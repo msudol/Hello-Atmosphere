@@ -9,26 +9,15 @@
 		<title>Hello Atmosphere</title>      
 	</head>
 	<body>
-	   <canvas id="main"></canvas>
-    
-       <!-- Loading zebra framework -->
-       <script src='js/zebra.json.js' type='text/javascript'></script>
-       <script type="text/javascript" src="js/zebra.min.js"></script>
-       <script type='text/javascript'>zebra()['zebra.json'] = JSONConfig;</script>        
-       
-       <!-- Load cordova.js - this file will get built during phonegap build it does not need to exist -->
-       <script type="text/javascript" src="cordova.js"></script>
-       
-       <!-- Current App -->
-       <script type="text/javascript" src="js/current_app.js"></script>
-       
-       <!-- Atmosphere App .js files -->       
-       <script type="text/javascript" src="js/elements.js"></script>
-       <script type="text/javascript" src="js/current_index.js"></script>   
-          
-	   <script type="text/javascript">
-	   baseApp.initialize();
-       </script>	
-		
+        <canvas id="main"></canvas>
+           
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/zebra.js"></script>
+        <script type="text/javascript" src="js/current_app.js"></script>
+        <script type="text/javascript" src="js/elements.js"></script>
+        <script type="text/javascript" src="js/current_index.js"></script>
+        <script type="text/javascript">
+            baseApp.initialize();
+        </script>
 	</body>
 </html>
