@@ -1346,7 +1346,7 @@ var app = {
 							app.layouts[app.currentLayout]["elements"]["logo01"].height);
 							
 		
-			app.element_Needle = new ImagePan("http://atmosphere.anaren.com/dev/images/demo/compass_needle.png", "element_Needle");
+			app.element_Needle = new ImagePan("images/compass_needle.png", "element_Needle");
 			
 			app.element_Needle.setRotation(0);
 			app.element_Needle.setVisible(false);
