@@ -1244,7 +1244,7 @@ var app = {
 			app.currentLayout = bestLayoutMatch;
 			
 			
-			app.element_ButtonBackground = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/blank.png", "element_ButtonBackground");
+			app.element_ButtonBackground = new ImagePan("images/blank.png", "element_ButtonBackground");
 			
 			app.element_ButtonBackground.setRotation(0);
 			app.element_ButtonBackground.setVisible(true);
@@ -1278,7 +1278,7 @@ var app = {
 							app.layouts[app.currentLayout]["elements"]["ButtonBackground"].height);
 							
 		
-			app.element_logo02 = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/animdemo/02.gif", "element_logo02");
+			app.element_logo02 = new ImagePan("images/02.gif", "element_logo02");
 			
 			app.element_logo02.setRotation(0);
 			app.element_logo02.setVisible(false);
@@ -1312,7 +1312,7 @@ var app = {
 							app.layouts[app.currentLayout]["elements"]["logo02"].height);
 							
 		
-			app.element_logo01 = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/animdemo/01.gif", "element_logo01");
+			app.element_logo01 = new ImagePan("images/01.gif", "element_logo01");
 			
 			app.element_logo01.setRotation(0);
 			app.element_logo01.setVisible(true);
@@ -1380,7 +1380,7 @@ var app = {
 							app.layouts[app.currentLayout]["elements"]["Needle"].height);
 							
 		
-			app.element_logo05 = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/animdemo/05.gif", "element_logo05");
+			app.element_logo05 = new ImagePan("images/05.gif", "element_logo05");
 			
 			app.element_logo05.setRotation(0);
 			app.element_logo05.setVisible(false);
@@ -1414,7 +1414,7 @@ var app = {
 							app.layouts[app.currentLayout]["elements"]["logo05"].height);
 							
 		
-			app.element_logo04 = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/animdemo/04.gif", "element_logo04");
+			app.element_logo04 = new ImagePan("images/04.gif", "element_logo04");
 			
 			app.element_logo04.setRotation(0);
 			app.element_logo04.setVisible(false);
@@ -1498,7 +1498,7 @@ var app = {
 			if(app.element_Beep_notified != undefined)
 				app.element_Beep.notified = app.element_Beep_notified;
 		
-			app.element_ButtonUp2 = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/button-up.png", "element_ButtonUp2");
+			app.element_ButtonUp2 = new ImagePan("images/button-up.png", "element_ButtonUp2");
 			
 			app.element_ButtonUp2.setRotation(0);
 			app.element_ButtonUp2.setVisible(true);
@@ -1566,7 +1566,7 @@ var app = {
 							app.layouts[app.currentLayout]["elements"]["Page3But"].height);
 			
 		
-			app.element_logo03 = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/animdemo/03.gif", "element_logo03");
+			app.element_logo03 = new ImagePan("images/03.gif", "element_logo03");
 			
 			app.element_logo03.setRotation(0);
 			app.element_logo03.setVisible(false);
@@ -1698,7 +1698,7 @@ var app = {
 		
 			app.element_Task5.pause();
 			
-			app.element_ButtonDown = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/button-down.png", "element_ButtonDown");
+			app.element_ButtonDown = new ImagePan("images/button-down.png", "element_ButtonDown");
 			
 			app.element_ButtonDown.setRotation(0);
 			app.element_ButtonDown.setVisible(false);
@@ -1732,7 +1732,7 @@ var app = {
 							app.layouts[app.currentLayout]["elements"]["ButtonDown"].height);
 							
 		
-			app.element_ButtonUp = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/button-up.png", "element_ButtonUp");
+			app.element_ButtonUp = new ImagePan("images/button-up.png", "element_ButtonUp");
 			
 			app.element_ButtonUp.setRotation(0);
 			app.element_ButtonUp.setVisible(true);
@@ -1856,7 +1856,7 @@ var app = {
 			if(app.element_Connected_disconnected != undefined)
 				app.element_Connected.disconnected = app.element_Connected_disconnected;
 		
-			app.element_PageBg = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/blank.png", "element_PageBg");
+			app.element_PageBg = new ImagePan("images/blank.png", "element_PageBg");
 			
 			app.element_PageBg.setRotation(0);
 			app.element_PageBg.setVisible(true);
@@ -2028,7 +2028,7 @@ var app = {
 							app.layouts[app.currentLayout]["elements"]["Value"].height);
 							
 		
-			app.element_BLEon = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/LogoBluetoothSmart.jpg", "element_BLEon");
+			app.element_BLEon = new ImagePan("images/LogoBluetoothSmart.jpg", "element_BLEon");
 			
 			app.element_BLEon.setRotation(0);
 			app.element_BLEon.setVisible(false);
@@ -2062,7 +2062,7 @@ var app = {
 							app.layouts[app.currentLayout]["elements"]["BLEon"].height);
 							
 		
-			app.element_SoundIcon = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/sound.png", "element_SoundIcon");
+			app.element_SoundIcon = new ImagePan("images/sound.png", "element_SoundIcon");
 			
 			app.element_SoundIcon.setRotation(0);
 			app.element_SoundIcon.setVisible(false);
@@ -2130,7 +2130,7 @@ var app = {
 							app.layouts[app.currentLayout]["elements"]["Page2But"].height);
 			
 		
-			app.element_LedIcon = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/led.png", "element_LedIcon");
+			app.element_LedIcon = new ImagePan("images/led.png", "element_LedIcon");
 			
 			app.element_LedIcon.setRotation(0);
 			app.element_LedIcon.setVisible(false);
@@ -2164,7 +2164,7 @@ var app = {
 							app.layouts[app.currentLayout]["elements"]["LedIcon"].height);
 							
 		
-			app.element_ButtonDown2 = new ImagePan("https://atmosphere.anaren.com/dev/images/demo/button-down.png", "element_ButtonDown2");
+			app.element_ButtonDown2 = new ImagePan("images/button-down.png", "element_ButtonDown2");
 			
 			app.element_ButtonDown2.setRotation(0);
 			app.element_ButtonDown2.setVisible(false);
