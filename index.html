@@ -20,22 +20,14 @@
         <script type="text/javascript" src="js/current_app.js"></script>
         
         <!-- Atmosphere App .js files -->       
-		<script type="text/javascript" src="js/utils.js"></script>
 		<script type="text/javascript" src="js/elements.js"></script>
-		<script type="text/javascript" src="js/client_elements.js"></script>
-		<script type="text/javascript" src="js/ble_elements.js"></script>
-		<script type="text/javascript" src="js/PhoneGapBLEClient.js"></script>
-		<script type="text/javascript" src="js/Client.js"></script>
-		<script type="text/javascript" src="js/Chart.Core.js"></script>
-		<script type="text/javascript" src="js/Chart.Scatter.js"></script>
-		<script type="text/javascript">
-			baseApp = new Client('PhoneGapBLEClient');
-			app = new MyApp(baseApp);
-			baseApp.setApp(app);
-			baseApp.initialize();
-		</script>	        
+		<script type="text/javascript" src="js/current_index.js"></script>        
 	</head>
 	<body>
 		<canvas id="main"></canvas>
 	</body>
+    
+    <script type="text/javascript">
+        baseApp.initialize();
+	</script>	
 </html>
