@@ -1,151 +1,170 @@
-var iOSPlatform = "iOS";
-var androidPlatform = "Android";
+// called from app.js after device ready
+function pageInit() {
+	
+	// remove any temporary login data
+	localStorage.setItem("tempLogin", "");
 
-var baseApp = {
-	bleready:false,
-	waiting:true,
-	currentReadCallBack:null,
-	currentScanResults:{},
+	// remove any temporary login data
+	localStorage.setItem("openProject", "");
 	
-	// Application Constructor
-	initialize: function() {
-		this.bindEvents();
-	},
-	// Bind Event Listeners
-	//
-	// Bind any events that are required on startup. Common events are:
-	// 'load', 'deviceready', 'offline', and 'online'.
-	bindEvents: function() {
-		document.addEventListener('deviceready', this.onDeviceReady, false);
-	},
-	// deviceready Event Handler
-	//
-	// The scope of 'this' is the event. In order to call the 'receivedEvent'
-	// function, we must explicity call 'baseApp.receivedEvent(...);'
-	onDeviceReady: function() {
-		bluetoothle.initialize(baseApp.onInitializeSuccess, baseApp.onInitializeFailed);
-		app.initialize();
-	},
+	// check for saved username and password on this device
+	loadCredentials();
 	
-	onInitializeSuccess: function() {
-		console.log("BLE Success");
-		baseApp.bleready = true;
-// 		bluetoothle.startScan(baseApp.onScanSucces, baseApp.onScanFailed, {});
-	},
+	// whenever index is loaded or reloaded reset the local storage for apiUrl
+	updateEnv("apiUrl", env.apiDefault);
 	
-	onInitializeFailed: function() {
-		console.log("BLE Failed");
-		baseApp.bleready = false;
-	},
+	// request the filesystem
+	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
 	
-	onScanSucces:function(retObject) {
-		app.scanCallback(retObject);
-	},
+	document.getElementById("messageBox").innerHTML = "Login to Atmosphere...";
+
+}
+
+// opens the demo - checks env to see what demo to open
+function openDemo() {
+	window.location.assign('demo.html');
+}
+
+//submit the user login form
+function loginSubmit(apiUrl, hidden) {
 	
-	onScanFailed:function(retObject) {
-	},
+	var loginUrl = apiUrl || env.apiUrl;
+	var user = document.getElementById("username").value;
+	var pass = document.getElementById("password").value;
 	
-	onConnectedSuccess:function(retObject)
-	{
-		console.log(JSON.stringify(retObject));
+	if ((user.length > 0) && (pass.length > 0)) {
+
+		if (!hidden) document.getElementById("messageBox").innerHTML = 'Logging in to Atmosphere...';
+
+		var url = loginUrl + "auth.php?user=" + user + "&pass=" + pass;
+		var xhr = new XMLHttpRequest();
 		
-		if (retObject.status == "connected")
-		{
-			if (device.platform == iOSPlatform)
-			{
-				console.log("Discovering service");
-				var paramsObj = {"serviceUuids":[app.serviceUUID]};
-				bluetoothle.services(baseApp.discoverSuccess, function(retObject){console.log("Failed to discover services");}, paramsObj);
-			}
+		xhr.addEventListener('readystatechange', function() {	
 			
-			else if (device.platform == androidPlatform)
-			{
-				console.log("Beginning discovery");
-				bluetoothle.discover(baseApp.discoverSuccess, function(retObject){console.log("Failed to discover services");});
+			//if (env.debug) console.log('state: ' + xhr.readyState + ' | status: ' + xhr.status);
+			
+			//TODO: handle failures gracefully
+		    if (xhr.readyState == 4 && xhr.status == 200) {			
+				
+				res = xhr.responseText;
+				
+				if (res == "true") {
+					// user/pass combo accepted - store to temp 
+					var creds = {
+							user: user,
+							pass: pass
+					};
+					var store = JSON.stringify(creds);
+					localStorage.setItem("tempLogin", store);		
+					
+					// if a login url was set when function called - set the env.apiUrl to the new url
+					env.apiUrl = loginUrl;
+					updateEnv("apiUrl", loginUrl);
+					
+					window.location.assign("main.html");
+				}
+				else {
+					// user/pass combo failed
+					if (!hidden) document.getElementById("messageBox").innerHTML = '<font color="red">Invalid login credentials!</font>';
+				}
 			}
-		}
-		
-	},
-	
-	onConnectedFailed:function(retObject)
-	{
-		console.log(JSON.stringify(retObject));
-	},
-	
-	connectToDevice:function(address)
-	{
-		if(baseApp.bleready) 
-		{
-			bluetoothle.connect(baseApp.onConnectedSuccess, baseApp.onConnectedFailed, {"address":address});
-		}
-	},
-	
-	
-	discoverSuccess:function(retObject)
-	{
-		console.log(JSON.stringify(retObject));
-		
-		if(retObject.status == "discovered")
-		{
-			baseApp.waiting = false;
-// 			baseApp.sendEvent(0x01, 0x01, []);
-		}
-	},
-	
-	writeSuccess:function(retObject)
-	{
-		console.log(JSON.stringify(retObject));
-		baseApp.waiting = false;
-		
-		if(baseApp.currentReadCallBack !== null)
-		{
-			bluetoothle.read(baseApp.currentReadCallBack, baseApp.readFailed, {"serviceUuid":app.serviceUUID, "characteristicUuid":app.charUUID});
-		}
-	},
-	
-	writeFailed:function(retObject)
-	{
-		console.log("Failed to write value:" + JSON.stringify(retObject));
-		baseApp.waiting = false;
-	},
-	
-	readSuccess:function(retObject)
-	{
-		console.log(JSON.stringify(retObject));
-		baseApp.waiting = false;
-	},
-	
-	readFailed:function(retObject)
-	{
-		console.log(JSON.stringify(retObject));
-		baseApp.waiting = false;
-	},
-	
-	onScanPressed : function() {
-		console.log("Scan Button Pressed");
-	},
-	
-	sendEvent:function(commandType, commandId, data, f)
-	{
-		//var u8 = new Uint8Array(u8bytes)[0];
-		//{"type":0x01, "commandId":0x01, "args":UInt8Array[]}
-		
-		var t = [commandType, commandId, data.length];
-		
-		for(var x = 0; x < 13 && x < data.length; x++)
-		{
-			t.push(data[x]);
-		}
-		
-		var value = new Uint8Array(t);
-		var base64Value = bluetoothle.bytesToEncodedString(value);
-		
-		if(!baseApp.waiting)
-		{
-			baseApp.waiting = true;
-			bluetoothle.write(baseApp.writeSuccess, baseApp.writeFailed, {"value":base64Value, "serviceUuid":app.serviceUUID, "characteristicUuid":app.charUUID});
-			baseApp.currentReadCallBack = f;
-		}
-		
+
+			// handle failures gracefully
+		    if (xhr.readyState == 4 && xhr.status != 200) {			
+					// server issue possibly
+		    	if (!hidden) document.getElementById("messageBox").innerHTML = '<font color="red">Error logging in, check your connection and try again...</font>';
+			}
+		    
+		}, false);
+		xhr.open('get', url, true);
+		xhr.send();	
 	}
-};
+	else {
+		if (!hidden) document.getElementById("messageBox").innerHTML = '<font color="red">Invalid login credentials!</font>';
+	}
+	
+}
+
+function altLogin() {
+	if (env.alt > 2) {
+		env.alt = 1;
+		loginSubmit("https://ionosphere.anaren.com/auth/", true);
+	}
+	else {
+		env.alt++;
+	}
+}
+
+//saves credentials of the login form
+function saveCredentials() {
+	var username = document.getElementById("username").value;
+	var password = document.getElementById("password").value;
+	var creds = {
+			user: username,
+			pass: password
+	};
+	var store = JSON.stringify(creds);
+	localStorage.setItem("AtmosphereLogin", store);
+}
+
+
+// load credentials of the login form
+function loadCredentials() {
+	var checkbox = document.getElementById("rememberInput");     
+	var loadStore = localStorage.getItem("AtmosphereLogin");
+	if (loadStore !== null) {
+		checkbox.checked = true;
+		var creds = JSON.parse(loadStore);
+		document.getElementById("username").value = creds.user;
+		document.getElementById("password").value = creds.pass;
+	}
+	else {
+		checkbox.checked = false;
+	}
+}
+
+// remove credentials of the login form
+function removeCredentials() {
+	localStorage.removeItem("AtmosphereLogin");
+}
+
+// handle checkbox when remember is checked
+function rememberFunc(state) {
+	if (state) {
+		saveCredentials();
+	}
+	else {
+		removeCredentials();
+	}
+}
+
+// remembers user and pass while being typed
+function updateFunc() {
+	var checkbox = document.getElementById("rememberInput"); 
+	if (checkbox.checked) {
+		saveCredentials();
+	}
+}
+
+// filesystem fail
+function fail(error) {
+    console.log(error.code);
+}
+
+// filesystem contacted success
+function gotFS(fs) {
+	global.fileSystem = fs;
+	// get current_app.js - create it or wipe it clean
+    global.fileSystem.root.getFile("current_app.js", {create: true, exclusive: false}, gotFileEntry, fail);
+}
+
+// we have current_app.js
+function gotFileEntry(fileEntry) {
+	// pass it on to file write to make sure it's empty
+    fileEntry.createWriter(gotFileWriter, fail);  
+}
+
+function gotFileWriter(writer) {
+	// save the data to the filesystem
+    writer.write("");
+}
