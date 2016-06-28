@@ -34,9 +34,8 @@
     <preference name="DisallowOverscroll" value="true" />
 	<preference name="cordova-custom-config-autorestore" value="false" />
      
-    <!-- TODO: update these to NPM -->
     <gap:plugin name="cordova-plugin-battery-status" source="npm" />
-    <gap:plugin name="cordova-plugin-camera source="npm" />
+    <gap:plugin name="cordova-plugin-camera" source="npm" />
     <gap:plugin name="cordova-plugin-media-capture" source="npm" />
     <gap:plugin name="cordova-plugin-console" source="npm" />
     <gap:plugin name="cordova-plugin-contacts" source="npm" />
