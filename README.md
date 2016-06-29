@@ -5,9 +5,11 @@ Hello Atmosphere is a sample phonegap build tool project integrated with Anaren 
 Learn more @ https://atmosphere.anaren.com
 
 This demo application should connect to an Anaren "MSDB" programmed with the sample project from 
-the Atmopshere IDE called "UI Demo".
+the Atmopshere IDE called "UI Demo". 
 
-Program the MSDB with UI Demo to test BLE connectivity.
+Check /firmware in this repository for the .hex file to program with this example.
+
+Program the MSDB with UI Demo firmware to test BLE connectivity.
 
 1. Use this sample application as a skeleton to build your own projects, simply replace the 
 following files with files in your downloaded app source:
