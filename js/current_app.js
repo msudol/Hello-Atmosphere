@@ -5,8 +5,8 @@ function MyApp(parent) {
 	
 	this.parent = parent;
 
-	this.parent.serviceUUID = "e9707559-543a-48d2-ba4f-103aea44a3c9";
-	this.parent.notifyUUID = "e9707559-543a-48d2-ba4f-103aea44a3ca";
+	this.parent.serviceUUID = "c917a2de-a2fb-4604-8d36-161c8d1fb4a6";
+	this.parent.notifyUUID = "c917a2de-a2fb-4604-8d36-161c8d1fb4a7";
 		
 	this.parent.localName = "ui_demo";
 	this.parent.embeddedChains = {};
