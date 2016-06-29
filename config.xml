@@ -143,7 +143,7 @@
 
 		<preference name="android-manifest/application/@android:hardwareAccelerated" value="false" />
 		<preference name="android-manifest/@android:hardwareAccelerated" value="false" />
-    	<preference name="android-minSdkVersion" value="23" />
+    	<preference name="android-minSdkVersion" value="19" />
     	<preference name="android-targetSdkVersion" value="23" />
     		  	     
     </platform>
