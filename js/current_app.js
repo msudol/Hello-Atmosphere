@@ -1875,7 +1875,7 @@ function MyApp(parent) {
 								this.layouts[this.currentLayout]["elements"]["StatefulButton"].height);
 							
 		
-			this.element_Beep = new FunctionElement(this.parent, "Beep", 19, "e9707559-543a-48d2-ba4f-103aea44a3cb", "json", "json");
+			this.element_Beep = new FunctionElement(this.parent, "Beep", 19, "c917a2de-a2fb-4604-8d36-161c8d1fb4a8", "json", "json");
 				
 			if(this.element_Beep_onTrigger)
 				this.element_Beep.onTrigger = this.element_Beep_onTrigger;
@@ -2386,7 +2386,7 @@ function MyApp(parent) {
 								this.layouts[this.currentLayout]["elements"]["ImageAsButton"].height);
 							
 		
-			this.element_Light = new FunctionElement(this.parent, "Light", 21, "e9707559-543a-48d2-ba4f-103aea44a3cc", "json", "json");
+			this.element_Light = new FunctionElement(this.parent, "Light", 21, "c917a2de-a2fb-4604-8d36-161c8d1fb4a9", "json", "json");
 				
 			if(this.element_Light_onTrigger)
 				this.element_Light.onTrigger = this.element_Light_onTrigger;
