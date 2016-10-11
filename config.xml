@@ -18,8 +18,8 @@
     
     <content src="index.html" />
 	
-	<!-- Add this line for phonegap build -->	
-    <preference name="phonegap-version" value="cli-6.0.0" />
+    <!-- Add this line for phonegap build -->	
+    <preference name="phonegap-version" value="cli-6.3.0" />
         
     <preference name="permissions" value="none" />
     <preference name="orientation" value="portrait" />
@@ -33,7 +33,7 @@
     <preference name="exit-on-suspend" value="false" />
     <preference name="disable-cursor" value="false" />
     <preference name="DisallowOverscroll" value="true" />
-	<preference name="cordova-custom-config-autorestore" value="false" />
+    <preference name="cordova-custom-config-autorestore" value="false" />
      
     <gap:plugin name="cordova-plugin-battery-status" source="npm" />
     <gap:plugin name="cordova-plugin-camera" source="npm" />
@@ -137,8 +137,8 @@
 		<uses-feature android:name="android.hardware.BLUETOOTH" android:required="true" />
     	</config-file>   
 
-		<preference name="android-manifest/application/@android:hardwareAccelerated" value="false" />
-		<preference name="android-manifest/@android:hardwareAccelerated" value="false" />
+	<preference name="android-manifest/application/@android:hardwareAccelerated" value="false" />
+	<preference name="android-manifest/@android:hardwareAccelerated" value="false" />
     	<preference name="android-minSdkVersion" value="19" />
     	<preference name="android-targetSdkVersion" value="23" />
     		  	     
