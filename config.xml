@@ -19,7 +19,7 @@
     <content src="index.html" />
 	
     <!-- Add this line for phonegap build -->	
-    <preference name="phonegap-version" value="cli-6.3.0" />
+    <preference name="phonegap-version" value="cli-6.5.0" />
         
     <preference name="permissions" value="none" />
     <preference name="orientation" value="portrait" />
@@ -55,7 +55,7 @@
     <gap:plugin name="cordova-plugin-vibration" source="npm" />
     <gap:plugin name="cordova-custom-config" source="npm" />
     <gap:plugin name="cordova-plugin-fullscreen" source="npm" />
-    <gap:plugin name="cordova-plugin-bluetoothle" source="npm" version="4.3.0" />
+    <gap:plugin name="cordova-plugin-bluetoothle" source="npm" version="4.3.1" />
     
     <icon src="icon.png" />
     
@@ -126,21 +126,21 @@
     	<splash src="www/res/screen/android/screen-mdpi-portrait.png" density="port-mdpi"/>
     	<splash src="www/res/screen/android/screen-xhdpi-portrait.png" density="port-xhdpi"/>
     	      
-     	<config-file target="AndroidManifest.xml" parent="/*">
-        	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-        	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-        	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-        	<uses-permission android:name="android.permission.CAMERA" />
-        	<uses-permission android:name="android.permission.VIBRATE" />
-		<uses-permission android:name="android.permission.BLUETOOTH" android:required="true" />
-		<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:required="true" />
-		<uses-feature android:name="android.hardware.BLUETOOTH" android:required="true" />
-    	</config-file>   
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.CAMERA" />
+            <uses-permission android:name="android.permission.VIBRATE" />
+        <uses-permission android:name="android.permission.BLUETOOTH" android:required="true" />
+        <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:required="true" />
+        <uses-feature android:name="android.hardware.BLUETOOTH" android:required="true" />
+        </config-file>   
 
-	<preference name="android-manifest/application/@android:hardwareAccelerated" value="false" />
-	<preference name="android-manifest/@android:hardwareAccelerated" value="false" />
-    	<preference name="android-minSdkVersion" value="19" />
-    	<preference name="android-targetSdkVersion" value="23" />
+        <preference name="android-manifest/application/@android:hardwareAccelerated" value="false" />
+        <preference name="android-manifest/@android:hardwareAccelerated" value="false" />
+        <preference name="android-minSdkVersion" value="19" />
+        <preference name="android-targetSdkVersion" value="23" />
     		  	     
     </platform>
      
