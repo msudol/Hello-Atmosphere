@@ -5,11 +5,14 @@ function MyApp(parent) {
 	
 	this.parent = parent;
 
-	this.parent.serviceUUID = "c917a2de-a2fb-4604-8d36-161c8d1fb4a6";
-	this.parent.notifyUUID = "c917a2de-a2fb-4604-8d36-161c8d1fb4a7";
+	this.parent.projectName = "UI Demo";
+	this.parent.cloudUrl = "atmosphere.anaren.com:1337";
+		
+	this.parent.serviceUUID = "c68c4c4b-21ce-47da-aca1-3ce24c3ba92f";
+	this.parent.notifyUUID = "c68c4c4b-21ce-47da-aca1-3ce24c3ba930";
 		
 	this.parent.localName = "ui_demo";
-	this.parent.embeddedChains = {};
+	this.parent.embeddedChains = {"Beep": [], "Light": []};
 
 	this.element_ButtonUp_mouseReleased = function(e) {
 		(function(){
@@ -33,7 +36,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Beep.execute(targetValues.value);
+			airMe.element_Beep.execute(clone(targetValues.value));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonUp\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Beep\" ]");
 		})();
@@ -59,7 +62,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_SoundIcon.setVisible(targetValues.visible);
+			airMe.element_SoundIcon.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonUp\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"SoundIcon\" ]");
 		})();
@@ -85,7 +88,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_ButtonUp.setVisible(targetValues.visible);
+			airMe.element_ButtonUp.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonUp\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"ButtonUp\" ]");
 		})();
@@ -114,7 +117,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Beep.execute(targetValues.value);
+			airMe.element_Beep.execute(clone(targetValues.value));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonUp\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Beep\" ]");
 		})();
@@ -140,7 +143,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_SoundIcon.setVisible(targetValues.visible);
+			airMe.element_SoundIcon.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonUp\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"SoundIcon\" ]");
 		})();
@@ -166,7 +169,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_ButtonUp.setVisible(targetValues.visible);
+			airMe.element_ButtonUp.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonUp\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"ButtonUp\" ]");
 		})();
@@ -195,7 +198,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_ButtonDown2.setVisible(targetValues.visible);
+			airMe.element_ButtonDown2.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonUp2\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"ButtonDown2\" ]");
 		})();
@@ -224,7 +227,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_ButtonDown2.setVisible(targetValues.visible);
+			airMe.element_ButtonDown2.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonUp2\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"ButtonDown2\" ]");
 		})();
@@ -260,7 +263,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Light.execute(targetValues.value);
+			airMe.element_Light.execute(clone(targetValues.value));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonUp2\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Light\" ]");
 		})();
@@ -286,7 +289,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_LedIcon.setVisible(targetValues.visible);
+			airMe.element_LedIcon.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonUp2\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"LedIcon\" ]");
 		})();
@@ -315,7 +318,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Page1.setVisible(targetValues.visible);
+			airMe.element_Page1.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page3But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Page1\" ]");
 		})();
@@ -341,7 +344,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Page2.setVisible(targetValues.visible);
+			airMe.element_Page2.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page3But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Page2\" ]");
 		})();
@@ -367,7 +370,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Page3.setVisible(targetValues.visible);
+			airMe.element_Page3.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page3But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Page3\" ]");
 		})();
@@ -393,7 +396,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Spinner.setVisible(targetValues.visible);
+			airMe.element_Spinner.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page3But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Spinner\" ]");
 		})();
@@ -419,7 +422,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Needle.setVisible(targetValues.visible);
+			airMe.element_Needle.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page3But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Needle\" ]");
 		})();
@@ -448,7 +451,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_logo01.setVisible(targetValues.visible);
+			airMe.element_logo01.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task1\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"logo01\" ]");
 		})();
@@ -474,7 +477,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_logo02.setVisible(targetValues.visible);
+			airMe.element_logo02.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task1\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"logo02\" ]");
 		})();
@@ -516,7 +519,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Task2.run(targetValues.runIn,targetValues.runEvery);
+			airMe.element_Task2.run(clone(targetValues.runIn),clone(targetValues.runEvery));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task1\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Task2\" ]");
 		})();
@@ -555,7 +558,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_logo02.setVisible(targetValues.visible);
+			airMe.element_logo02.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task2\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"logo02\" ]");
 		})();
@@ -581,7 +584,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_logo03.setVisible(targetValues.visible);
+			airMe.element_logo03.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task2\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"logo03\" ]");
 		})();
@@ -623,7 +626,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Task3.run(targetValues.runIn,targetValues.runEvery);
+			airMe.element_Task3.run(clone(targetValues.runIn),clone(targetValues.runEvery));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task2\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Task3\" ]");
 		})();
@@ -662,7 +665,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_logo03.setVisible(targetValues.visible);
+			airMe.element_logo03.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task3\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"logo03\" ]");
 		})();
@@ -688,7 +691,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_logo04.setVisible(targetValues.visible);
+			airMe.element_logo04.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task3\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"logo04\" ]");
 		})();
@@ -730,7 +733,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Task4.run(targetValues.runIn,targetValues.runEvery);
+			airMe.element_Task4.run(clone(targetValues.runIn),clone(targetValues.runEvery));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task3\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Task4\" ]");
 		})();
@@ -769,7 +772,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_logo04.setVisible(targetValues.visible);
+			airMe.element_logo04.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task4\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"logo04\" ]");
 		})();
@@ -795,7 +798,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_logo05.setVisible(targetValues.visible);
+			airMe.element_logo05.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task4\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"logo05\" ]");
 		})();
@@ -837,7 +840,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Task5.run(targetValues.runIn,targetValues.runEvery);
+			airMe.element_Task5.run(clone(targetValues.runIn),clone(targetValues.runEvery));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task4\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Task5\" ]");
 		})();
@@ -876,7 +879,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_logo05.setVisible(targetValues.visible);
+			airMe.element_logo05.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task5\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"logo05\" ]");
 		})();
@@ -902,7 +905,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_logo01.setVisible(targetValues.visible);
+			airMe.element_logo01.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task5\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"logo01\" ]");
 		})();
@@ -944,7 +947,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Task1.run(targetValues.runIn,targetValues.runEvery);
+			airMe.element_Task1.run(clone(targetValues.runIn),clone(targetValues.runEvery));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Task5\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Task1\" ]");
 		})();
@@ -983,7 +986,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_BLEon.setVisible(targetValues.visible);
+			airMe.element_BLEon.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Connected\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"BLEon\" ]");
 		})();
@@ -1012,7 +1015,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_BLEon.setVisible(targetValues.visible);
+			airMe.element_BLEon.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Connected\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"BLEon\" ]");
 		})();
@@ -1041,7 +1044,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Off.setVisible(targetValues.visible);
+			airMe.element_Off.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"On\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Off\" ]");
 		})();
@@ -1070,7 +1073,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Off.setVisible(targetValues.visible);
+			airMe.element_Off.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"On\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Off\" ]");
 		})();
@@ -1106,7 +1109,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Value.setValue(targetValues.value);
+			airMe.element_Value.setValue(clone(targetValues.value));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"On\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Value\" ]");
 		})();
@@ -1135,7 +1138,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_On.setVisible(targetValues.visible);
+			airMe.element_On.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Off\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"On\" ]");
 		})();
@@ -1164,7 +1167,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_On.setVisible(targetValues.visible);
+			airMe.element_On.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Off\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"On\" ]");
 		})();
@@ -1200,7 +1203,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Value.setValue(targetValues.value);
+			airMe.element_Value.setValue(clone(targetValues.value));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Off\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Value\" ]");
 		})();
@@ -1229,7 +1232,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Page1.setVisible(targetValues.visible);
+			airMe.element_Page1.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page2But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Page1\" ]");
 		})();
@@ -1255,7 +1258,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Page2.setVisible(targetValues.visible);
+			airMe.element_Page2.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page2But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Page2\" ]");
 		})();
@@ -1281,7 +1284,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Page3.setVisible(targetValues.visible);
+			airMe.element_Page3.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page2But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Page3\" ]");
 		})();
@@ -1307,7 +1310,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Needle.setVisible(targetValues.visible);
+			airMe.element_Needle.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page2But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Needle\" ]");
 		})();
@@ -1333,7 +1336,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Spinner.setVisible(targetValues.visible);
+			airMe.element_Spinner.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page2But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Spinner\" ]");
 		})();
@@ -1362,7 +1365,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_ButtonUp2.setVisible(targetValues.visible);
+			airMe.element_ButtonUp2.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonDown2\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"ButtonUp2\" ]");
 		})();
@@ -1391,7 +1394,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_ButtonUp2.setVisible(targetValues.visible);
+			airMe.element_ButtonUp2.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonDown2\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"ButtonUp2\" ]");
 		})();
@@ -1427,7 +1430,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Light.execute(targetValues.value);
+			airMe.element_Light.execute(clone(targetValues.value));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonDown2\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Light\" ]");
 		})();
@@ -1453,7 +1456,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_LedIcon.setVisible(targetValues.visible);
+			airMe.element_LedIcon.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"ButtonDown2\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"LedIcon\" ]");
 		})();
@@ -1484,7 +1487,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Needle.setRotation(targetValues.value);
+			airMe.element_Needle.setRotation(clone(targetValues.value));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Spinner\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Needle\" ]");
 		})();
@@ -1513,7 +1516,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Page1.setVisible(targetValues.visible);
+			airMe.element_Page1.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page1But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Page1\" ]");
 		})();
@@ -1539,7 +1542,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Page2.setVisible(targetValues.visible);
+			airMe.element_Page2.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page1But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Page2\" ]");
 		})();
@@ -1565,7 +1568,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Page3.setVisible(targetValues.visible);
+			airMe.element_Page3.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page1But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Page3\" ]");
 		})();
@@ -1591,7 +1594,7 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Needle.setVisible(targetValues.visible);
+			airMe.element_Needle.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page1But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Needle\" ]");
 		})();
@@ -1617,16 +1620,17 @@ function MyApp(parent) {
 				return;
 			}
 				
-			airMe.element_Spinner.setVisible(targetValues.visible);
+			airMe.element_Spinner.setVisible(clone(targetValues.visible));
 					
 			//airMe.parent.debugLog("Connection Event: [ \"Page1But\" ]---(" + JSON.stringify(targetValues) + ")--->[ \"Spinner\" ]");
 		})();
 
 	};
 
+		this.layouts = {"iPad": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 188, "x": -17, "width": 802, "height": 147}, "logo02": {"y": 16, "x": 330, "width": 110, "height": 55}, "logo01": {"y": 16, "x": 330, "width": 110, "height": 55}, "Needle": {"y": 649, "x": 364, "width": 86, "height": 86}, "logo05": {"y": 16, "x": 330, "width": 110, "height": 55}, "logo04": {"y": 16, "x": 330, "width": 110, "height": 55}, "StatefulButton": {"y": 270, "x": 498, "width": 116, "height": 51}, "Spinner": {"y": 631.5, "x": 108, "width": 106, "height": 127}, "ButtonUp2": {"y": 211, "x": 500, "width": 116, "height": 51}, "Page3But": {"y": 550, "x": 190, "width": 80, "height": 38}, "logo03": {"y": 16, "x": 330, "width": 110, "height": 55}, "ButtonDown": {"y": 211, "x": 103, "width": 116, "height": 51}, "ButtonUp": {"y": 211, "x": 103, "width": 116, "height": 51}, "informationLabel": {"y": 352, "x": 227, "width": 314, "height": 37}, "TogButLabel": {"y": 447, "x": 441, "width": 146, "height": 40}, "PageBg": {"y": 600, "x": -13, "width": 794, "height": 186}, "On": {"y": 448, "x": 221, "width": 80, "height": 38}, "Off": {"y": 448, "x": 221, "width": 80, "height": 38}, "ImageAsButton": {"y": 270, "x": 102, "width": 116, "height": 51}, "Value": {"y": 448, "x": 324, "width": 92, "height": 38}, "BLEon": {"y": 30, "x": 57, "width": 67, "height": 27}, "SoundIcon": {"y": 21, "x": 635.5, "width": 45, "height": 45}, "Page2But": {"y": 550, "x": 100, "width": 80, "height": 38}, "LedIcon": {"y": 21, "x": 635.5, "width": 45, "height": 45}, "ButtonDown2": {"y": 211, "x": 500, "width": 116, "height": 51}, "Page1But": {"y": 550, "x": 10, "width": 80, "height": 38}, "Page2": {"y": 626, "x": 24, "width": 296, "height": 130}, "Page3": {"y": 628, "x": 25.5, "width": 293, "height": 130}, "Page1": {"y": 627, "x": 24, "width": 296, "height": 130}}, "orientation": "portrait", "platform": "iOS", "height": 1024, "width": 768, "version": ".*", "name": "iPad 1/2/Mini"}, "Default": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 70, "x": 4, "height": 100, "width": 316}, "logo02": {"y": 10, "x": 105, "height": 55, "width": 110}, "logo01": {"y": 10, "x": 105, "height": 55, "width": 110}, "ButtonUp": {"y": 72, "x": 7, "height": 51, "width": 116}, "logo05": {"y": 10, "x": 105, "height": 55, "width": 110}, "logo04": {"y": 10, "x": 105, "height": 55, "width": 110}, "StatefulButton": {"y": 126, "x": 199, "height": 51, "width": 116}, "Spinner": {"y": 323, "x": 17, "height": 127, "width": 106}, "ButtonUp2": {"y": 72, "x": 202, "height": 51, "width": 116}, "Page3But": {"y": 270, "x": 190, "height": 38, "width": 80}, "logo03": {"y": 10, "x": 105, "height": 55, "width": 110}, "ButtonDown": {"y": 72, "x": 7, "height": 51, "width": 116}, "Needle": {"y": 336.5, "x": 138, "height": 86, "width": 86}, "informationLabel": {"y": 177, "x": 7, "height": 37, "width": 311}, "TogButLabel": {"y": 216, "x": 173, "height": 40, "width": 146}, "PageBg": {"y": 312, "x": 4, "height": 146, "width": 316}, "On": {"y": 216, "x": 10.5, "height": 38, "width": 80}, "Off": {"y": 216, "x": 9.5, "height": 38, "width": 80}, "ImageAsButton": {"y": 126, "x": 10, "height": 51, "width": 116}, "Value": {"y": 216, "x": 104, "height": 38, "width": 55}, "BLEon": {"y": 22, "x": 10, "height": 27, "width": 67}, "SoundIcon": {"y": 15, "x": 272.5, "height": 45, "width": 45}, "Page2But": {"y": 270, "x": 100, "height": 38, "width": 80}, "LedIcon": {"y": 15.5, "x": 273, "height": 45, "width": 45}, "ButtonDown2": {"y": 72, "x": 202, "height": 51, "width": 116}, "Page1But": {"y": 270, "x": 10, "height": 38, "width": 80}, "Page2": {"y": 320, "x": 10, "height": 130, "width": 296}, "Page3": {"y": 319, "x": 10.5, "height": 130, "width": 293}, "Page1": {"y": 319.5, "x": 13.5, "height": 130, "width": 296}}, "orientation": "portrait", "platform": ".*", "height": 1024, "width": 768, "version": ".*", "name": "Default (768x1024)"}, "iPhone4": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 70, "x": -9, "width": 332, "height": 100}, "logo02": {"y": 10, "x": 105, "width": 110, "height": 55}, "logo01": {"y": 10, "x": 105, "width": 110, "height": 55}, "Needle": {"y": 336.5, "x": 138, "width": 86, "height": 86}, "logo05": {"y": 10, "x": 105, "width": 110, "height": 55}, "logo04": {"y": 10, "x": 105, "width": 110, "height": 55}, "StatefulButton": {"y": 126, "x": 190, "width": 116, "height": 51}, "Spinner": {"y": 323, "x": 16, "width": 106, "height": 127}, "ButtonUp2": {"y": 72, "x": 190, "width": 116, "height": 51}, "Page3But": {"y": 270, "x": 190, "width": 80, "height": 38}, "logo03": {"y": 10, "x": 105, "width": 110, "height": 55}, "ButtonDown": {"y": 72, "x": 7, "width": 116, "height": 51}, "ButtonUp": {"y": 72, "x": 7, "width": 116, "height": 51}, "informationLabel": {"y": 177, "x": 11, "width": 311, "height": 37}, "TogButLabel": {"y": 217, "x": 164, "width": 146, "height": 40}, "PageBg": {"y": 312, "x": -11, "width": 335, "height": 146}, "On": {"y": 216, "x": 10.5, "width": 80, "height": 38}, "Off": {"y": 216, "x": 9.5, "width": 80, "height": 38}, "ImageAsButton": {"y": 126, "x": 10, "width": 116, "height": 51}, "Value": {"y": 216, "x": 104, "width": 55, "height": 38}, "BLEon": {"y": 22, "x": 10, "width": 67, "height": 27}, "SoundIcon": {"y": 15, "x": 261, "width": 45, "height": 45}, "Page2But": {"y": 270, "x": 100, "width": 80, "height": 38}, "LedIcon": {"y": 15.5, "x": 261, "width": 45, "height": 45}, "ButtonDown2": {"y": 72, "x": 190, "width": 116, "height": 51}, "Page1But": {"y": 270, "x": 10, "width": 80, "height": 38}, "Page2": {"y": 320, "x": 12, "width": 296, "height": 130}, "Page3": {"y": 319, "x": 10.5, "width": 293, "height": 130}, "Page1": {"y": 319.5, "x": 10, "width": 296, "height": 130}}, "orientation": "portrait", "platform": "iOS", "height": 480, "width": 320, "version": ".*", "name": "iPhone 4/4S"}, "iPhone5": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 80, "x": -21, "width": 343, "height": 100}, "logo02": {"y": 10, "x": 105, "width": 110, "height": 55}, "logo01": {"y": 10, "x": 105, "width": 110, "height": 55}, "Needle": {"y": 380.5, "x": 138, "width": 86, "height": 86}, "logo05": {"y": 10, "x": 105, "width": 110, "height": 55}, "logo04": {"y": 10, "x": 105, "width": 110, "height": 55}, "StatefulButton": {"y": 135, "x": 190, "width": 116, "height": 51}, "Spinner": {"y": 360, "x": 17, "width": 106, "height": 127}, "ButtonUp2": {"y": 82, "x": 190, "width": 116, "height": 51}, "Page3But": {"y": 310, "x": 190, "width": 80, "height": 38}, "logo03": {"y": 10, "x": 105, "width": 110, "height": 55}, "ButtonDown": {"y": 82, "x": 7, "width": 116, "height": 51}, "ButtonUp": {"y": 82, "x": 7, "width": 116, "height": 51}, "informationLabel": {"y": 197, "x": 6, "width": 311, "height": 37}, "TogButLabel": {"y": 251, "x": 163, "width": 146, "height": 40}, "PageBg": {"y": 349, "x": -13, "width": 333, "height": 146}, "On": {"y": 250, "x": 10.5, "width": 80, "height": 38}, "Off": {"y": 250, "x": 9.5, "width": 80, "height": 38}, "ImageAsButton": {"y": 136, "x": 10, "width": 116, "height": 51}, "Value": {"y": 250, "x": 104, "width": 55, "height": 38}, "BLEon": {"y": 22, "x": 10, "width": 67, "height": 27}, "SoundIcon": {"y": 15, "x": 261, "width": 45, "height": 45}, "Page2But": {"y": 310, "x": 100, "width": 80, "height": 38}, "LedIcon": {"y": 15.5, "x": 261, "width": 45, "height": 45}, "ButtonDown2": {"y": 82, "x": 190, "width": 116, "height": 51}, "Page1But": {"y": 310, "x": 10, "width": 80, "height": 38}, "Page2": {"y": 359, "x": 10, "width": 296, "height": 130}, "Page3": {"y": 360, "x": 10.5, "width": 293, "height": 130}, "Page1": {"y": 359.5, "x": 10, "width": 296, "height": 130}}, "orientation": "portrait", "platform": "iOS", "height": 568, "width": 320, "version": ".*", "name": "iPhone 5/5C/5S & iPod Touch"}, "iPhone6": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 80, "x": -21, "width": 397, "height": 100}, "logo02": {"y": 10, "x": 140, "width": 110, "height": 55}, "logo01": {"y": 10, "x": 140, "width": 110, "height": 55}, "Needle": {"y": 380.5, "x": 162, "width": 86, "height": 86}, "logo05": {"y": 10, "x": 140, "width": 110, "height": 55}, "logo04": {"y": 10, "x": 140, "width": 110, "height": 55}, "StatefulButton": {"y": 135, "x": 227, "width": 116, "height": 51}, "Spinner": {"y": 360, "x": 24, "width": 106, "height": 127}, "ButtonUp2": {"y": 82, "x": 225, "width": 116, "height": 51}, "Page3But": {"y": 310, "x": 190, "width": 80, "height": 38}, "logo03": {"y": 10, "x": 140, "width": 110, "height": 55}, "ButtonDown": {"y": 82, "x": 25, "width": 116, "height": 51}, "ButtonUp": {"y": 82, "x": 25, "width": 116, "height": 51}, "informationLabel": {"y": 199, "x": 30.5, "width": 314, "height": 37}, "TogButLabel": {"y": 251, "x": 204, "width": 146, "height": 40}, "PageBg": {"y": 349, "x": -13, "width": 391, "height": 146}, "On": {"y": 250, "x": 29.5, "width": 80, "height": 38}, "Off": {"y": 250, "x": 29.5, "width": 80, "height": 38}, "ImageAsButton": {"y": 136, "x": 28, "width": 116, "height": 51}, "Value": {"y": 250, "x": 131, "width": 55, "height": 38}, "BLEon": {"y": 22, "x": 19, "width": 67, "height": 27}, "SoundIcon": {"y": 15, "x": 300, "width": 45, "height": 45}, "Page2But": {"y": 310, "x": 100, "width": 80, "height": 38}, "LedIcon": {"y": 15.5, "x": 300, "width": 45, "height": 45}, "ButtonDown2": {"y": 82, "x": 225, "width": 116, "height": 51}, "Page1But": {"y": 310, "x": 10, "width": 80, "height": 38}, "Page2": {"y": 359, "x": 13, "width": 296, "height": 130}, "Page3": {"y": 360, "x": 10.5, "width": 293, "height": 130}, "Page1": {"y": 359.5, "x": 10, "width": 296, "height": 130}}, "orientation": "portrait", "platform": "iOS", "height": 568, "width": 375, "version": ".*", "name": "iPhone 6"}, "iPhone6Plus": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 184.5, "x": -11, "width": 562, "height": 147}, "logo02": {"y": 16, "x": 220, "width": 110, "height": 55}, "logo01": {"y": 16, "x": 220, "width": 110, "height": 55}, "Needle": {"y": 630, "x": 364, "width": 86, "height": 86}, "logo05": {"y": 16, "x": 220, "width": 110, "height": 55}, "logo04": {"y": 16, "x": 220, "width": 110, "height": 55}, "StatefulButton": {"y": 270, "x": 333, "width": 116, "height": 51}, "Spinner": {"y": 605.5, "x": 108, "width": 106, "height": 127}, "ButtonUp2": {"y": 211, "x": 334, "width": 116, "height": 51}, "Page3But": {"y": 550, "x": 190, "width": 80, "height": 38}, "logo03": {"y": 16, "x": 220, "width": 110, "height": 55}, "ButtonDown": {"y": 211, "x": 103, "width": 116, "height": 51}, "ButtonUp": {"y": 211, "x": 103, "width": 116, "height": 51}, "informationLabel": {"y": 349, "x": 111, "width": 314, "height": 37}, "TogButLabel": {"y": 404, "x": 334, "width": 146, "height": 40}, "PageBg": {"y": 595, "x": -19.5, "width": 567, "height": 146}, "On": {"y": 405, "x": 85, "width": 80, "height": 38}, "Off": {"y": 405, "x": 85, "width": 80, "height": 38}, "ImageAsButton": {"y": 270, "x": 102, "width": 116, "height": 51}, "Value": {"y": 405, "x": 242.5, "width": 55, "height": 38}, "BLEon": {"y": 30, "x": 57, "width": 67, "height": 27}, "SoundIcon": {"y": 22, "x": 424.5, "width": 45, "height": 45}, "Page2But": {"y": 550, "x": 100, "width": 80, "height": 38}, "LedIcon": {"y": 22, "x": 424.5, "width": 45, "height": 45}, "ButtonDown2": {"y": 211, "x": 334, "width": 116, "height": 51}, "Page1But": {"y": 550, "x": 10, "width": 80, "height": 38}, "Page2": {"y": 608, "x": 24, "width": 296, "height": 130}, "Page3": {"y": 608, "x": 25.5, "width": 293, "height": 130}, "Page1": {"y": 606, "x": 24, "width": 296, "height": 130}}, "orientation": "portrait", "platform": "iOS", "height": 960, "width": 540, "version": ".*", "name": "iPhone 6 Plus"}, "Nexus7": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 188, "x": -15.5, "width": 631, "height": 147}, "logo02": {"y": 16, "x": 240, "width": 110, "height": 55}, "logo01": {"y": 16, "x": 240, "width": 110, "height": 55}, "Needle": {"y": 630, "x": 364, "width": 86, "height": 86}, "logo05": {"y": 16, "x": 240, "width": 110, "height": 55}, "logo04": {"y": 16, "x": 240, "width": 110, "height": 55}, "StatefulButton": {"y": 271, "x": 360, "width": 116, "height": 51}, "Spinner": {"y": 605.5, "x": 108, "width": 106, "height": 127}, "ButtonUp2": {"y": 211, "x": 360, "width": 116, "height": 51}, "Page3But": {"y": 550, "x": 190, "width": 80, "height": 38}, "logo03": {"y": 16, "x": 240, "width": 110, "height": 55}, "ButtonDown": {"y": 211, "x": 103, "width": 116, "height": 51}, "ButtonUp": {"y": 211, "x": 103, "width": 116, "height": 51}, "informationLabel": {"y": 349, "x": 145, "width": 314, "height": 37}, "TogButLabel": {"y": 404, "x": 334, "width": 146, "height": 40}, "PageBg": {"y": 598, "x": -15, "width": 630, "height": 146}, "On": {"y": 405, "x": 85, "width": 80, "height": 38}, "Off": {"y": 405, "x": 85, "width": 80, "height": 38}, "ImageAsButton": {"y": 270, "x": 102, "width": 116, "height": 51}, "Value": {"y": 405, "x": 242.5, "width": 55, "height": 38}, "BLEon": {"y": 30, "x": 57, "width": 67, "height": 27}, "SoundIcon": {"y": 22, "x": 468.5, "width": 45, "height": 45}, "Page2But": {"y": 550, "x": 100, "width": 80, "height": 38}, "LedIcon": {"y": 22, "x": 468.5, "width": 45, "height": 45}, "ButtonDown2": {"y": 211, "x": 360, "width": 116, "height": 51}, "Page1But": {"y": 550, "x": 10, "width": 80, "height": 38}, "Page2": {"y": 608, "x": 24, "width": 296, "height": 130}, "Page3": {"y": 608, "x": 25.5, "width": 293, "height": 130}, "Page1": {"y": 606, "x": 24, "width": 296, "height": 130}}, "orientation": "portrait", "platform": "Android", "height": 912, "width": 600, "version": ".*", "name": "Nexus 7 (2013)"}};
+			
 	this.initialize = function() {
 
-			this.layouts = {"iPad": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 188, "x": -17, "height": 147, "width": 802}, "logo02": {"y": 16, "x": 330, "height": 55, "width": 110}, "logo01": {"y": 16, "x": 330, "height": 55, "width": 110}, "Needle": {"y": 649, "x": 364, "height": 86, "width": 86}, "logo05": {"y": 16, "x": 330, "height": 55, "width": 110}, "logo04": {"y": 16, "x": 330, "height": 55, "width": 110}, "StatefulButton": {"y": 270, "x": 498, "height": 51, "width": 116}, "Spinner": {"y": 631.5, "x": 108, "height": 127, "width": 106}, "ButtonUp2": {"y": 211, "x": 500, "height": 51, "width": 116}, "Page3But": {"y": 550, "x": 190, "height": 38, "width": 80}, "logo03": {"y": 16, "x": 330, "height": 55, "width": 110}, "ButtonDown": {"y": 211, "x": 103, "height": 51, "width": 116}, "ButtonUp": {"y": 211, "x": 103, "height": 51, "width": 116}, "informationLabel": {"y": 352, "x": 227, "height": 37, "width": 314}, "TogButLabel": {"y": 447, "x": 441, "height": 40, "width": 146}, "PageBg": {"y": 600, "x": -13, "height": 186, "width": 794}, "On": {"y": 448, "x": 221, "height": 38, "width": 80}, "Off": {"y": 448, "x": 221, "height": 38, "width": 80}, "ImageAsButton": {"y": 270, "x": 102, "height": 51, "width": 116}, "Value": {"y": 448, "x": 324, "height": 38, "width": 92}, "BLEon": {"y": 30, "x": 57, "height": 27, "width": 67}, "SoundIcon": {"y": 21, "x": 635.5, "height": 45, "width": 45}, "Page2But": {"y": 550, "x": 100, "height": 38, "width": 80}, "LedIcon": {"y": 21, "x": 635.5, "height": 45, "width": 45}, "ButtonDown2": {"y": 211, "x": 500, "height": 51, "width": 116}, "Page1But": {"y": 550, "x": 10, "height": 38, "width": 80}, "Page2": {"y": 626, "x": 24, "height": 130, "width": 296}, "Page3": {"y": 628, "x": 25.5, "height": 130, "width": 293}, "Page1": {"y": 627, "x": 24, "height": 130, "width": 296}}, "orientation": "portrait", "platform": "iOS", "height": 1024, "width": 768, "version": ".*", "name": "iPad 1/2/Mini"}, "Default": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 70, "x": 4, "height": 100, "width": 316}, "logo02": {"y": 10, "x": 105, "height": 55, "width": 110}, "logo01": {"y": 10, "x": 105, "height": 55, "width": 110}, "ButtonUp": {"y": 72, "x": 7, "height": 51, "width": 116}, "logo05": {"y": 10, "x": 105, "height": 55, "width": 110}, "logo04": {"y": 10, "x": 105, "height": 55, "width": 110}, "StatefulButton": {"y": 126, "x": 199, "height": 51, "width": 116}, "Spinner": {"y": 323, "x": 17, "height": 127, "width": 106}, "ButtonUp2": {"y": 72, "x": 202, "height": 51, "width": 116}, "Page3But": {"y": 270, "x": 190, "height": 38, "width": 80}, "logo03": {"y": 10, "x": 105, "height": 55, "width": 110}, "ButtonDown": {"y": 72, "x": 7, "height": 51, "width": 116}, "Needle": {"y": 336.5, "x": 138, "height": 86, "width": 86}, "informationLabel": {"y": 177, "x": 7, "height": 37, "width": 311}, "TogButLabel": {"y": 216, "x": 173, "height": 40, "width": 146}, "PageBg": {"y": 312, "x": 4, "height": 146, "width": 316}, "On": {"y": 216, "x": 10.5, "height": 38, "width": 80}, "Off": {"y": 216, "x": 9.5, "height": 38, "width": 80}, "ImageAsButton": {"y": 126, "x": 10, "height": 51, "width": 116}, "Value": {"y": 216, "x": 104, "height": 38, "width": 55}, "BLEon": {"y": 22, "x": 10, "height": 27, "width": 67}, "SoundIcon": {"y": 15, "x": 272.5, "height": 45, "width": 45}, "Page2But": {"y": 270, "x": 100, "height": 38, "width": 80}, "LedIcon": {"y": 15.5, "x": 273, "height": 45, "width": 45}, "ButtonDown2": {"y": 72, "x": 202, "height": 51, "width": 116}, "Page1But": {"y": 270, "x": 10, "height": 38, "width": 80}, "Page2": {"y": 320, "x": 10, "height": 130, "width": 296}, "Page3": {"y": 319, "x": 10.5, "height": 130, "width": 293}, "Page1": {"y": 319.5, "x": 13.5, "height": 130, "width": 296}}, "orientation": "portrait", "platform": ".*", "height": 1024, "width": 768, "version": ".*", "name": "Default (768x1024)"}, "iPhone4": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 70, "x": -9, "height": 100, "width": 332}, "logo02": {"y": 10, "x": 105, "height": 55, "width": 110}, "logo01": {"y": 10, "x": 105, "height": 55, "width": 110}, "Needle": {"y": 336.5, "x": 138, "height": 86, "width": 86}, "logo05": {"y": 10, "x": 105, "height": 55, "width": 110}, "logo04": {"y": 10, "x": 105, "height": 55, "width": 110}, "StatefulButton": {"y": 126, "x": 190, "height": 51, "width": 116}, "Spinner": {"y": 323, "x": 16, "height": 127, "width": 106}, "ButtonUp2": {"y": 72, "x": 190, "height": 51, "width": 116}, "Page3But": {"y": 270, "x": 190, "height": 38, "width": 80}, "logo03": {"y": 10, "x": 105, "height": 55, "width": 110}, "ButtonDown": {"y": 72, "x": 7, "height": 51, "width": 116}, "ButtonUp": {"y": 72, "x": 7, "height": 51, "width": 116}, "informationLabel": {"y": 177, "x": 11, "height": 37, "width": 311}, "TogButLabel": {"y": 217, "x": 164, "height": 40, "width": 146}, "PageBg": {"y": 312, "x": -11, "height": 146, "width": 335}, "On": {"y": 216, "x": 10.5, "height": 38, "width": 80}, "Off": {"y": 216, "x": 9.5, "height": 38, "width": 80}, "ImageAsButton": {"y": 126, "x": 10, "height": 51, "width": 116}, "Value": {"y": 216, "x": 104, "height": 38, "width": 55}, "BLEon": {"y": 22, "x": 10, "height": 27, "width": 67}, "SoundIcon": {"y": 15, "x": 261, "height": 45, "width": 45}, "Page2But": {"y": 270, "x": 100, "height": 38, "width": 80}, "LedIcon": {"y": 15.5, "x": 261, "height": 45, "width": 45}, "ButtonDown2": {"y": 72, "x": 190, "height": 51, "width": 116}, "Page1But": {"y": 270, "x": 10, "height": 38, "width": 80}, "Page2": {"y": 320, "x": 12, "height": 130, "width": 296}, "Page3": {"y": 319, "x": 10.5, "height": 130, "width": 293}, "Page1": {"y": 319.5, "x": 10, "height": 130, "width": 296}}, "orientation": "portrait", "platform": "iOS", "height": 480, "width": 320, "version": ".*", "name": "iPhone 4/4S"}, "iPhone5": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 80, "x": -21, "height": 100, "width": 343}, "logo02": {"y": 10, "x": 105, "height": 55, "width": 110}, "logo01": {"y": 10, "x": 105, "height": 55, "width": 110}, "Needle": {"y": 380.5, "x": 138, "height": 86, "width": 86}, "logo05": {"y": 10, "x": 105, "height": 55, "width": 110}, "logo04": {"y": 10, "x": 105, "height": 55, "width": 110}, "StatefulButton": {"y": 135, "x": 190, "height": 51, "width": 116}, "Spinner": {"y": 360, "x": 17, "height": 127, "width": 106}, "ButtonUp2": {"y": 82, "x": 190, "height": 51, "width": 116}, "Page3But": {"y": 310, "x": 190, "height": 38, "width": 80}, "logo03": {"y": 10, "x": 105, "height": 55, "width": 110}, "ButtonDown": {"y": 82, "x": 7, "height": 51, "width": 116}, "ButtonUp": {"y": 82, "x": 7, "height": 51, "width": 116}, "informationLabel": {"y": 197, "x": 6, "height": 37, "width": 311}, "TogButLabel": {"y": 251, "x": 163, "height": 40, "width": 146}, "PageBg": {"y": 349, "x": -13, "height": 146, "width": 333}, "On": {"y": 250, "x": 10.5, "height": 38, "width": 80}, "Off": {"y": 250, "x": 9.5, "height": 38, "width": 80}, "ImageAsButton": {"y": 136, "x": 10, "height": 51, "width": 116}, "Value": {"y": 250, "x": 104, "height": 38, "width": 55}, "BLEon": {"y": 22, "x": 10, "height": 27, "width": 67}, "SoundIcon": {"y": 15, "x": 261, "height": 45, "width": 45}, "Page2But": {"y": 310, "x": 100, "height": 38, "width": 80}, "LedIcon": {"y": 15.5, "x": 261, "height": 45, "width": 45}, "ButtonDown2": {"y": 82, "x": 190, "height": 51, "width": 116}, "Page1But": {"y": 310, "x": 10, "height": 38, "width": 80}, "Page2": {"y": 359, "x": 10, "height": 130, "width": 296}, "Page3": {"y": 360, "x": 10.5, "height": 130, "width": 293}, "Page1": {"y": 359.5, "x": 10, "height": 130, "width": 296}}, "orientation": "portrait", "platform": "iOS", "height": 568, "width": 320, "version": ".*", "name": "iPhone 5/5C/5S & iPod Touch"}, "iPhone6": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 80, "x": -21, "height": 100, "width": 397}, "logo02": {"y": 10, "x": 140, "height": 55, "width": 110}, "logo01": {"y": 10, "x": 140, "height": 55, "width": 110}, "Needle": {"y": 380.5, "x": 162, "height": 86, "width": 86}, "logo05": {"y": 10, "x": 140, "height": 55, "width": 110}, "logo04": {"y": 10, "x": 140, "height": 55, "width": 110}, "StatefulButton": {"y": 135, "x": 227, "height": 51, "width": 116}, "Spinner": {"y": 360, "x": 24, "height": 127, "width": 106}, "ButtonUp2": {"y": 82, "x": 225, "height": 51, "width": 116}, "Page3But": {"y": 310, "x": 190, "height": 38, "width": 80}, "logo03": {"y": 10, "x": 140, "height": 55, "width": 110}, "ButtonDown": {"y": 82, "x": 25, "height": 51, "width": 116}, "ButtonUp": {"y": 82, "x": 25, "height": 51, "width": 116}, "informationLabel": {"y": 199, "x": 30.5, "height": 37, "width": 314}, "TogButLabel": {"y": 251, "x": 204, "height": 40, "width": 146}, "PageBg": {"y": 349, "x": -13, "height": 146, "width": 391}, "On": {"y": 250, "x": 29.5, "height": 38, "width": 80}, "Off": {"y": 250, "x": 29.5, "height": 38, "width": 80}, "ImageAsButton": {"y": 136, "x": 28, "height": 51, "width": 116}, "Value": {"y": 250, "x": 131, "height": 38, "width": 55}, "BLEon": {"y": 22, "x": 19, "height": 27, "width": 67}, "SoundIcon": {"y": 15, "x": 300, "height": 45, "width": 45}, "Page2But": {"y": 310, "x": 100, "height": 38, "width": 80}, "LedIcon": {"y": 15.5, "x": 300, "height": 45, "width": 45}, "ButtonDown2": {"y": 82, "x": 225, "height": 51, "width": 116}, "Page1But": {"y": 310, "x": 10, "height": 38, "width": 80}, "Page2": {"y": 359, "x": 13, "height": 130, "width": 296}, "Page3": {"y": 360, "x": 10.5, "height": 130, "width": 293}, "Page1": {"y": 359.5, "x": 10, "height": 130, "width": 296}}, "orientation": "portrait", "platform": "iOS", "height": 568, "width": 375, "version": ".*", "name": "iPhone 6"}, "iPhone6Plus": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 184.5, "x": -11, "height": 147, "width": 562}, "logo02": {"y": 16, "x": 220, "height": 55, "width": 110}, "logo01": {"y": 16, "x": 220, "height": 55, "width": 110}, "Needle": {"y": 630, "x": 364, "height": 86, "width": 86}, "logo05": {"y": 16, "x": 220, "height": 55, "width": 110}, "logo04": {"y": 16, "x": 220, "height": 55, "width": 110}, "StatefulButton": {"y": 270, "x": 333, "height": 51, "width": 116}, "Spinner": {"y": 605.5, "x": 108, "height": 127, "width": 106}, "ButtonUp2": {"y": 211, "x": 334, "height": 51, "width": 116}, "Page3But": {"y": 550, "x": 190, "height": 38, "width": 80}, "logo03": {"y": 16, "x": 220, "height": 55, "width": 110}, "ButtonDown": {"y": 211, "x": 103, "height": 51, "width": 116}, "ButtonUp": {"y": 211, "x": 103, "height": 51, "width": 116}, "informationLabel": {"y": 349, "x": 111, "height": 37, "width": 314}, "TogButLabel": {"y": 404, "x": 334, "height": 40, "width": 146}, "PageBg": {"y": 595, "x": -19.5, "height": 146, "width": 567}, "On": {"y": 405, "x": 85, "height": 38, "width": 80}, "Off": {"y": 405, "x": 85, "height": 38, "width": 80}, "ImageAsButton": {"y": 270, "x": 102, "height": 51, "width": 116}, "Value": {"y": 405, "x": 242.5, "height": 38, "width": 55}, "BLEon": {"y": 30, "x": 57, "height": 27, "width": 67}, "SoundIcon": {"y": 22, "x": 424.5, "height": 45, "width": 45}, "Page2But": {"y": 550, "x": 100, "height": 38, "width": 80}, "LedIcon": {"y": 22, "x": 424.5, "height": 45, "width": 45}, "ButtonDown2": {"y": 211, "x": 334, "height": 51, "width": 116}, "Page1But": {"y": 550, "x": 10, "height": 38, "width": 80}, "Page2": {"y": 608, "x": 24, "height": 130, "width": 296}, "Page3": {"y": 608, "x": 25.5, "height": 130, "width": 293}, "Page1": {"y": 606, "x": 24, "height": 130, "width": 296}}, "orientation": "portrait", "platform": "iOS", "height": 960, "width": 540, "version": ".*", "name": "iPhone 6 Plus"}, "Nexus7": {"devicename": ".*", "elements": {"ButtonBackground": {"y": 188, "x": -15.5, "height": 147, "width": 631}, "logo02": {"y": 16, "x": 240, "height": 55, "width": 110}, "logo01": {"y": 16, "x": 240, "height": 55, "width": 110}, "Needle": {"y": 630, "x": 364, "height": 86, "width": 86}, "logo05": {"y": 16, "x": 240, "height": 55, "width": 110}, "logo04": {"y": 16, "x": 240, "height": 55, "width": 110}, "StatefulButton": {"y": 271, "x": 360, "height": 51, "width": 116}, "Spinner": {"y": 605.5, "x": 108, "height": 127, "width": 106}, "ButtonUp2": {"y": 211, "x": 360, "height": 51, "width": 116}, "Page3But": {"y": 550, "x": 190, "height": 38, "width": 80}, "logo03": {"y": 16, "x": 240, "height": 55, "width": 110}, "ButtonDown": {"y": 211, "x": 103, "height": 51, "width": 116}, "ButtonUp": {"y": 211, "x": 103, "height": 51, "width": 116}, "informationLabel": {"y": 349, "x": 145, "height": 37, "width": 314}, "TogButLabel": {"y": 404, "x": 334, "height": 40, "width": 146}, "PageBg": {"y": 598, "x": -15, "height": 146, "width": 630}, "On": {"y": 405, "x": 85, "height": 38, "width": 80}, "Off": {"y": 405, "x": 85, "height": 38, "width": 80}, "ImageAsButton": {"y": 270, "x": 102, "height": 51, "width": 116}, "Value": {"y": 405, "x": 242.5, "height": 38, "width": 55}, "BLEon": {"y": 30, "x": 57, "height": 27, "width": 67}, "SoundIcon": {"y": 22, "x": 468.5, "height": 45, "width": 45}, "Page2But": {"y": 550, "x": 100, "height": 38, "width": 80}, "LedIcon": {"y": 22, "x": 468.5, "height": 45, "width": 45}, "ButtonDown2": {"y": 211, "x": 360, "height": 51, "width": 116}, "Page1But": {"y": 550, "x": 10, "height": 38, "width": 80}, "Page2": {"y": 608, "x": 24, "height": 130, "width": 296}, "Page3": {"y": 608, "x": 25.5, "height": 130, "width": 293}, "Page1": {"y": 606, "x": 24, "height": 130, "width": 296}}, "orientation": "portrait", "platform": "Android", "height": 912, "width": 600, "version": ".*", "name": "Nexus 7 (2013)"}};
 			this.currentLayout = this.parent.layoutSelector(this.layouts);
 			
 			
@@ -1875,7 +1879,7 @@ function MyApp(parent) {
 								this.layouts[this.currentLayout]["elements"]["StatefulButton"].height);
 							
 		
-			this.element_Beep = new FunctionElement(this.parent, "Beep", 19, "c917a2de-a2fb-4604-8d36-161c8d1fb4a8", "json", "json");
+			this.element_Beep = new FunctionElement(this.parent, "Beep", 24, "c68c4c4b-21ce-47da-aca1-3ce24c3ba931", "json", "json");
 				
 			if(this.element_Beep_onTrigger)
 				this.element_Beep.onTrigger = this.element_Beep_onTrigger;
@@ -2386,7 +2390,7 @@ function MyApp(parent) {
 								this.layouts[this.currentLayout]["elements"]["ImageAsButton"].height);
 							
 		
-			this.element_Light = new FunctionElement(this.parent, "Light", 21, "c917a2de-a2fb-4604-8d36-161c8d1fb4a9", "json", "json");
+			this.element_Light = new FunctionElement(this.parent, "Light", 26, "c68c4c4b-21ce-47da-aca1-3ce24c3ba932", "json", "json");
 				
 			if(this.element_Light_onTrigger)
 				this.element_Light.onTrigger = this.element_Light_onTrigger;
@@ -2611,6 +2615,9 @@ function MyApp(parent) {
 			
 			if(this.element_Spinner_changed)
 				this.element_Spinner.changed = this.element_Spinner_changed;
+			
+			if(this.element_Spinner_valueSet)
+				this.element_Spinner.valueSet = this.element_Spinner_valueSet;
 				
 			if(this.element_Spinner_mousePressed)
 				this.element_Spinner.mousePressed = this.element_Spinner_mousePressed;

@@ -1,159 +1,135 @@
-/*** 
- * Copyright 2014 Anaren Inc.
- * All rights reserved
- ***/
 
-function LabelElement(parent, name) {
-	parent.elements[name] = this;
+function BaseUIElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	BaseElement.call(this, parent);
+	
+	this.parent.elements[name] = this;
 	this.name = name;
 	
-	var zebraUIElement = new zebra.ui.MLabel("");
-	zebraUIElement.airParent = this;
+	if(this.zebraUIElement === undefined) {
+		return;
+	}
 	
-	zebraUIElement.setValue = function(s) {
-		
-		if (s === undefined) s = '';
-		if (s === null) s = '';
-		if (s.toString === undefined) s = '';
-		
-		s = s.toString();
-		this.view.setValue(s);
-		this.repaint();
-		return this;
-	};
+	this.zebraUIElement.airParent = this;
 	
-	this.getZebraUIElement = function() {
-		return zebraUIElement;
-	};
-	
-	this.repaint = function() {
-		zebraUIElement.repaint();
-	};
-	
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	//Target
-	this.setFont = function(font) {
-		zebraUIElement.setFont(font);
-	};
-	
-	//Target
-	this.setValue = function(value) {
-		
-		if (value === undefined) {
-			value = "undefined";
-		}
-		if (value === null) {
-			value = "null";
-		}		
 
-		zebraUIElement.setValue(value.toString());
-
-	};
-	
-	//Target
-	this.appendValue = function(value) {
-
-		if (value === undefined) {
-			value = "undefined";
-		}
-		if (value === null) {
-			value = "null";
-		}		
-		
-		zebraUIElement.setValue(this.getValue() + value.toString());
-	};
-	
-	//Target
-	this.setColor = function(color) {
-		zebraUIElement.setColor(color);
-	};
-	
-	//Target
-	this.setEnabled = function(enabled) {
-		zebraUIElement.setEnabled(enabled);
-	};
-	
-	//Target
-	this.setVisible = function(visible) {
-		zebraUIElement.setVisible(visible);
-	};
-	
-	//Target
-	this.setLocation = function(x, y) {
-		zebraUIElement.setLocation(x, y);
-	};
-	
-	//Target
-	this.setSize = function(w, h) {
-		zebraUIElement.setSize(w, h);
-	};
-	
-	//Target
-	this.setBounds = function(x, y, w, h) {
-		zebraUIElement.setBounds(x, y, w, h);
-	};
-	
-	//Source
-	this.getValue = function() {
-		return zebraUIElement.getValue();
-	};
-	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-	
-	//Trigger
 	this.mousePressed = function(e) {
-		parent.sendTrigger(this.name, "mousePressed");
+		currentParent.sendTrigger(this.name, "mousePressed");
 	};
 	
-	//Trigger
-	this.mouseClicked = function (e) {
-		parent.sendTrigger(this.name, "mouseClicked");
+	this.mouseClicked = function(e) {
+		currentParent.sendTrigger(this.name, "mouseClicked");
 	};
 	
-	//Trigger
-	this.mouseReleased = function (e) {
-		parent.sendTrigger(this.name, "mouseReleased");
+	this.mouseReleased = function(e) {
+		currentParent.sendTrigger(this.name, "mouseReleased");
 	};
 	
-	//Trigger
 	this.mouseEntered = function(e) {
-// 		parent.sendTrigger(this.name, "mouseEntered");
+// 		currentParent.sendTrigger(this.name, "mouseEntered");
 	};
 	
-	//Trigger
 	this.mouseMoved = function(e) {
-// 		parent.sendTrigger(this.name, "mouseMoved");
+// 		currentParent.sendTrigger(this.name, "mouseMoved");
 	};
 	
-	//Trigger
 	this.mouseExited = function(e) {
-// 		parent.sendTrigger(this.name, "mouseExited");
+// 		currentParent.sendTrigger(this.name, "mouseExited");
 	};
 	
-	//Cloud
-	this.updateState = function(state) {
-// 		console.log(state);
+	this.zebraUIElement.baseMousePressed = this.zebraUIElement.mousePressed;
+	this.zebraUIElement.baseMouseClicked = this.zebraUIElement.mouseClicked;
+	this.zebraUIElement.baseMouseReleased = this.zebraUIElement.mouseReleased;
+	this.zebraUIElement.baseMouseEntered = this.zebraUIElement.mouseEntered;
+	this.zebraUIElement.baseMouseMoved = this.zebraUIElement.mouseMoved;
+	this.zebraUIElement.baseMouseExited = this.zebraUIElement.mouseExited;
+	
+	this.zebraUIElement.mousePressed = function(e) {
+		currentElement.mousePressed(e);
 		
-		if(state.font !== undefined) {
-			this.setFont(state.font);
+		if(currentElement.zebraUIElement.baseMousePressed !== undefined) {
+			currentElement.zebraUIElement.baseMousePressed(e);
 		}
+	};
+	
+	this.zebraUIElement.mouseClicked = function(e) {
+		currentElement.mouseClicked(e);
 		
-		if(state.value !== undefined) {
-			this.setValue(state.value);
+		if(currentElement.zebraUIElement.baseMouseClicked !== undefined) {
+			currentElement.zebraUIElement.baseMouseClicked(e);
 		}
+	};
+	
+	this.zebraUIElement.mouseReleased = function(e) {
+		currentElement.mouseReleased(e);
 		
-		if(state.color !== undefined) {
-			this.setColor(state.color);
+		if(currentElement.zebraUIElement.baseMouseReleased !== undefined) {
+			currentElement.zebraUIElement.baseMouseReleased(e);
 		}
+	};
+	
+	this.zebraUIElement.mouseEntered = function(e) {
+		currentElement.mouseEntered(e);
 		
-		if(state.enabled !== undefined) {
+		if(currentElement.zebraUIElement.baseMouseEntered !== undefined) {
+			currentElement.zebraUIElement.baseMouseEntered(e);
+		}
+	};
+	
+	this.zebraUIElement.mouseMoved = function(e) {
+		currentElement.mouseMoved(e);
+		
+		if(currentElement.zebraUIElement.baseMouseMoved !== undefined) {
+			currentElement.zebraUIElement.baseMouseMoved(e);
+		}
+	};
+	
+	this.zebraUIElement.mouseExited = function(e) {
+		currentElement.mouseExited(e);
+		
+		if(currentElement.zebraUIElement.baseMouseExited !== undefined) {
+			currentElement.zebraUIElement.baseMouseExited(e);
+		}
+	};
+}
+
+BaseUIElement.prototype = Object.create(BaseElement.prototype);
+BaseUIElement.prototype.constructor = BaseUIElement;
+
+BaseUIElement.prototype.repaint = function() {
+	this.zebraUIElement.repaint();
+};
+
+BaseUIElement.prototype.setEnabled = function(enabled) {
+	this.zebraUIElement.setEnabled(!(enabled == 0));
+};
+
+BaseUIElement.prototype.setVisible = function(visible) {
+	this.zebraUIElement.setVisible(!(visible == 0));
+};
+
+BaseUIElement.prototype.setLocation = function(x, y) {
+	this.zebraUIElement.setLocation(x, y);
+};
+
+BaseUIElement.prototype.setSize = function(w, h) {
+	this.zebraUIElement.setSize(w, h);
+};
+
+BaseUIElement.prototype.setBounds = function(x, y, w, h) {
+	this.zebraUIElement.setBounds(x, y, w, h);
+};
+
+BaseUIElement.prototype.getZebraUIElement = function() {
+	return this.zebraUIElement;
+};
+
+BaseUIElement.prototype.updateState = function(state) {
+	BaseElement.prototype.updateState.call(this, state);
+	
+	if(state.enabled !== undefined) {
 			this.setEnabled(state.enabled);
 		}
 		
@@ -172,77 +148,23 @@ function LabelElement(parent, name) {
 		if(state.size !== undefined && state.location === undefined) {
 			this.setSize(state.size.width, state.size.height);
 		}
-		
-		if(state.font !== undefined) {
-			this.setFont(state.font);
-		}
-	};
-	
-	zebraUIElement.mousePressed = function(e) {this.airParent.mousePressed(e);};
-	zebraUIElement.mouseClicked = function(e) {this.airParent.mouseClicked(e);};
-	zebraUIElement.mouseReleased = function(e) {this.airParent.mouseReleased(e);};
-	zebraUIElement.mouseEntered = function(e) {this.airParent.mouseEntered(e);};
-	zebraUIElement.mouseMoved = function(e) {this.airParent.mouseMoved(e);};
-	zebraUIElement.mouseExited = function(e) {this.airParent.mouseExited(e);};
-}
+};
+
+
 
 function ButtonElement(parent, name) {
-	parent.elements[name] = this;
-	this.name = name;
+	var currentParent = parent;
+	var currentElement = this;
+	
+	this.zebraUIElement = new zebra.ui.Button(new zebra.ui.MLabel(""));
+	
+	BaseUIElement.call(this, parent, name);
+}
 
-	var zebraUIElement = new zebra.ui.Button(new zebra.ui.MLabel(""));
-	zebraUIElement.airParent = this;
-	
-	this.getZebraUIElement = function() {
-		return zebraUIElement;
-	};
-	
-	this.repaint = function() {
-		zebraUIElement.repaint();
-	};
-	
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	//Target
-	this.setEnabled = function(enabled) {
-		zebraUIElement.setEnabled(enabled);
-	};
-	
-	//Target
-	this.setVisible = function(visible) {
-		zebraUIElement.setVisible(visible);
-	};
-	
-	//Target
-	this.setLocation = function(x, y) {
-		zebraUIElement.setLocation(x, y);
-	};
-	
-	//Target
-	this.setSize = function(w, h) {
-		zebraUIElement.setSize(w, h);
-	};
-	
-	//Target
-	this.setBounds = function(x, y, w, h) {
-		zebraUIElement.setBounds(x, y, w, h);
-	};
-	
-	//Target
-	this.setBorder = function(border) {
-		zebraUIElement.setBorder(border);
-	};
-	
-	//Target
-	this.setProperties = function(properties) {
-		zebraUIElement.properties(properties);
-	};
-	
-	//Target
-	this.setLabel = function(value) {
+ButtonElement.prototype = Object.create(BaseUIElement.prototype);
+ButtonElement.prototype.constructor = ButtonElement;
+
+ButtonElement.prototype.setLabel = function(value) {
 		
 		if (value === undefined) {
 			value = "undefined";
@@ -251,1463 +173,168 @@ function ButtonElement(parent, name) {
 			value = "null";
 		}
 		
-		zebraUIElement.find("//zebra.ui.MLabel").setValue(value.toString());
-	};
+		this.zebraUIElement.find("//zebra.ui.MLabel").setValue(value.toString());
+};
+
+ButtonElement.prototype.setBorder = function(border) {
+	this.zebraUIElement.setBorder(border);
+};
+
+ButtonElement.prototype.updateState = function(state) {
+	BaseUIElement.prototype.updateState.call(this, state);
 	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-	
-	//Trigger
-	this.mousePressed = function(e) {
-		parent.sendTrigger(this.name, "mousePressed");
-	};
-	
-	//Trigger
-	this.mouseClicked = function (e) {
-		parent.sendTrigger(this.name, "mouseClicked");
-	};
-	
-	//Trigger
-	this.mouseReleased = function (e) {
-		parent.sendTrigger(this.name, "mouseReleased");
-	};
-	
-	//Trigger
-	this.mouseEntered = function(e) {
-// 		parent.sendTrigger(this.name, "mouseEntered");
-	};
-	
-	//Trigger
-	this.mouseMoved = function(e) {
-// 		parent.sendTrigger(this.name, "mouseMoved");
-	};
-	
-	//Trigger
-	this.mouseExited = function(e) {
-// 		parent.sendTrigger(this.name, "mouseExited");
-	};
-	
-	//Cloud
-	this.updateState = function(state) {
-// 		console.log(state);
-		
-		if(state.label !== undefined) {
-			this.setLabel(state.label);
-		}
-		
-		if(state.enabled !== undefined) {
-			this.setEnabled(state.enabled);
-		}
-		
-		if(state.visible !== undefined) {
-			this.setVisible(state.visible);
-		}
-		
-		if(state.location !== undefined && state.size !== undefined) {
-			this.setBounds(state.location.x, state.location.y, state.size.width, state.size.height);
-		}
-		
-		if(state.location !== undefined && state.size === undefined) {
-			this.setLocation(state.location.x, state.location.y);
-		}
-		
-		if(state.size !== undefined && state.location === undefined) {
-			this.setSize(state.size.width, state.size.height);
-		}
-	};
-	
-	zebraUIElement.mousePressed = function(e) {
-		this._mousePressed(e);
-		this.airParent.mousePressed(e);
-	};
-	
-	zebraUIElement.mouseClicked = function(e) {
-		this.airParent.mouseClicked(e);
-	};
-	
-	zebraUIElement.mouseReleased = function(e) {
-		this._mouseReleased(e);
-		this.airParent.mouseReleased(e);
-	};
-	
-	zebraUIElement.mouseEntered = function(e) {
-		this._mouseEntered(e);
-		this.airParent.mouseEntered(e);
-	};
-	
-	zebraUIElement.mouseMoved = function(e) {
-		this.airParent.mouseMoved(e);
-	};
-	
-	zebraUIElement.mouseExited = function(e) {
-		if (this.isEnabled === true) {
-			this.setState(this.state == 1 ? 3 : 2);
-			this.$isIn = false;
-		}
-            
-		this.airParent.mouseExited(e);
-	};
-}
+	if(state.label !== undefined) {
+		this.setLabel(state.label);
+	}
+};
 
 function CheckboxElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
 	
-	parent.elements[name] = this;
+	this.zebraUIElement = new zebra.ui.Checkbox(new zebra.ui.MLabel(""));
 	
-	var updatingState = false;
+	BaseUIElement.call(this, parent, name);
 	
-	this.name = name;
+	this.stateLock = false;
 	
-	var zebraUIElement = new zebra.ui.Checkbox(new zebra.ui.MLabel(""));
-	
-	zebraUIElement.airParent = this;
-	
-	this.getZebraUIElement = function() {
-		return zebraUIElement;
-	};
-	
-	this.repaint = function() {
-		zebraUIElement.repaint();
-	};
-	
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	this.setLabel = function(value) {
-		
-		if (value === undefined) {
-			value = "undefined";
-		}
-		if (value === null) {
-			value = "null";
-		}
-		
-		zebraUIElement.find("//zebra.ui.Label").setValue(value.toString());
-	};
-	
-	this.setValue = function(value) {
-		zebraUIElement.setValue(value);
-		zebraUIElement.stateUpdated();
-		zebraUIElement.repaint();
-	};
-	
-	this.setEnabled = function(enabled) {
-		zebraUIElement.setEnabled(enabled);
-	};
-	
-	this.setVisible = function(visible) {
-		zebraUIElement.setVisible(visible);
-	};
-	
-	this.setLocation = function(x, y) {
-		zebraUIElement.setLocation(x, y);
-	};
-	
-	this.setSize = function(w, h) {
-		zebraUIElement.setSize(w, h);
-	};
-	
-	this.setBounds = function(x, y, w, h) {
-		zebraUIElement.setBounds(x, y, w, h);
-	};
-	
-	this.getValue = function () {
-		return zebraUIElement.getValue();
-	};
-	
-	this.onTrigger = function (e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-	
-	this.switched = function (e) {
-		if(!updatingState) {
-			parent.sendTrigger(this.name, "switched", {"value":this.getValue()});
+	this.switched = function(e) {
+		if(!currentElement.stateLock) {
+			currentParent.sendTrigger(currentElement.name, "switched", {"value":currentElement.getValue()});
 		}
 	};
 	
-	//Cloud
-	this.updateState = function(state) {
-// 		console.log(state);
-		updatingState = true;
-		
-		if(state.value !== undefined) {
-			zebraUIElement.setValue(state.value);
-		}
-		
-		if(state.label !== undefined) {
-			this.setEnabled(state.label);
-		}
-		
-		if(state.enabled !== undefined) {
-			this.setEnabled(state.enabled);
-		}
-		
-		if(state.visible !== undefined) {
-			this.setVisible(state.visible);
-		}
-		
-		if(state.location !== undefined && state.size !== undefined) {
-			this.setBounds(state.location.x, state.location.y, state.size.width, state.size.height);
-		}
-		
-		if(state.location !== undefined && state.size === undefined) {
-			this.setLocation(state.location.x, state.location.y);
-		}
-		
-		if(state.size !== undefined && state.location === undefined) {
-			this.setSize(state.size.width, state.size.height);
-		}
-		
-		updatingState = false;
-	};
-	
-	zebraUIElement.switched = function(e){
+	this.zebraUIElement.switched = function(e){
 		this.stateUpdated(this.state, this.state);
-		this.airParent.switched(e);
+		currentElement.switched(e);
 	};
+	
 }
 
-function TextFieldElement(parent, name) {
-	
-	parent.elements[name] = this;
-	
-	this.name = name;
-	this.lastValue = '';
-	this.valueLocked = false;
-	
-	var zebraUIElement = new zebra.ui.HtmlTextField("");
-	
-	zebraUIElement.airParent = this;
-	
-	this.getZebraUIElement = function() {
-		return zebraUIElement;
-	};
-	
-	this.repaint = function() {
-		zebraUIElement.repaint();
-	};
-	
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	this.setEnabled = function(enabled) {
-		zebraUIElement.setEnabled(enabled);
-	};
-	
-	this.setVisible = function(visible) {
-		zebraUIElement.setVisible(visible);
-	};
-	
-	this.setBounds = function(x, y, w, h) {
-		zebraUIElement.setBounds(x, y, w, h);
-	};
-	
-	this.setLocation = function(x, y) {
-		zebraUIElement.setLocation(x, y);
-	};
-	
-	this.setSize = function(w, h) {
-		zebraUIElement.setSize(w, h);
-	};
-	
-	this.setValue = function(value) {
-		
-		if (value === undefined) {
-			value = "undefined";
-		}
-		if (value === null) {
-			value = "null";
-		}
+CheckboxElement.prototype = Object.create(BaseUIElement.prototype);
+CheckboxElement.prototype.constructor = CheckboxElement;
 
-		zebraUIElement.setValue(value.toString());
-	};
+CheckboxElement.prototype.setLabel = function(value) {
+	if (value === undefined) {
+		value = "undefined";
+	}
+	if (value === null) {
+		value = "null";
+	}
 	
-	this.appendValue = function(value) {
-		
-		if (value === undefined) {
-			value = "undefined";
-		}
-		if (value === null) {
-			value = "null";
-		}
-		
-		zebraUIElement.setValue(this.getValue() + value.toString());
-	};
-	
-	this.getValue = function() {
-		return zebraUIElement.getValue();
-	};
-	
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-	
-	this.keyReleased = function(e) {
-		this.lastValue = this.getValue();
-		this.valueLocked = true;
-		parent.sendTrigger(this.name, "keyReleased", {"value":this.getValue()});
-		//if (env.debug) baseApp.debugLog("Text field value on key release: " + this.getValue());
-	};
-	
-	this.keyPressed = function(e) {
-		parent.sendTrigger(this.name, "keyPressed");
-	};
-	
-	this.returnPressed = function (e) {
-		parent.sendTrigger(this.name, "returnPressed");
-	};
-	
-	this.returnReleased = function (e) {
-		parent.sendTrigger(this.name, "returnReleased");
-	};
-	
-	//Cloud
-	this.updateState = function(state) {
-// 		console.log(state);
-		
-		if(state.value !== undefined) {
-			
-			if(!this.valueLocked) {
-				this.setValue(state.value);
-			}
-			
-			if(state.value === this.lastValue) {
-				this.lastValue = null;
-				this.valueLocked = false;
-			}
-		}
-		
-		if(state.enabled !== undefined) {
-			this.setEnabled(state.enabled);
-		}
-		
-		if(state.visible !== undefined) {
-			this.setVisible(state.visible);
-		}
-		
-		if(state.location !== undefined && state.size !== undefined) {
-			this.setBounds(state.location.x, state.location.y, state.size.width, state.size.height);
-		}
-		
-		if(state.location !== undefined && state.size === undefined) {
-			this.setLocation(state.location.x, state.location.y);
-		}
-		
-		if(state.size !== undefined && state.location === undefined) {
-			this.setSize(state.size.width, state.size.height);
-		}
-	};
-	
-	zebraUIElement.keyReleased = function(e) {
-		//TODO: Put check in for enter key then trigger the correct trigger
-		this.airParent.keyReleased(e);
-		
-		this.repaint();
-	};
-	
-	zebraUIElement.keyPressed = function(e) {
-		//TODO: Put check in for enter key then trigger the correct trigger
-		this.airParent.keyPressed(e);
-	};
-}
+	this.zebraUIElement.find("//zebra.ui.MLabel").setValue(value.toString());
+};
 
-function ImageElement(parent, name) {
-	
-	parent.elements[name] = this;
-	
-	this.name = name;
-	
-	var zebraUIElement = new zebra.ui.ImagePan();
-	
-	var i = new Image();
+CheckboxElement.prototype.setValue = function(value) {
+	this.zebraUIElement.setValue(!(value == 0));
+	this.zebraUIElement.stateUpdated();
+	this.zebraUIElement.repaint();
+};
 
-	i.onload = function() {
-		zebraUIElement.setImage(this);
-	};
-	
-	i.src = "";
-	
-	zebraUIElement.airParent = this;
-	
-	this.getZebraUIElement = function() {
-		return zebraUIElement;
-	};
-	
-	this.repaint = function() {
-		zebraUIElement.repaint();
-	};
-	
-	//PATCHING
-	zebraUIElement.airOffset = [0, 0];
-	zebraUIElement.airRotation = 0.0;
-	
-	zebraUIElement.paint = function (g) {
-		if (this.view !== null) {
-			var l = this.getLeft(), t = this.getTop(), w = this.width, h = this.height;
-			if(this.airRotation !== undefined) {
-				g.translate(this.width/2, this.height/2);
-				g.rotate(this.airRotation*Math.PI/180);
-				g.translate(-this.width/2, -this.height/2);
-			}
-			this.view.paint(g, l, t, w, h, this);
-		}
-	};
-	
-	zebraUIElement.setOffset = function (x, y) {
-		if(this.airOffset === undefined) {
-			this.airOffset = [0, 0];
-		}
-		
-		x = x || 0;
-		y = y || 0;
-		
-		if(typeof x !== "number" || typeof y !== "number") {
-			return;
-		}
-		
-		if(x != this.airOffset[0] || y != this.airOffset[1]) {
-			this.setLocation(this.x - this.airOffset[0], this.y - this.airOffset[1]);
-		
-			this.airOffset[0] = x;
-			this.airOffset[1] = y;
-		
-			this.setLocation(this.x + this.airOffset[0], this.y + this.airOffset[1]);
-		
-			this.repaint();
-		}
-	};
+CheckboxElement.prototype.getValue = function() {
+	return this.zebraUIElement.getValue();
+};
 
-	zebraUIElement.getOffset = function() {
-		if(this.airOffset === undefined) {
-			this.airOffset = [0, 0];
-		}
-		
-		return this.airOffset;
-	};
+CheckboxElement.prototype.updateState = function(state) {
+	BaseUIElement.prototype.updateState.call(this, state);
 	
-	zebraUIElement.setRotation = function(r) {
-		if(typeof r !== "number") {
-			return;
-		}
-		
-		if(this.airRotation != r) {
-			this.airRotation = r;
-			this.repaint();
-		}
-	};
+	this.stateLock = true;
 	
-	zebraUIElement.getRotation = function() {
-		if (this.airRotation === undefined) {
-			this.airRotation = 0;
-		}
-		
-		return this.airRotation;
-	};
+	if(state.value !== undefined) {
+		this.zebraUIElement.setValue(!(state.value == 0));
+	}
 	
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
+	if(state.label !== undefined) {
+		this.setLabel(state.label);
+	}
 	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-		
-	this.setEnabled = function(enabled) {
-		zebraUIElement.setEnabled(enabled);
-	};
-	
-	this.setImage = function(imageSrc) {
-		var img = new Image();
-		
-		img.onload = function() {
-			zebraUIElement.setImage(this);
-		};
-		
-		img.src = imageSrc;
-	};
-	
-	this.setVisible = function(visible) {
-		zebraUIElement.setVisible(visible);
-	};
-	
-	this.setOffset = function(x, y) {
-		zebraUIElement.setOffset(x, y);
-	};
-	
-	this.setLocation = function(x, y) {
-		zebraUIElement.setLocation(x, y);
-	};
-	
-	this.setSize = function(w, h) {
-		zebraUIElement.setSize(w, h);
-	};
-	
-	this.setBounds = function(x, y, w, h) {
-		zebraUIElement.setBounds(x, y, w, h);
-	};
-	
-	this.setBackground = function(value) {
-		zebraUIElement.setBackground(value);
-	};
-	
-	this.setRotation = function(r) {
-		zebraUIElement.setRotation(r);
-	};
-	
-	this.getOffset = function() {
-		return zebraUIElement.getOffset();
-	};
-	
-	this.getRotation = function() {
-		return zebraUIElement.getRotation();
-	};
-
-	//Source
-	this.getValues = function() {
-		return {
-			"Offset":this.getOffset,
-			"Rotation":this.getRotation
-		};
-	};
-	
-	//Trigger
-	this.mousePressed = function(e) {
-		parent.sendTrigger(this.name, "mousePressed");
-	};
-	
-	//Trigger
-	this.mouseClicked = function (e) {
-		parent.sendTrigger(this.name, "mouseClicked");
-	};
-	
-	//Trigger
-	this.mouseReleased = function (e) {
-		parent.sendTrigger(this.name, "mouseReleased");
-	};
-	
-	//Trigger
-	this.mouseEntered = function(e) {
-// 		parent.sendTrigger(this.name, "mouseEntered");
-	};
-	
-	//Trigger
-	this.mouseMoved = function(e) {
-// 		parent.sendTrigger(this.name, "mouseMoved");
-	};
-	
-	//Trigger
-	this.mouseExited = function(e) {
-// 		parent.sendTrigger(this.name, "mouseExited");
-	};
-	
-	//Cloud
-	this.updateState = function(state) {
-		if(state.offset !== undefined) {
-			this.setOffset(state.offset.x, state.offset.y);
-		}
-		
-		if(state.rotation !== undefined) {
-			this.setRotation(state.rotation);
-		}
-		
-		if(state.imageSrc !== undefined) {
-			this.setImage(state.imageSrc);
-		}
-		
-		if(state.background !== undefined) {
-			this.setBackground(state.background);
-		}
-		
-		if(state.enabled !== undefined) {
-			this.setEnabled(state.enabled);
-		}
-		
-		if(state.visible !== undefined) {
-			this.setVisible(state.visible);
-		}
-		
-		if(state.location !== undefined && state.size !== undefined) {
-			this.setBounds(state.location.x, state.location.y, state.size.width, state.size.height);
-		}
-		
-		if(state.location !== undefined && state.size === undefined) {
-			this.setLocation(state.location.x, state.location.y);
-		}
-		
-		if(state.size !== undefined && state.location === undefined) {
-			this.setSize(state.size.width, state.size.height);
-		}
-	};
-	
-	zebraUIElement.mousePressed = function(e) {
-		this.airParent.mousePressed(e);
-	};
-	
-	zebraUIElement.mouseClicked = function(e) {
-		this.airParent.mouseClicked(e);
-	};
-	
-	zebraUIElement.mouseReleased = function(e) {
-		this.airParent.mouseReleased(e);
-	};
-	
-	zebraUIElement.mouseEntered = function(e) {
-		this.airParent.mouseEntered(e);
-	};
-	
-	zebraUIElement.mouseMoved = function(e) {
-		this.airParent.mouseMoved(e);
-	};
-	
-	zebraUIElement.mouseExited = function(e) {
-		this.airParent.mouseExited(e);
-	};
-}
-
-function SliderElement(parent, name) {
-	
-	parent.elements[name] = this;
-	
-	this.name = name;
-	this.lastValue = '';
-	this.valueLocked = false;
-	
-	var zebraUIElement = new zebra.ui.Slider();
-	
-	zebraUIElement.airParent = this;
-	
-	this.getZebraUIElement = function() {
-		return zebraUIElement;
-	};
-	
-	this.repaint = function() {
-		zebraUIElement.repaint();
-	};
-	
-	//PATCHING
-	zebraUIElement.setValues = function(min,max,intervals,roughStep,exactStep) {
-		if(roughStep <= 0 || exactStep < 0 || min >= max || min + roughStep > max || min + exactStep > max) {
-			//throw new Error("Invalid values");
-		}
-
-		// inject new intervals code here
-		for(var i = 0, start = min;i < intervals.length; i ++ ) {
-			start += intervals[i];
-			if(start > max || intervals[i] < 0) {
-				//throw new Error();
-			}
-		}
-
-		this.min = min;
-		this.max = max;
-		this.roughStep = roughStep;
-		this.exactStep = exactStep;
-		this.intervals = Array(intervals.length);
-
-		for(var j=0; j<intervals.length; j++){
-			this.intervals[j] = intervals[j];
-		}
-
-		if(this.value < min || this.value > max) {
-			this.setValue(this.isIntervalMode ? min + intervals[0] : min);
-		}
-		this.vrp();
-	};
-		
-	//PATCHING
-	zebraUIElement.setValue = function(v) {
-		var prev = this.value;
-		if(this.value != v) {
-			this.value = v;
-			this._.fired(this, prev);
-			this.repaint();
-		}
-	};
-	
-	//PATCHING
-	zebraUIElement.setMaxValue = function (max) {
-		this.setValues(this.min, max, this.intervals, this.roughStep, this.exactStep);
-	};
-			
-	//PATCHING
-	zebraUIElement.setMinValue = function(min) {
-		this.setValues(min, this.max, this.intervals, this.roughStep, this.exactStep);
-	};
-	
-	//PATCHING
-	zebraUIElement.setIntervals = function(intervals) {
-		this.setValues(this.min, this.max, intervals, this.roughStep, this.exactStep);
-	};
-	
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	//Target
-	this.setMaxValue = function(max) {
-		zebraUIElement.setMaxValue(max);
-	};
-	
-	//Target
-	this.setMinValue = function(min) {
-		zebraUIElement.setMinValue(min);
-	};
-	
-	//Target
-	this.setIntervals = function(intervals) {
-		zebraUIElement.setIntervals(intervals);
-	};
-	
-	//Target
-	this.setScaleStep = function(scaleStep) {
-		zebraUIElement.setScaleStep(scaleStep);
-	};
-	
-	//Target
-	this.setEnabled = function(enabled) {
-		zebraUIElement.setEnabled(enabled);
-	};
-	
-	this.setVisible = function(visible) {
-		zebraUIElement.setVisible(visible);
-	};
-	
-	//Target
-	this.setLocation = function(x, y) {
-		zebraUIElement.setLocation(x, y);
-	};
-	
-	//Target
-	this.setSize = function(w, h) {
-		zebraUIElement.setSize(w, h);
-	};
-	
-	//Target
-	this.setBounds = function(x, y, w, h) {
-		zebraUIElement.setBounds(x, y, w, h);
-	};
-	
-	//Target
-	this.setValue = function(value) {
-		zebraUIElement.setValue(value);
-	};
-	
-	//Target
-	this.setShowScale = function(show) {
-		zebraUIElement.setShowScale(show);
-	};
-	
-	//Target
-	this.setShowTitle = function(show) {
-		zebraUIElement.setShowTitle(show);
-	};
-	
-	//Target
-	this.setOrientation = function(orientation) {
-		if(orientation.toLowerCase() === 'vertical') {
-			zebraUIElement.orient = zebra.layout.VERTICAL;
-		}
-		
-		else if(orientation.toLowerCase() === 'horizontal') {
-			zebraUIElement.orient = zebra.layout.HORIZONTAL;
-		}
-	};
-	
-	//Source
-	this.getValue = function() {
-		return zebraUIElement.getValue();
-	};
-	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-	
-	//Trigger
-	this.mousePressed = function(e) {
-	};
-	
-	//Trigger
-	this.mouseClicked = function (e) {
-	};
-	
-	//Trigger
-	this.mouseReleased = function (e) {
-		parent.sendTrigger(this.name, "mouseReleased");
-	};
-	
-	//Trigger
-	this.mouseEntered = function(e) {
-	};
-	
-	//Trigger
-	this.mouseMoved = function(e) {
-	};
-	
-	//Trigger
-	this.mouseExited = function(e) {
-	};
-	
-	//Trigger
-	this.changed = function (e) {
-		this.lastValue = e.getValue();
-		this.valueLocked = true;
-		parent.sendTrigger(e.airParent.name, "changed", {"value":e.getValue()});
-	};
-	
-	//Cloud
-	this.updateState = function(state) {
-		if(state.minValue !== undefined) {
-			this.setMinValue(state.minValue);
-		}
-		
-		if(state.maxValue !== undefined) {
-			this.setMaxValue(state.maxValue);
-		}
-		
-		if(state.enabled !== undefined) {
-			this.setEnabled(state.enabled);
-		}
-		
-		if(state.visible !== undefined) {
-			this.setVisible(state.visible);
-		}
-		
-		if(state.location !== undefined && state.size !== undefined) {
-			this.setBounds(state.location.x, state.location.y, state.size.width, state.size.height);
-		}
-		
-		if(state.location !== undefined && state.size === undefined) {
-			this.setLocation(state.location.x, state.location.y);
-		}
-		
-		if(state.size !== undefined && state.location === undefined) {
-			this.setSize(state.size.width, state.size.height);
-		}
-		
-		if(state.intervals !== undefined) {
-			this.setIntervals(state.intervals);
-		}
-		
-		if(state.orientation !== undefined) {
-			this.setOrientation(state.orientation);
-		}
-		
-		if(state.value !== undefined) {
-			
-			if(!this.valueLocked) {
-				zebraUIElement.setValue(state.value);
-			}
-			
-			if(state.value === this.lastValue) {
-				this.lastValue = null;
-				this.valueLocked = false;
-			}
-		}
-	};
-	
-	zebraUIElement.baseMousePressed = zebraUIElement.mousePressed;
-	zebraUIElement.baseMouseClicked = zebraUIElement.mousePressed;
-	zebraUIElement.baseMouseReleased = zebraUIElement.mousePressed;
-	zebraUIElement.baseMouseEntered = zebraUIElement.mousePressed;
-	zebraUIElement.baseMouseMoved = zebraUIElement.mousePressed;
-	zebraUIElement.baseMouseExited = zebraUIElement.mousePressed;
-	
-	zebraUIElement.mousePressed = function(e) {
-		this.airParent.mousePressed(e);
-		zebraUIElement.baseMousePressed(e);
-	};
-	
-	zebraUIElement.mouseClicked = function(e) {
-		this.airParent.mouseClicked(e);
-		zebraUIElement.baseMouseClicked(e);
-	};
-	
-	zebraUIElement.mouseReleased = function(e) {
-		this.airParent.mouseReleased(e);
-		zebraUIElement.baseMouseReleased(e);
-	};
-	
-	zebraUIElement.mouseEntered = function(e) {
-		this.airParent.mouseEntered(e);
-		zebraUIElement.baseMouseEntered(e);
-	};
-	
-	zebraUIElement.mouseMoved = function(e) {
-		this.airParent.mouseMoved(e);
-		zebraUIElement.baseMouseMoved(e);
-	};
-	
-	zebraUIElement.mouseExited = function(e) {
-		this.airParent.mouseExited(e);
-		zebraUIElement.baseMouseExited(e);
-	};
-	
-	// on change binding
-	zebraUIElement.bind(function(e) {e.airParent.changed(e);});
-		
-}
+	this.stateLock = false;
+};
 
 function ComboboxElement(parent, name) {
-	parent.elements[name] = this;
-	this.name = name;
+	var currentParent = parent;
+	var currentElement = this;
 	
-	var zebraUIElement = new zebra.ui.Combo(new zebra.ui.List([]));
-	zebraUIElement.airParent = this;
+	this.zebraUIElement = new zebra.ui.Combo(new zebra.ui.List([]));
 	
-	this.getZebraUIElement = function() {
-		return zebraUIElement;
-	};
-	
-	this.repaint = function() {
-		zebraUIElement.repaint();
-	};
+	BaseUIElement.call(this, parent, name);
 	
 	//PATCHING
-	zebraUIElement.addValue = function(e) {
+	this.zebraUIElement.addValue = function(e) {
 		this.list.model.add(e);
 		return;
 	};
 	
 	//PATCHING
-	zebraUIElement.removeValue = function(e) {
+	this.zebraUIElement.removeValue = function(e) {
 		this.list.model.remove(e);
 	};
 	
 	
 	//PATCHING
-	zebraUIElement.removeAll = function() {
+	this.zebraUIElement.removeAll = function() {
 		this.list.mode.removeAll();
 	};
 	
 	//PATCHING
-	zebraUIElement.addValues = function(e) {
+	this.zebraUIElement.addValues = function(e) {
 		for(var i = 0; i < e.length; i++) {
 			this.list.model.add(e[i]);
 		}
 	};
 	
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	//Target
-	this.setValue = function(value) {
-		zebraUIElement.setValue(value);
-	};
-	
-	//Target
-	this.addValue = function(value) {
-		zebraUIElement.addValue(value);
-	};
-	
-	//Target
-	this.addValues = function(value) {
-		zebraUIElement.addValues(value);
-	};
-	
-	//Target
-	this.removeValue = function(value) {
-		zebraUIElement.removeValue(value);
-	};
-	
-	//Target
-	this.clearValues = function(value) {
-		zebraUIElement.removeAll();
-	};
-	
-	//Target
-	this.setEnabled = function(enabled) {
-		zebraUIElement.setEnabled(enabled);
-	};
-	
-	//Target
-	this.setVisible = function(visible) {
-		zebraUIElement.setVisible(visible);
-	};
-	
-	//Target
-	this.setLocation = function(x, y) {
-		zebraUIElement.setLocation(x, y);
-	};
-	
-	//Target
-	this.setSize = function(w, h) {
-		zebraUIElement.setSize(w, h);
-	};
-	
-	//Target
-	this.setBounds = function(x, y, w, h) {
-		zebraUIElement.setBounds(x, y, w, h);
-	};
-	
-	//Source
-	this.getValue = function() {
-		return zebraUIElement.getValue();
-	};
-	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-	
 	//Trigger
 	this.changed = function(e) {
-		parent.sendTrigger(this.name, "changed");
+		currentParent.sendTrigger(this.name, "changed");
 	};
 	
-	//Cloud
-	this.updateState = function(state) {
-		
-		if(state.values !== undefined) {
-			zebraUIElement.list.model.d = state.values;
-		}
-		
-		if(state.enabled !== undefined) {
-			this.setEnabled(state.enabled);
-		}
-		
-		if(state.visible !== undefined) {
-			this.setVisible(state.visible);
-		}
-		
-		if(state.location !== undefined && state.size !== undefined) {
-			this.setBounds(state.location.x, state.location.y, state.size.width, state.size.height);
-		}
-		
-		if(state.location !== undefined && state.size === undefined) {
-			this.setLocation(state.location.x, state.location.y);
-		}
-		
-		if(state.size !== undefined && state.location === undefined) {
-			this.setSize(state.size.width, state.size.height);
-		}
-		
-		if(state.intervals !== undefined) {
-			this.setIntervals(state.intervals);
-		}
-		
-		if(state.orientation !== undefined) {
-			this.setOrientation(state.orientation);
-		}
-		
-		if(state.value !== undefined) {
-			zebraUIElement.setValue(state.value);
-		}
-	};
-	
-	zebraUIElement.bind(function(e){e.airParent.changed(e);});
-	
+	this.zebraUIElement.bind(function(e){currentElement.changed(e);});
 }
 
-function ProgressBarElement(parent, name) {
-	
-	parent.elements[name] = this;
-	
-	this.name = name;
-	
-	var zebraUIElement = new zebra.ui.Progress();
-	
-	zebraUIElement.airParent = this;
-	
-	this.getZebraUIElement = function() {
-		return zebraUIElement;
-	};
-	
-	this.repaint = function() {
-		zebraUIElement.repaint();
-	};
-	
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	//Target
-	this.setOrientation = function(orientation) {
-		if(orientation.toLowerCase() === 'vertical') {
-			zebraUIElement.setOrientation(zebra.layout.VERTICAL);
-		}
-		
-		else if(orientation.toLowerCase() === 'horizontal') {
-			zebraUIElement.setOrientation(zebra.layout.HORIZONTAL);
-		}
-	};
-	
-	//Target
-	this.setValue = function(value) {
-		zebraUIElement.setValue(value);
-	};
-	
-	//Target
-	this.setMaxValue = function(value) {
-		zebraUIElement.setMaxValue(value);
-	};
-	
-	//Target
-	this.setGap = function(gap) {
-		zebraUIElement.setGap(gap);
-	};
-	
-	//Target
-	this.setEnabled = function(enable) {
-		zebraUIElement.setEnabled(enable);
-	};
-	
-	//Target
-	this.setVisible = function(visible) {
-		zebraUIElement.setVisible(visible);
-	};
-	
-	//Target
-	this.setLocation = function(x, y) {
-		zebraUIElement.setLocation(x, y);
-	};
-	
-	//Target
-	this.setSize = function(w, h) {
-		zebraUIElement.setSize(w, h);
-	};
-	
-	//Target
-	this.setBounds = function(x, y, w, h) {
-		zebraUIElement.setBounds(x, y, w, h);
-	};
-	
-	//Target
-	this.setBundleSize = function(i, j) {
-		zebraUIElement.setBundleSize(i, j);
-	};
-	
-	//Source
-	this.getValue = function() {
-		return zebraUIElement.getValue();
-	};
-	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-		
-	//Cloud
-	this.updateState = function(state) {
-		if(state.gap !== undefined) {
-			this.setGap(state.gap);
-		}
-		
-		if(state.enabled !== undefined) {
-			this.setEnabled(state.enabled);
-		}
-		
-		if(state.visible !== undefined) {
-			this.setVisible(state.visible);
-		}
-		
-		if(state.location !== undefined && state.size !== undefined) {
-			this.setBounds(state.location.x, state.location.y, state.size.width, state.size.height);
-		}
-		
-		if(state.location !== undefined && state.size === undefined) {
-			this.setLocation(state.location.x, state.location.y);
-		}
-		
-		if(state.size !== undefined && state.location === undefined) {
-			this.setSize(state.size.width, state.size.height);
-		}
-		
-		if(state.maxValue !== undefined) {
-			this.setMaxValue(state.maxValue);
-		}
-		
-		if(state.orientation !== undefined) {
-			this.setOrientation(state.orientation);
-		}
-		
-		if(state.bundleSize !== undefined) {
-			this.setBundleSize(state.bundleSize.w, state.bundleSize.h);
-		}
-		
-		if(state.value !== undefined) {
-			this.setValue(state.value);
-		}
-	};
-	
-}
+ComboboxElement.prototype = Object.create(BaseUIElement.prototype);
+ComboboxElement.prototype.constructor = ComboboxElement;
 
-function WebIOElement(parent, name) {
-	
-	parent.elements[name] = this;
-	
-	var uri = null;
-	var me = this;
-	var currentValue = null;
-	var currentStatus = 404;
-	
-	//Trigger
-	this.valueReturned = function () {
-	};
-	
-	//Trigger
-	this.errorReturned = function () {
-	};
-	
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-	
-	//Helper
-	this.valueReturnedCallback = function(request) {
-		//console.log(JSON.stringify(request));
-		
-		currentStatus = request.status;
-		if (request.status == 200) {
-			try {
-				currentValue = JSON.parse(request.response);
-			}
-			catch(e) {
-				currentValue = request.response;
-				
-			}
-			
-			me.valueReturned();
-		}
-		
-		else {
-			currentValue = null;
-			me.errorReturned();
-		}
-	};
-	
-	//Target
-	this.get = function (data) {
-        //console.log(JSON.stringify(data));
-		var gdata = zebra.io.GET(uri, {data:encodeURI(JSON.stringify(data))}, me.valueReturnedCallback);
-	};
-	
-	//Target
-	this.post = function (data) {
-        //console.log(JSON.stringify(data));
-		var gdata = POSTForm(uri, {data:encodeURI(JSON.stringify(data))}, me.valueReturnedCallback);
-	};
-	
-	//Target
-	this.advancedGet = function(data) {
-        //console.log("get sent");
-        //console.log(data);
-		var gdata = zebra.io.GET(uri, data, me.valueReturnedCallback);
-	};
-	
-	//Target
-	this.advancedPost = function(data, headers) {
-        //console.log("get sent");
-        //console.log(JSON.stringify(data));
-		var gdata = POSTForm(uri, data, me.valueReturnedCallback, headers);
-	};
-	
-	//Target
-	this.setURI = function (value) {
-		uri = value;
-	};
-	
-	//Source
-	this.getURI = function () {
-		return uri;
-	};
-	
-	//Source
-	this.getValue = function () {
-		return currentValue;
-	};
-	
-	//Source
-	this.getStatus = function () {
-		return currentStatus;
-	};
+//Target
+ComboboxElement.prototype.setValue = function(value) {
+	this.zebraUIElement.setValue(value);
+};
 
-	//Source
-	this.getValues = function() {
-		return {
-			"URI":this.getURI,
-			"Value":this.getValue,
-			"Status":this.getStatus
-		};
-	};
+//Target
+ComboboxElement.prototype.addValue = function(value) {
+	this.zebraUIElement.addValue(value);
+};
 
-}
+//Target
+ComboboxElement.prototype.addValues = function(value) {
+	this.zebraUIElement.addValues(value);
+};
 
-// for handling connection to stratosphere directly 
-// needs to have a global scope for  UUID & TOKEN 
-function MobileCloudEventElement(parent, name) {
-	
-	parent.elements[name] = this;
-	
-	this.name = name;
-	var uri = null;
-	var me = this;
-	var currentValue = null;
-	var currentStatus = 404;
-	
-	//Trigger
-	this.eventSent = function () {
-	};
-	
-	//Trigger
-	this.errorReturned = function () {
-	};
-	
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-	
-	//Target
-	this.sendEvent = function(value) {
-		
-		if(parent.currentStratosphereUuid === null || 
-			parent.currentStratosphereUuid === undefined || 
-			parent.currentStratosphereUuid === null ||
-			parent.currentStratosphereUuid === undefined) {
-			
-			return;
-		}
-		
-		var currentMobileCloudEventElement = this;
-		var xhttp = new XMLHttpRequest();
+//Target
+ComboboxElement.prototype.removeValue = function(value) {
+	this.zebraUIElement.removeValue(value);
+};
 
-		xhttp.onreadystatechange = function() {
-			if (xhttp.readyState == 4 && xhttp.status == 200) {
-				console.log("Strat Event Success");
-				console.log(xhttp.responseText);
-				
-				currentMobileCloudEventElement.eventSent();
-			}
-		};
-		
-		console.log("https://ionosphere.anaren.com:1337/thing/" + parent.currentStratosphereUuid + "/event/" + this.name + "/" + encodeURIComponent(JSON.stringify(value)));
-		xhttp.open("GET", "https://ionosphere.anaren.com:1337/thing/" + parent.currentStratosphereUuid  + "/event/" + this.name + "/" + encodeURIComponent(JSON.stringify(value)));
-		xhttp.setRequestHeader("stratosphere", parent.currentStratosphereToken);
-		xhttp.send();
-	};
-}
+//Target
+ComboboxElement.prototype.clearValues = function(value) {
+	this.zebraUIElement.removeAll();
+};
 
-function LocalStorageElement(parent, name) {
-	
-	parent.elements[name] = this;
-	
-	var value = '';
-	var key = name;
- 
-	//Trigger
-	this.valueSet = function() {
-	};
-	
-	//Trigger
-	this.valueReturned = function() {
-	};
-	
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-		
-	//Target
-	this.setKey = function(k) {
-		key = k;
-	};
-	
-	//Target
-	this.setValue = function(value) {
-		window.localStorage.setItem(key, JSON.stringify(value));
-		this.valueSet();
-	};
-	
-	//Target
-	this.retrieveValue = function() {
-		value = JSON.parse(window.localStorage.getItem(key));
-		this.valueReturned();
-	};
-	
-	//Source
-	this.getValue = function() {
-		return value;
-	};
-	
-	//Source
-	this.getKey = function() {
-		return key;
-	};
+//Source
+ComboboxElement.prototype.getValue = function() {
+	return this.zebraUIElement.getValue();
+};
 
-	//Source
-	this.getValues = function() {
-		return {
-			"Value":this.getValue,
-			"Key":this.getKey
-		};
-	};
+ComboboxElement.prototype.updateState = function(state) {
+	BaseUIElement.prototype.updateState.call(this, state);
 	
-}
-
-function WebLinkElement(parent, name) {
-	parent.elements[name] = this;
+	if(state.values !== undefined) {
+		this.zebraUIElement.list.model.d = state.values;
+	}
 	
-	this.url = "about:blank";
-	
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-	
-	//Trigger
-	this.opened = function() {
-	};
-	
-	//Target
-	this.open = function() {
-		window.open(this.url, '_system');
-		
-		this.opened();
-	};
-	
-	//Target
-	this.setURL = function(url) {
-		this.url = url;
-	};
-	
-	//Source
-	this.getURL = function() {
-		return this.url;
-	};
-	
-}
-
+	if(state.value !== undefined) {
+		this.zebraUIElement.setValue(state.value);
+	}
+};
 function GraphElement(parent, name) {
 	parent.elements[name] = this;
 	
@@ -2188,12 +815,12 @@ function GraphElement(parent, name) {
 	
 	//Target
 	this.setEnabled = function(enabled) {
-		this.zebraUIElement.setEnabled(enabled);
+		this.zebraUIElement.setEnabled(enabled == true);
 	};
 	
 	//Target
 	this.setVisible = function(visible) {
-		this.zebraUIElement.setVisible(visible);
+		this.zebraUIElement.setVisible(visible == true);
 	};
 	
 	//Target
@@ -2257,467 +884,727 @@ function GraphElement(parent, name) {
 		};
 	};
 }
-function MobileVibrationElement(parent, name) {
-	parent.elements[name] = this;
 
-	this.vibrationTime = 1000;
-
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-
-	//Target
-	this.setTime = function(vibrationTime) {
-		if (isFinite(vibrationTime)){
-			this.vibrationTime = parseInt(vibrationTime);
-		}
-	};
-
-	//Target
-	this.vibrate = function(vibrationTime) {
-		vibrationTime = isFinite(vibrationTime) ? vibrationTime : this.vibrationTime;
-		navigator.vibrate(parseInt(vibrationTime));
-		this.vibrated();
-	};
-
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-
-	//Trigger
-	this.vibrated = function() {
-	};
-
-	//Source
-	this.getTime = function() {
-		return this.vibrationTime;
-	};
-
-}
-function MobileBeepElement(parent, name) {
-	parent.elements[name] = this;
-
-	this.numberOfBeeps = 1;
-
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-
-	//Target
-	this.setNumberOfBeeps = function(numberOfBeeps) {
-		if (isFinite(numberOfBeeps)){
-			this.numberOfBeeps = parseInt(numberOfBeeps);
-		}
-	};
-
-	//Target
-	this.beep = function(numberOfBeeps) {
-		numberOfBeeps = isFinite(numberOfBeeps) ? numberOfBeeps : this.numberOfBeeps;
-		navigator.notification.beep(parseInt(numberOfBeeps));
-		this.onBeep();
-	};
-
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-
-	//Trigger
-	this.onBeep = function() {
-	};
-
-	//Source
-	this.getNumberOfBeeps = function() {
-		return this.numberOfBeeps;
-	};
-
-}
-
-function MobileDeviceInfoElement(parent, name) {
-	parent.elements[name] = this;
-
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-
-	//Source
-	this.getModel = function() {
-		return device.model;
-	};
-
-	//Source
-	this.getPlatform = function() {
-		return device.platform;
-	};
-
-	//Source
-	this.getUUID = function() {
-		return device.uuid;
-	};
-
-	//Source
-	this.getVersion = function() {
-		return device.version;
-	};
-
-	//Source
-	this.getIsVirtual = function() {
-		return device.isVirtual;
-	};
-
-	//Source
-	this.getSerial = function() {
-		return device.serial;
-	};
-	
-	//Source
-	this.getInfo = function() {
-		return {
-			"model":device.model,
-			"platform":device.platform,
-			"uuid":device.uuid,
-			"version":device.version,
-			"isVirtual":device.isVirtual,
-			"serial":device.serial
-		};
-	};
-
-}
-
-function MobileNetworkElement(parent, name) {
-	parent.elements[name] = this;
-
+function ImageElement(parent, name) {
+	var currentParent = parent;
 	var currentElement = this;
 	
-	document.addEventListener("offline", function() { currentElement.goesOfflineHelper(); }, false);
-	document.addEventListener("online", function() { currentElement.goesOnlineHelper(); }, false);
+	this.zebraUIElement = new zebra.ui.ImagePan();
 	
-	this.goesOfflineHelper = function() {
-		currentElement.goesOffline.call(currentElement);
-	};
-
-	this.goesOnlineHelper = function() {
-		currentElement.goesOnline.call(currentElement);
-	};
+	BaseUIElement.call(this, parent, name);
 	
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
+	this.image = new Image();
+	
+	this.image.onload = function() {
+		currentElement.zebraUIElement.setImage(this);
 	};
 	
-	//Trigger
-	this.goesOffline = function() {
+	this.image.src = "";
+	
+	//PATCHING
+	this.zebraUIElement.airOffset = [0, 0];
+	this.zebraUIElement.airRotation = 0.0;
+	
+	this.zebraUIElement.paint = function (g) {
+		if (this.view !== null) {
+			var l = this.getLeft(), t = this.getTop(), w = this.width, h = this.height;
+			if(this.airRotation !== undefined) {
+				g.translate(this.width/2, this.height/2);
+				g.rotate(this.airRotation*Math.PI/180);
+				g.translate(-this.width/2, -this.height/2);
+			}
+			this.view.paint(g, l, t, w, h, this);
+		}
+	};
+	
+	this.zebraUIElement.setOffset = function (x, y) {
+		if(this.airOffset === undefined) {
+			this.airOffset = [0, 0];
+		}
+		
+		x = x || 0;
+		y = y || 0;
+		
+		if(typeof x !== "number" || typeof y !== "number") {
+			return;
+		}
+		
+		if(x != this.airOffset[0] || y != this.airOffset[1]) {
+			this.setLocation(this.x - this.airOffset[0], this.y - this.airOffset[1]);
+		
+			this.airOffset[0] = x;
+			this.airOffset[1] = y;
+		
+			this.setLocation(this.x + this.airOffset[0], this.y + this.airOffset[1]);
+		
+			this.repaint();
+		}
 	};
 
-	//Trigger
-	this.goesOnline = function() {
+	this.zebraUIElement.getOffset = function() {
+		if(this.airOffset === undefined) {
+			this.airOffset = [0, 0];
+		}
+		
+		return this.airOffset;
 	};
-
-	//Source
-	this.getConnectionType = function() {
-		return navigator.connection.type;
+	
+	this.zebraUIElement.setRotation = function(r) {
+		if(typeof r !== "number") {
+			return;
+		}
+		
+		if(this.airRotation != r) {
+			this.airRotation = r;
+			this.repaint();
+		}
 	};
-
+	
+	this.zebraUIElement.getRotation = function() {
+		if (this.airRotation === undefined) {
+			this.airRotation = 0;
+		}
+		
+		return this.airRotation;
+	};
 }
 
-function MobileAlertElement(parent, name) {
-	parent.elements[name] = this;
+ImageElement.prototype = Object.create(BaseUIElement.prototype);
+ImageElement.prototype.constructor = ImageElement;
 
+ImageElement.prototype.setImage = function(imageSrc) {
+	var currentElement = this;
+	
+	this.image = new Image();
+	
+	this.image.onload = function() {
+		currentElement.zebraUIElement.setImage(this);
+	};
+	
+	this.image.src = imageSrc;
+};
+
+ImageElement.prototype.setOffset = function(x, y) {
+	this.zebraUIElement.setOffset(x, y);
+};
+	
+ImageElement.prototype.setBackground = function(value) {
+	this.zebraUIElement.setBackground(value);
+};
+	
+ImageElement.prototype.setRotation = function(r) {
+	this.zebraUIElement.setRotation(r);
+};
+
+ImageElement.prototype.getOffset = function() {
+	return this.zebraUIElement.getOffset();
+};
+
+ImageElement.prototype.getRotation = function() {
+	return this.zebraUIElement.getRotation();
+};
+
+//Source
+ImageElement.prototype.getValues = function() {
+	return {
+		"Offset":this.getOffset,
+		"Rotation":this.getRotation
+	};
+};
+
+ImageElement.prototype.updateState = function(state) {
+	BaseUIElement.prototype.updateState.call(this, state);
+	
+	if(state.offset !== undefined) {
+		this.setOffset(state.offset.x, state.offset.y);
+	}
+	
+	if(state.rotation !== undefined) {
+		this.setRotation(state.rotation);
+	}
+	
+	if(state.imageSrc !== undefined) {
+		this.setImage(state.imageSrc);
+	}
+	
+	if(state.background !== undefined) {
+		this.setBackground(state.background);
+	}
+};
+
+function LabelElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	this.zebraUIElement = new zebra.ui.MLabel("");
+	
+	BaseUIElement.call(this, parent, name);
+}
+
+LabelElement.prototype = Object.create(BaseUIElement.prototype);
+LabelElement.prototype.constructor = LabelElement;
+
+LabelElement.prototype.setFont = function(font) {
+	this.zebraUIElement.setFont(font);
+};
+
+LabelElement.prototype.setValue = function(value) {
+	if (value === undefined) {
+		value = "undefined";
+	}
+	if (value === null) {
+		value = "null";
+	}		
+
+	this.zebraUIElement.setValue(value.toString());
+};
+
+LabelElement.prototype.appendValue = function(value) {
+	if (value === undefined) {
+		value = "undefined";
+	}
+	
+	if (value === null) {
+		value = "null";
+	}		
+	
+	this.zebraUIElement.setValue(this.getValue() + value.toString());
+};
+
+LabelElement.prototype.setColor = function(color) {
+	this.zebraUIElement.setColor(color);
+};
+
+LabelElement.prototype.getValue = function(color) {
+	return this.zebraUIElement.getValue();
+};
+
+LabelElement.prototype.updateState = function(state) {
+	BaseUIElement.prototype.updateState.call(this, state);
+	
+	if(state.color !== undefined) {
+		this.setColor(state.color);
+	}
+	
+	if(state.font !== undefined) {
+		this.setFont(state.font);
+	}
+	
+	if(state.value !== undefined) {
+		this.setValue(state.value);
+	}
+};
+
+function LocalStorageElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	BaseElement.call(this, parent);
+	
+	this.parent.elements[name] = this;
+	this.name = name;
+	
+	this.key = name;
+	this.value = '';
+	
+	//Trigger
+	this.valueSet = function() {
+	};
+	
+	//Trigger
+	this.valueReturned = function() {
+	};
+}
+
+LocalStorageElement.prototype = Object.create(BaseElement.prototype);
+LocalStorageElement.prototype.constructor = LocalStorageElement;
+
+//Target
+LocalStorageElement.prototype.setKey = function(k) {
+	this.key = k;
+};
+
+//Target
+LocalStorageElement.prototype.setValue = function(value) {
+	window.localStorage.setItem(this.key, JSON.stringify(value));
+	this.valueSet();
+};
+
+//Target
+LocalStorageElement.prototype.retrieveValue = function() {
+	this.value = JSON.parse(window.localStorage.getItem(this.key));
+	this.valueReturned();
+};
+
+//Source
+LocalStorageElement.prototype.getValue = function() {
+	return this.value;
+};
+
+//Source
+LocalStorageElement.prototype.getKey = function() {
+	return this.key;
+};
+
+//Source
+LocalStorageElement.prototype.getValues = function() {
+	return {
+		"value":this.getValue(),
+		"key":this.getKey()
+	};
+};
+
+LocalStorageElement.prototype.updateState = function(state) {
+	BaseElement.prototype.updateState.call(this, state);
+};
+
+
+
+function MobileAlertElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	BaseElement.call(this, parent);
+	
+	this.parent.elements[name] = this;
+	this.name = name;
+	
 	this.message = "Alert!";
 	this.title = "Alert";
 	this.buttonName = "OK";
-
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-
-	//Target
-	this.setMessage = function(message) {
-		message = message || "";
-		this.message = String(message);
-	};
-
-	//Target
-	this.setTitle = function(title) {
-		title = title || "";
-		this.title = String(title);
-	};
-
-	//Target
-	this.setButtonName = function(buttonName) {
-		buttonName = buttonName || "";
-		this.buttonName = String(buttonName);
-	};
-
-	//Target
-	this.alert = function(message, title, buttonName) {
-		message = message || "";
-		title = title || "";
-		buttonName = buttonName || "";
-
-		message = String(message);
-		title = String(title);
-		buttonName = String(buttonName);
-
-		message = message !== "" ? message : this.message;
-		title = title !== "" ? title : this.title;
-		buttonName = buttonName !== "" ? buttonName : this.buttonName;
-		navigator.notification.alert(message, this.alertDismissed, title, buttonName);
-	};
-
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-
+	
 	//Trigger
 	this.alertDismissed = function() {
 	};
 }
 
-function MobileConfirmElement(parent, name) {
-	
-	parent.elements[name] = this;
+MobileAlertElement.prototype = Object.create(BaseElement.prototype);
+MobileAlertElement.prototype.constructor = MobileAlertElement;
 
+//Target
+MobileAlertElement.prototype.setMessage = function(message) {
+	message = message || "";
+	this.message = String(message);
+};
+
+//Target
+MobileAlertElement.prototype.setTitle = function(title) {
+	title = title || "";
+	this.title = String(title);
+};
+
+//Target
+MobileAlertElement.prototype.setButtonName = function(buttonName) {
+	buttonName = buttonName || "";
+	this.buttonName = String(buttonName);
+};
+
+//Target
+MobileAlertElement.prototype.alert = function(message, title, buttonName) {
+	message = message || "";
+	title = title || "";
+	buttonName = buttonName || "";
+
+	message = String(message);
+	title = String(title);
+	buttonName = String(buttonName);
+
+	message = message !== "" ? message : this.message;
+	title = title !== "" ? title : this.title;
+	buttonName = buttonName !== "" ? buttonName : this.buttonName;
+	navigator.notification.alert(message, this.alertDismissed, title, buttonName);
+};
+
+MobileAlertElement.prototype.updateState = function(state) {
+	BaseElement.prototype.updateState.call(this, state);
+};
+
+
+
+function MobileBeepElement(parent, name) {
+	var currentParent = parent;
 	var currentElement = this;
+	
+	BaseElement.call(this, parent);
+	
+	this.parent.elements[name] = this;
+	this.name = name;
+	
+	this.numberOfBeeps = 1;
+	
+	//Trigger
+	this.onBeep = function() {
+	};
+}
+
+MobileBeepElement.prototype = Object.create(BaseElement.prototype);
+MobileBeepElement.prototype.constructor = MobileBeepElement;
+
+//Target
+MobileBeepElement.prototype.setNumberOfBeeps = function(numberOfBeeps) {
+	if (isFinite(numberOfBeeps)){
+		this.numberOfBeeps = parseInt(numberOfBeeps);
+	}
+};
+
+//Target
+MobileBeepElement.prototype.beep = function(numberOfBeeps) {
+	numberOfBeeps = isFinite(numberOfBeeps) ? numberOfBeeps : this.numberOfBeeps;
+	navigator.notification.beep(parseInt(numberOfBeeps));
+	this.onBeep();
+};
+
+//Source
+MobileBeepElement.prototype.getNumberOfBeeps = function() {
+	return this.numberOfBeeps;
+};
+
+
+MobileBeepElement.prototype.updateState = function(state) {
+	BaseElement.prototype.updateState.call(this, state);
+};
+
+
+
+function MobileCloudCommand(parent, name, interval) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	parent.stratosphereEnabled = true;
+	
+	BaseElement.call(this, parent);
+	
+	this.parent.elements[name] = this;
+	this.name = name;
+	
+	this.interval = interval || 1000;
+	this.uri = null;
+	this.value = null;
+	this.status = 404;
+	this.currentInterval = null;
+	
+	//Trigger
+	this.valueReturned = function () {
+	};
+	
+	//Trigger
+	this.errorReturned = function () {
+	};
+	
+	this.connecting = function() {
+	};
+	
+	this.disconnecting = function() {
+	};
+	
+	parent.connections.push(this);
+}
+
+MobileCloudCommand.prototype = Object.create(BaseElement.prototype);
+MobileCloudCommand.prototype.constructor = MobileCloudCommand;
+
+//Helper
+MobileCloudCommand.prototype.bleCallbackHandler = function(e) {
+	var currentElement = this;
+	
+	if(e.status == "subscribed") {
+		this.currentInterval = setInterval(function() {
+			currentElement.popCommand();
+		}, this.interval);
+	}
+
+	else if(e.status == "closed")	{
+		if(this.currentInterval !== null) {
+			clearInterval(this.currentInterval)
+		}
+		
+		this.currentInterval = null;
+	}
+};
+
+//Source
+MobileCloudCommand.prototype.getValue = function() {
+	return this.value;
+};
+
+//Target
+MobileCloudCommand.prototype.popCommand = function() {
+	var currentElement = this;
+	
+	if(currentElement.parent.stratosphereUrl === null ||
+		currentElement.parent.stratosphereUrl === undefined ||
+		currentElement.parent.currentStratosphereUuid === null || 
+		currentElement.parent.currentStratosphereUuid === undefined || 
+		currentElement.parent.currentStratosphereToken === null ||
+		currentElement.parent.currentStratosphereToken === undefined) {
+		
+		console.log("Credentials are null or undefined!");
+		return;
+	}
+	
+	var xhttp = new XMLHttpRequest();
+
+	xhttp.responseType = 'text';
+	
+	xhttp.onreadystatechange = function() {
+		if (xhttp.readyState == 4 && xhttp.status == 200) {
+			
+			try {
+				var commandValue = JSON.parse(xhttp.responseText);
+				
+				if(commandValue !== null && commandValue !== undefined) {
+					currentElement.value = commandValue;
+					currentElement.valueReturned();
+				}
+			}
+			
+			catch(e) {
+			}	
+		}
+	};
+	
+	xhttp.open("GET", "https://"+currentElement.parent.stratosphereUrl+"/thing/" + currentElement.parent.currentStratosphereUuid  + "/command/" + this.name + "/pop");
+	xhttp.setRequestHeader("stratosphere", currentElement.parent.currentStratosphereToken);
+	xhttp.send();
+};
+
+MobileCloudCommand.prototype.updateState = function(state) {
+	BaseElement.prototype.updateState.call(this, state);
+};
+
+
+
+function MobileCloudEventElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	parent.stratosphereEnabled = true;
+	
+	BaseElement.call(this, parent);
+	
+	this.parent.elements[name] = this;
+	this.name = name;
+	
+	this.uri = null;
+	this.value = null;
+	this.status = 404;
+	
+	//Trigger
+	this.eventSent = function () {
+	};
+	
+	//Trigger
+	this.errorReturned = function () {
+	};
+}
+
+MobileCloudEventElement.prototype = Object.create(BaseElement.prototype);
+MobileCloudEventElement.prototype.constructor = MobileCloudEventElement;
+
+//Target
+MobileCloudEventElement.prototype.sendEvent = function(value) {
+	var currentElement = this;
+	
+	if(currentElement.parent.stratosphereUrl === null ||
+		currentElement.parent.stratosphereUrl === undefined ||
+		currentElement.parent.currentStratosphereUuid === null || 
+		currentElement.parent.currentStratosphereUuid === undefined || 
+		currentElement.parent.currentStratosphereUuid === null ||
+		currentElement.parent.currentStratosphereUuid === undefined) {
+		
+		return;
+	}
+	
+	var xhttp = new XMLHttpRequest();
+
+	xhttp.onreadystatechange = function() {
+		if (xhttp.readyState == 4 && xhttp.status == 200) {
+			console.log("Strat Event Success");
+			console.log(xhttp.responseText);
+			
+			currentElement.eventSent();
+		}
+	};
+	
+	console.log("https://"+currentElement.parent.stratosphereUrl+"/thing/" + currentElement.parent.currentStratosphereUuid + "/event/" + this.name + "/" + encodeURIComponent(JSON.stringify(value)));
+	xhttp.open("GET", "https://"+currentElement.parent.stratosphereUrl+"/thing/" + currentElement.parent.currentStratosphereUuid  + "/event/" + this.name + "/" + encodeURIComponent(JSON.stringify(value)));
+	xhttp.setRequestHeader("stratosphere", currentElement.parent.currentStratosphereToken);
+	xhttp.send();
+};
+
+MobileCloudEventElement.prototype.updateState = function(state) {
+	BaseElement.prototype.updateState.call(this, state);
+};
+
+
+
+function MobileConfirmElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	BaseElement.call(this, parent);
+	
+	this.parent.elements[name] = this;
+	this.name = name;
 	
 	this.message = "Are you sure?";
 	this.title = "Confirm";
 	this.buttonArray = ["Yes","No"];
-
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-
-	//Target
-	this.setMessage = function(message) {
-		message = message || "";
-		this.message = String(message);
-	};
-
-	//Target
-	this.setTitle = function(title) {
-		title = title || "";
-		this.title = String(title);
-	};
-
-	//Target
-	this.addButton = function(buttonName) {
-		buttonName = buttonName || "";
-	 	buttonName = String(buttonName);
-	 	if (buttonName !== ""){
-	 		this.buttonArray.push(buttonName);
-	 	}
-	};
-
-	//Target
-	this.removeButton = function(buttonName) {
-		if (isFinite(buttonName)){
-			index = parseInt(buttonName);
-			if (index >= 0 && index < this.buttonArray.length){
-				this.buttonArray.splice(index,1);
-			}
-		}
-		else{
-			buttonName = buttonName || "";
-		 	buttonName = String(buttonName);
-		 	if (buttonName !== ""){
-		 		index = buttonArray.indexOf(buttonName);
-		 		if(i != -1){
-					array.splice(i, 1);
-				}
-			}
-		}
-	};
-
-	//Target
-	this.alert = function(message, title, buttonArray) {
-		message = message || "";
-		title = title || "";
-		message = String(message);
-		title = String(title);
-
-		message = message !== "" ? message : currentElement.message;
-		title = title !== "" ? title : currentElement.title;
-		
-		buttonArray = (typeof buttonArray !== 'undefined' && buttonArray instanceof Array)? buttonArray : currentElement.buttonArray;
-		currentElement.currentButtonArray = buttonArray;
-		
-		navigator.notification.confirm(message, currentElement.helper, title, buttonArray);
-	};
-
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-
-	//Helper
-	this.helper = function(buttonIndex){
-		
-		if (buttonIndex === 0){
-			currentElement.pressedButton = 'No Button';
-		}
-		else {
-			currentElement.pressedButton = currentElement.currentButtonArray[buttonIndex - 1];
-		}
-
-		currentElement.confirmed();
-	};
-
-	//Source
-	this.getPressedButton = function() {
-		return this.pressedButton;
-	};
 	
 	//Trigger
-	this.confirmed = function() {
-	};
+	this.confirmed = function() {};
 }
 
-function MobilePromptElement(parent, name) {
-	
-	parent.elements[name] = this;
+MobileConfirmElement.prototype = Object.create(BaseElement.prototype);
+MobileConfirmElement.prototype.constructor = MobileConfirmElement;
 
+//Helper
+MobileConfirmElement.prototype.helper = function(buttonIndex){
+	
+	if (buttonIndex === 0){
+		this.pressedButton = 'No Button';
+	}
+	else {
+		this.pressedButton = this.currentButtonArray[buttonIndex - 1];
+	}
+
+	this.confirmed();
+};
+
+//Target
+MobileConfirmElement.prototype.setMessage = function(message) {
+	message = message || "";
+	this.message = String(message);
+};
+
+//Target
+MobileConfirmElement.prototype.setTitle = function(title) {
+	title = title || "";
+	this.title = String(title);
+};
+
+//Target
+MobileConfirmElement.prototype.addButton = function(buttonName) {
+	buttonName = buttonName || "";
+	buttonName = String(buttonName);
+	if (buttonName !== ""){
+		this.buttonArray.push(buttonName);
+	}
+};
+
+//Target
+MobileConfirmElement.prototype.removeButton = function(buttonName) {
+	if (isFinite(buttonName)){
+		index = parseInt(buttonName);
+		if (index >= 0 && index < this.buttonArray.length){
+			this.buttonArray.splice(index,1);
+		}
+	}
+	else{
+		buttonName = buttonName || "";
+		buttonName = String(buttonName);
+		if (buttonName !== ""){
+			index = buttonArray.indexOf(buttonName);
+			if(i != -1){
+				array.splice(i, 1);
+			}
+		}
+	}
+};
+
+//Target
+MobileConfirmElement.prototype.alert = function(message, title, buttonArray) {
 	var currentElement = this;
 	
-	this.message = "Enter Text:";
-	this.title = "Prompt";
-	this.buttonArray = ["Ok","Cancel"];
-	this.value = "";
-	this.pressedButton = "";
+	message = message || "";
+	title = title || "";
+	message = String(message);
+	title = String(title);
 
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-
-	//Target
-	this.setMessage = function(message) {
-		message = message || "";
-		this.message = String(message);
-	};
-
-	//Target
-	this.setTitle = function(title) {
-		title = title || "";
-		this.title = String(title);
-	};
-
-	//Target
-	this.addButton = function(buttonName) {
-		buttonName = buttonName || "";
-	 	buttonName = String(buttonName);
-	 	if (buttonName !== ""){
-	 		this.buttonArray.push(buttonName);
-	 	}
-	};
-
-	//Target
-	this.setValue = function(value) {
-		value = value || "";
-		this.value = String(value);
-	};
+	message = message !== "" ? message : currentElement.message;
+	title = title !== "" ? title : currentElement.title;
 	
-	//Target
-	this.removeButton = function(buttonName) {
-		if (isFinite(buttonName)){
-			index = parseInt(buttonName);
-			if (index >= 0 && index < this.buttonArray.length){
-				this.buttonArray.splice(index,1);
-			}
-		}
-		else{
-		 	buttonName = String(buttonName);
-		 	if (buttonName !== ""){
-		 		index = buttonArray.indexOf(buttonName);
-		 		if(i != -1){
-					array.splice(i, 1);
-				}
-			}
-		}
-	};
-
-	//Target
-	this.alert = function(value, message, title, buttonArray) {
-		message = message || "";
-		title = title || "";
-		value = value || "";
-		
-		message = String(message);
-		title = String(title);
-		value = String(value);
-
-		message = message !== "" ? message : currentElement.message;
-		title = title !== "" ? title : currentElement.title;
-		buttonArray = (typeof buttonArray !== 'undefined' && buttonArray instanceof Array)? buttonArray : currentElement.buttonArray;
-		value = value !== "" ? value : currentElement.value;
-
-		currentElement.currentButtonArray = buttonArray;
-
-		navigator.notification.prompt(message, currentElement.helper, title, buttonArray, value);
-	};
-
-	//Source
-	this.getPressedButton = function() {
-		return this.pressedButton;
-	};
+	buttonArray = (typeof buttonArray !== 'undefined' && buttonArray instanceof Array)? buttonArray : currentElement.buttonArray;
+	currentElement.currentButtonArray = buttonArray;
 	
-	//Source
-	this.getValue = function() {
-		return this.value;
-	};
+	navigator.notification.confirm(message, function(buttonIndex){currentElement.helper(buttonIndex);}, title, buttonArray);
+};
 
-	//Source
-	this.getValues = function() {
-		return {
-			"Value":this.getValue,
-			"PressedButton":this.getPressedButton
-		};
-	};
+//Source
+MobileConfirmElement.prototype.getPressedButton = function() {
+	return this.pressedButton;
+};
+
+MobileConfirmElement.prototype.updateState = function(state) {
+	BaseElement.prototype.updateState.call(this, state);
+};
+
+
+
+function MobileDeviceInfoElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
 	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-
-	//Helper
-	this.helper = function(results){
-		if (env.debug) console.log("Results returned: " + JSON.stringify(results));
-		currentElement.value = results.input1;
-		if (results.buttonIndex === 0){
-			currentElement.pressedButton = 'No Button';
-		}
-		else{
-			currentElement.pressedButton = currentElement.buttonArray[results.buttonIndex - 1];
-		}
-		currentElement.responded();
-	};
-
-	//Trigger
-	this.responded = function() {
-	};
+	BaseElement.call(this, parent);
+	
+	this.parent.elements[name] = this;
+	this.name = name;
 }
+
+MobileDeviceInfoElement.prototype = Object.create(BaseElement.prototype);
+MobileDeviceInfoElement.prototype.constructor = MobileDeviceInfoElement;
+
+//Source
+MobileDeviceInfoElement.prototype.getModel = function() {
+	return device.model;
+};
+
+//Source
+MobileDeviceInfoElement.prototype.getPlatform = function() {
+	return device.platform;
+};
+
+//Source
+MobileDeviceInfoElement.prototype.getUUID = function() {
+	return device.uuid;
+};
+
+//Source
+MobileDeviceInfoElement.prototype.getVersion = function() {
+	return device.version;
+};
+
+//Source
+MobileDeviceInfoElement.prototype.getIsVirtual = function() {
+	return device.isVirtual;
+};
+
+//Source
+MobileDeviceInfoElement.prototype.getSerial = function() {
+	return device.serial;
+};
+
+//Source
+MobileDeviceInfoElement.prototype.getInfo = function() {
+	return {
+		"model":device.model,
+		"platform":device.platform,
+		"uuid":device.uuid,
+		"version":device.version,
+		"isVirtual":device.isVirtual,
+		"serial":device.serial
+	};
+};
+
+MobileDeviceInfoElement.prototype.updateState = function(state) {
+	BaseElement.prototype.updateState.call(this, state);
+};
+
 
 function MobileGeolocationElement(parent, name) {
 	
 	parent.elements[name] = this;
-
+	
 	var currentElement = this;
 	currentElement.currentPosition = null;	
 	currentElement.currentError = null;
@@ -2726,7 +1613,7 @@ function MobileGeolocationElement(parent, name) {
 	this.trigger = function() {
 		this.onTrigger();
 	};
-
+	
 	//Target
 	this.retrievePosition = function() {
 		navigator.geolocation.getCurrentPosition(
@@ -2734,7 +1621,7 @@ function MobileGeolocationElement(parent, name) {
 				currentElement.currentPosition = position;
 				currentElement.positionRetrieved();
 			}, 
-		
+			
 			function(error) {
 				currentElement.currentError = error;
 				currentElement.failedToRetrievePosition();
@@ -2745,22 +1632,22 @@ function MobileGeolocationElement(parent, name) {
 	//Source
 	this.getPositionData = function() {
 		return [
-			currentElement.currentPosition.coords.latitude,
-			currentElement.currentPosition.coords.longitude,
-			currentElement.currentPosition.coords.altitude,
-			currentElement.currentPosition.coords.accuracy,
-			currentElement.currentPosition.coords.altitudeAccuracy,
-			currentElement.currentPosition.coords.heading,
-			currentElement.currentPosition.coords.speed,
-			currentElement.currentPosition.timestamp
+		currentElement.currentPosition.coords.latitude,
+		currentElement.currentPosition.coords.longitude,
+		currentElement.currentPosition.coords.altitude,
+		currentElement.currentPosition.coords.accuracy,
+		currentElement.currentPosition.coords.altitudeAccuracy,
+		currentElement.currentPosition.coords.heading,
+		currentElement.currentPosition.coords.speed,
+		currentElement.currentPosition.timestamp
 		];
 	};
 	
 	//Source
 	this.getError = function() {
 		return [
-			currentElement.currentError.code,
-			currentElement.currentError.message
+		currentElement.currentError.code,
+		currentElement.currentError.message
 		];
 	};
 	
@@ -2777,6 +1664,825 @@ function MobileGeolocationElement(parent, name) {
 	this.failedToRetrievePosition = function() {
 	};
 }
+function MobileMotionElement(parent, name) {
+	
+	this.name = name;
+	this.parent = parent;
+	
+	this.currentAccelerationData = {x:0, y:0, z:0, timestamp:0};
+	
+	//Trigger
+	this.accelerationRetrieved = function() {
+	};
+	
+	//Trigger
+	this.error = function() {
+	};
+}
+
+//Target
+MobileMotionElement.prototype.retrieveAcceleration = function() {
+	var currentElement = this;
+	
+	if(navigator.accelerometer == undefined || navigator.accelerometer.getCurrentAcceleration == undefined) {
+		return;
+	}
+	
+	navigator.accelerometer.getCurrentAcceleration(function(accelerationData) {
+		currentElement.currentAccelerationData = accelerationData;
+		currentElement.accelerationRetrieved();
+	}, function() {
+		currentElement.error();
+	});
+	
+};
+
+//Source
+MobileMotionElement.prototype.getAcceleration = function() {
+	return [
+		this.currentAccelerationData.x,
+		this.currentAccelerationData.y,
+		this.currentAccelerationData.z,
+		this.currentAccelerationData.timestamp
+		];
+};
+
+function MobileNetworkElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	BaseElement.call(this, parent);
+	
+	this.parent.elements[name] = this;
+	this.name = name;
+	
+	//Trigger
+	this.goesOffline = function() {
+	};
+
+	//Trigger
+	this.goesOnline = function() {
+	};
+	
+	document.addEventListener("offline", function() { currentElement.goesOfflineHelper(); }, false);
+	document.addEventListener("online", function() { currentElement.goesOnlineHelper(); }, false);
+}
+
+MobileNetworkElement.prototype = Object.create(BaseElement.prototype);
+MobileNetworkElement.prototype.constructor = MobileNetworkElement;
+
+MobileNetworkElement.prototype.goesOfflineHelper = function() {
+	this.goesOffline();
+};
+
+MobileNetworkElement.prototype.goesOnlineHelper = function() {
+	this.goesOnline();
+};
+
+//Source
+MobileNetworkElement.prototype.getConnectionType = function() {
+	return navigator.connection.type;
+};
+
+MobileNetworkElement.prototype.updateState = function(state) {
+	BaseElement.prototype.updateState.call(this, state);
+};
+
+
+function MobileOrientationElement(parent, name) {
+	
+	this.name = name;
+	this.parent = parent;
+	
+	this.currentHeading = {
+		magneticHeading:null,
+		trueHeading:null,
+		headingAccuracy:null,
+		timestamp:null
+	};
+	
+	//Trigger
+	this.orientationRetrieved = function() {
+	};
+	
+	//Trigger
+	this.error = function() {
+	};
+}
+
+MobileOrientationElement.prototype.retrieveHeading = function() {
+	
+	var currentElement = this;
+	
+	if(navigator.compass == undefined || navigator.compass.getCurrentHeading == undefined) {
+		return;
+	}
+	
+	navigator.compass.getCurrentHeading(function(currentHeading) {
+		currentElement.currentHeading = currentHeading;
+		currentElement.orientationRetrieved();
+		
+	}, function() {
+		currentElement.error();
+	});
+};
+
+MobileOrientationElement.prototype.getHeading = function() {
+	return [
+		this.currentHeading.magneticHeading,
+		this.currentHeading.trueHeading,
+		this.currentHeading.headingAccuracy,
+		this.currentHeading.timestamp
+	];
+};
+function MobilePromptElement(parent, name) {
+	
+	parent.elements[name] = this;
+	
+	var currentElement = this;
+	
+	this.message = "Enter Text:";
+	this.title = "Prompt";
+	this.buttonArray = ["Ok","Cancel"];
+	this.value = "";
+	this.pressedButton = "";
+	
+	//Target
+	this.trigger = function() {
+		this.onTrigger();
+	};
+	
+	//Target
+	this.setMessage = function(message) {
+		message = message || "";
+		this.message = String(message);
+	};
+	
+	//Target
+	this.setTitle = function(title) {
+		title = title || "";
+		this.title = String(title);
+	};
+	
+	//Target
+	this.addButton = function(buttonName) {
+		buttonName = buttonName || "";
+		buttonName = String(buttonName);
+		if (buttonName !== ""){
+			this.buttonArray.push(buttonName);
+		}
+	};
+	
+	//Target
+	this.setValue = function(value) {
+		value = value || "";
+		this.value = String(value);
+	};
+	
+	//Target
+	this.removeButton = function(buttonName) {
+		if (isFinite(buttonName)){
+			index = parseInt(buttonName);
+			if (index >= 0 && index < this.buttonArray.length){
+				this.buttonArray.splice(index,1);
+			}
+		}
+		else{
+			buttonName = String(buttonName);
+			if (buttonName !== ""){
+				index = buttonArray.indexOf(buttonName);
+				if(i != -1){
+					array.splice(i, 1);
+				}
+			}
+		}
+	};
+	
+	//Target
+	this.alert = function(value, message, title, buttonArray) {
+		message = message || "";
+		title = title || "";
+		value = value || "";
+		
+		message = String(message);
+		title = String(title);
+		value = String(value);
+		
+		message = message !== "" ? message : currentElement.message;
+		title = title !== "" ? title : currentElement.title;
+		buttonArray = (typeof buttonArray !== 'undefined' && buttonArray instanceof Array)? buttonArray : currentElement.buttonArray;
+		value = value !== "" ? value : currentElement.value;
+		
+		currentElement.currentButtonArray = buttonArray;
+		
+		navigator.notification.prompt(message, currentElement.helper, title, buttonArray, value);
+	};
+	
+	//Source
+	this.getPressedButton = function() {
+		return this.pressedButton;
+	};
+	
+	//Source
+	this.getValue = function() {
+		return this.value;
+	};
+	
+	//Source
+	this.getValues = function() {
+		return {
+			"Value":this.getValue,
+			"PressedButton":this.getPressedButton
+		};
+	};
+	
+	//Trigger
+	this.onTrigger = function(e) {
+		parent.sendTrigger(this.name, "onTrigger");
+	};
+	
+	//Helper
+	this.helper = function(results){
+		if (env.debug) console.log("Results returned: " + JSON.stringify(results));
+		currentElement.value = results.input1;
+		if (results.buttonIndex === 0){
+			currentElement.pressedButton = 'No Button';
+		}
+		else{
+			currentElement.pressedButton = currentElement.buttonArray[results.buttonIndex - 1];
+		}
+		currentElement.responded();
+	};
+	
+	//Trigger
+	this.responded = function() {
+	};
+}
+
+function MobileVibrationElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	BaseElement.call(this, parent);
+	
+	this.parent.elements[name] = this;
+	this.name = name;
+	
+	this.vibrationTime = 1000;
+	
+	//Trigger
+	this.vibrated = function() {
+	};
+}
+
+MobileVibrationElement.prototype = Object.create(BaseElement.prototype);
+MobileVibrationElement.prototype.constructor = MobileVibrationElement;
+
+//Target
+MobileVibrationElement.prototype.setTime = function(vibrationTime) {
+	if (isFinite(vibrationTime)){
+		this.vibrationTime = parseInt(vibrationTime);
+	}
+};
+
+//Target
+MobileVibrationElement.prototype.vibrate = function(vibrationTime) {
+	vibrationTime = isFinite(vibrationTime) ? vibrationTime : this.vibrationTime;
+	navigator.vibrate(parseInt(vibrationTime));
+	this.vibrated();
+};
+
+//Source
+MobileVibrationElement.prototype.getTime = function() {
+	return this.vibrationTime;
+};
+
+MobileVibrationElement.prototype.updateState = function(state) {
+	BaseElement.prototype.updateState.call(this, state);
+};
+
+
+
+function NullUIElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	this.zebraUIElement = new zebra.ui.MLabel("");
+	
+	BaseUIElement.call(this, parent, name);
+}
+
+NullUIElement.prototype = Object.create(BaseUIElement.prototype);
+NullUIElement.prototype.constructor = NullUIElement;
+
+NullUIElement.prototype.updateState = function(state) {
+	BaseUIElement.prototype.updateState.call(this, state);
+};
+
+function ProgressBarElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	this.zebraUIElement = new zebra.ui.Progress();
+	
+	BaseUIElement.call(this, parent, name);
+}
+
+ProgressBarElement.prototype = Object.create(BaseUIElement.prototype);
+ProgressBarElement.prototype.constructor = ProgressBarElement;
+
+//Target
+ProgressBarElement.prototype.setOrientation = function(orientation) {
+	if(orientation.toLowerCase() === 'vertical') {
+		this.zebraUIElement.setOrientation(zebra.layout.VERTICAL);
+	}
+	
+	else if(orientation.toLowerCase() === 'horizontal') {
+		this.zebraUIElement.setOrientation(zebra.layout.HORIZONTAL);
+	}
+};
+
+//Target
+ProgressBarElement.prototype.setValue = function(value) {
+	this.zebraUIElement.setValue(value);
+};
+
+//Target
+ProgressBarElement.prototype.setMaxValue = function(value) {
+	this.zebraUIElement.setMaxValue(value);
+};
+
+//Target
+ProgressBarElement.prototype.setGap = function(gap) {
+	this.zebraUIElement.setGap(gap);
+};
+
+//Target
+ProgressBarElement.prototype.setBundleSize = function(i) {
+	
+	if(i < 1) {
+		return;
+	}
+	
+	this.zebraUIElement.setBundleSize(i);
+};
+
+//Source
+ProgressBarElement.prototype.getValue = function() {
+	return this.zebraUIElement.getValue();
+};
+
+ProgressBarElement.prototype.updateState = function(state) {
+	BaseUIElement.prototype.updateState.call(this, state);
+	
+	if(state.gap !== undefined) {
+		this.setGap(state.gap);
+	}
+
+	if(state.maxValue !== undefined) {
+		this.setMaxValue(state.maxValue);
+	}
+	
+	if(state.orientation !== undefined) {
+		this.setOrientation(state.orientation);
+	}
+	
+	if(state.bundleSize !== undefined) {
+		this.setBundleSize(state.bundleSize.w, state.bundleSize.h);
+	}
+	
+	if(state.value !== undefined) {
+		this.setValue(state.value);
+	}
+};
+
+function SliderElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	this.zebraUIElement = new zebra.ui.Slider();
+	
+	BaseUIElement.call(this, parent, name);
+	
+	//PATCHING
+	this.zebraUIElement.setValues = function(min,max,intervals,roughStep,exactStep) {
+		if(roughStep <= 0 || exactStep < 0 || min >= max || min + roughStep > max || min + exactStep > max) {
+			//throw new Error("Invalid values");
+		}
+
+		// inject new intervals code here
+		for(var i = 0, start = min;i < intervals.length; i ++ ) {
+			start += intervals[i];
+			if(start > max || intervals[i] < 0) {
+				//throw new Error();
+			}
+		}
+
+		this.min = min;
+		this.max = max;
+		this.roughStep = roughStep;
+		this.exactStep = exactStep;
+		this.intervals = Array(intervals.length);
+
+		for(var j=0; j<intervals.length; j++){
+			this.intervals[j] = intervals[j];
+		}
+
+		if(this.value < min || this.value > max) {
+			this.setValue(this.isIntervalMode ? min + intervals[0] : min);
+		}
+		this.vrp();
+	};
+		
+	//PATCHING
+	this.zebraUIElement.setValue = function(v) {
+		var prev = this.value;
+		if(this.value != v) {
+			this.value = v;
+			this._.fired(this, prev);
+			this.repaint();
+		}
+	};
+		
+	//PATCHING
+	this.zebraUIElement.setValueNoEvent = function(v) {
+		var prev = this.value;
+		if(this.value != v) {
+			this.value = v;
+			this.repaint();
+		}
+	};
+	
+	//PATCHING
+	this.zebraUIElement.setMaxValue = function (max) {
+		this.setValues(this.min, max, this.intervals, this.roughStep, this.exactStep);
+	};
+			
+	//PATCHING
+	this.zebraUIElement.setMinValue = function(min) {
+		this.setValues(min, this.max, this.intervals, this.roughStep, this.exactStep);
+	};
+	
+	//PATCHING
+	this.zebraUIElement.setIntervals = function(intervals) {
+		this.setValues(this.min, this.max, intervals, this.roughStep, this.exactStep);
+	};
+	
+	//Trigger
+	this.changed = function (e) {
+		this.lastValue = e.getValue();
+		this.valueLocked = true;
+		currentParent.sendTrigger(currentElement.name, "changed", {"value":e.getValue()});
+	};
+	
+	this.zebraUIElement.bind(function(e) {currentElement.changed(e);});
+}
+
+SliderElement.prototype = Object.create(BaseUIElement.prototype);
+SliderElement.prototype.constructor = SliderElement;
+	
+//Target
+SliderElement.prototype.trigger = function() {
+	this.onTrigger();
+};
+
+//Target
+SliderElement.prototype.setValue = function(value) {
+	this.zebraUIElement.setValueNoEvent(value);
+};
+
+//Target
+SliderElement.prototype.setMaxValue = function(max) {
+	this.zebraUIElement.setMaxValue(max);
+};
+
+//Target
+SliderElement.prototype.setMinValue = function(min) {
+	this.zebraUIElement.setMinValue(min);
+};
+
+//Target
+SliderElement.prototype.setIntervals = function(intervals) {
+	this.zebraUIElement.setIntervals(intervals);
+};
+
+//Target
+SliderElement.prototype.setScaleStep = function(scaleStep) {
+	this.zebraUIElement.setScaleStep(scaleStep);
+};
+	
+//Target
+SliderElement.prototype.setShowScale = function(show) {
+	this.zebraUIElement.setShowScale(show);
+};
+
+//Target
+SliderElement.prototype.setShowTitle = function(show) {
+	this.zebraUIElement.setShowTitle(show);
+};
+	
+//Target
+SliderElement.prototype.setOrientation = function(orientation) {
+	if(orientation.toLowerCase() === 'vertical') {
+		this.zebraUIElement.orient = zebra.layout.VERTICAL;
+	}
+	
+	else if(orientation.toLowerCase() === 'horizontal') {
+		this.zebraUIElement.orient = zebra.layout.HORIZONTAL;
+	}
+};
+
+//Source
+SliderElement.prototype.getValue = function() {
+	return this.zebraUIElement.getValue();
+};
+	
+SliderElement.prototype.updateState = function(state) {
+	BaseUIElement.prototype.updateState.call(this, state);
+	
+	if(state.minValue !== undefined) {
+		this.setMinValue(state.minValue);
+	}
+	
+	if(state.maxValue !== undefined) {
+		this.setMaxValue(state.maxValue);
+	}
+	
+	if(state.intervals !== undefined) {
+		this.setIntervals(state.intervals);
+	}
+	
+	if(state.orientation !== undefined) {
+		this.setOrientation(state.orientation);
+	}
+	
+	if(state.scaleStep !== undefined) {
+		this.setScaleStep(state.scaleStep);
+	}
+	
+	if(state.showScale !== undefined) {
+		this.setShowScale(state.showScale);
+	}
+	
+	if(state.showTitle !== undefined) {
+		this.setShowTitle(state.showTitle);
+	}
+	
+	if(state.value !== undefined) {
+		
+		if(!this.valueLocked) {
+			this.zebraUIElement.setValue(state.value);
+		}
+		
+		if(state.value === this.lastValue) {
+			this.lastValue = null;
+			this.valueLocked = false;
+		}
+	}
+};
+
+function TextFieldElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	this.zebraUIElement = new zebra.ui.HtmlTextField("");
+	
+	BaseUIElement.call(this, parent, name);
+	
+	this.lastValue = '';
+	this.valueLocked = false;
+	
+	this.keyReleased = function(e) {
+		this.lastValue = this.getValue();
+		this.valueLocked = true;
+		currentParent.sendTrigger(this.name, "keyReleased", {"value":this.getValue()});
+		//if (env.debug) baseApp.debugLog("Text field value on key release: " + this.getValue());
+	};
+	
+	this.keyPressed = function(e) {
+		currentParent.sendTrigger(this.name, "keyPressed");
+	};
+	
+	this.returnPressed = function (e) {
+		currentParent.sendTrigger(this.name, "returnPressed");
+	};
+	
+	this.returnReleased = function (e) {
+		currentParent.sendTrigger(this.name, "returnReleased");
+	};
+	
+	this.zebraUIElement.keyReleased = function(e) {
+		//TODO: Put check in for enter key then trigger the correct trigger
+		this.airParent.keyReleased(e);
+		
+		this.repaint();
+	};
+	
+	this.zebraUIElement.keyPressed = function(e) {
+		//TODO: Put check in for enter key then trigger the correct trigger
+		this.airParent.keyPressed(e);
+	};
+}
+
+TextFieldElement.prototype = Object.create(BaseUIElement.prototype);
+TextFieldElement.prototype.constructor = TextFieldElement;
+
+TextFieldElement.prototype.setValue = function(value) {
+	
+	if (value === undefined) {
+		value = "undefined";
+	}
+	if (value === null) {
+		value = "null";
+	}
+
+	this.zebraUIElement.setValue(value.toString());
+};
+
+TextFieldElement.prototype.appendValue = function(value) {
+	
+	if (value === undefined) {
+		value = "undefined";
+	}
+	if (value === null) {
+		value = "null";
+	}
+	
+	this.zebraUIElement.setValue(this.getValue() + value.toString());
+};
+
+TextFieldElement.prototype.getValue = function() {
+	return this.zebraUIElement.getValue();
+};
+
+TextFieldElement.prototype.updateState = function(state) {
+	BaseUIElement.prototype.updateState.call(this, state);
+	
+	if(state.value !== undefined) {
+			
+		if(!this.valueLocked) {
+			this.setValue(state.value);
+		}
+		
+		if(state.value === this.lastValue) {
+			this.lastValue = null;
+			this.valueLocked = false;
+		}
+	}
+};
+
+function WebIOElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	BaseElement.call(this, parent);
+	
+	this.parent.elements[name] = this;
+	this.name = name;
+	
+	this.uri = null;
+	this.value = null;
+	this.status = null;
+	
+	//Trigger
+	this.valueReturned = function () {
+	};
+	
+	//Trigger
+	this.errorReturned = function () {
+	};
+}
+
+WebIOElement.prototype = Object.create(BaseElement.prototype);
+WebIOElement.prototype.constructor = WebIOElement;
+
+//Helper
+WebIOElement.prototype.valueReturnedCallback = function(request) {
+	//console.log(JSON.stringify(request));
+	
+	this.status = request.status;
+	
+	if (request.status == 200) {
+		try {
+			this.value = JSON.parse(request.response);
+		}
+		catch(e) {
+			this.value = request.response;
+			
+		}
+		
+		this.valueReturned();
+	}
+	
+	else {
+		this.value = null;
+		this.errorReturned();
+	}
+};
+
+//Target
+WebIOElement.prototype.get = function (data) {
+	var currentElement = this;
+	
+	var gdata = zebra.io.GET(this.uri, {data:encodeURI(JSON.stringify(data))}, function(request){currentElement.valueReturnedCallback(request);});
+};
+
+//Target
+WebIOElement.prototype.post = function (data) {
+	var currentElement = this;
+
+	var gdata = POSTForm(this.uri, {data:encodeURI(JSON.stringify(data))}, function(request){currentElement.valueReturnedCallback(request);});
+};
+
+//Target
+WebIOElement.prototype.advancedGet = function(data) {
+	var currentElement = this;
+	
+	var gdata = zebra.io.GET(this.uri, data, function(request){currentElement.valueReturnedCallback(request);});
+};
+
+//Target
+WebIOElement.prototype.advancedPost = function(data, headers) {
+	var currentElement = this;
+	
+	var gdata = POSTForm(uri, data, function(request){currentElement.valueReturnedCallback(request);}, headers);
+};
+
+//Target
+WebIOElement.prototype.setURI = function (value) {
+	this.uri = value;
+};
+
+//Source
+WebIOElement.prototype.getURI = function () {
+	return this.uri;
+};
+
+//Source
+WebIOElement.prototype.getValue = function () {
+	return this.value;
+};
+
+//Source
+WebIOElement.prototype.getStatus = function () {
+	return this.status;
+};
+
+//Source
+WebIOElement.prototype.getValues = function() {
+	return {
+		"uri":this.getURI(),
+		"value":this.getValue(),
+		"status":this.getStatus()
+	};
+};
+
+WebIOElement.prototype.updateState = function(state) {
+	BaseElement.prototype.updateState.call(this, state);
+};
+
+
+
+function WebLinkElement(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	BaseElement.call(this, parent);
+	
+	this.parent.elements[name] = this;
+	this.name = name;
+	
+	this.url = "about:blank";
+	
+	//Trigger
+	this.opened = function() {
+	};
+}
+
+WebLinkElement.prototype = Object.create(BaseElement.prototype);
+WebLinkElement.prototype.constructor = WebLinkElement;
+
+//Target
+WebLinkElement.prototype.open = function() {
+	window.open(this.url, '_system');
+	
+	this.opened();
+};
+
+//Target
+WebLinkElement.prototype.setURL = function(url) {
+	this.url = url;
+};
+
+//Source
+WebLinkElement.prototype.getURL = function() {
+	return this.url;
+};
+
+WebLinkElement.prototype.updateState = function(state) {
+	BaseElement.prototype.updateState.call(this, state);
+};
+
 
 function WizardElement(parent, name) {
 	parent.elements[name] = this;

@@ -22,7 +22,6 @@ var env = {
 	projectList: false,
 };
 
-// add event listeners when the document is loaded
 // the deviceready listener will notify when the cordova is ready and talking to the devcice
 function onLoad(page) {
 	
@@ -83,8 +82,10 @@ function onDeviceReady() {
 // routine to load the app when the mobile device is ready
 function pageInit() {
     
+	env.projectList = false;
+	
 	// Init the BLE client
-    baseApp = new Client('PhoneGapBLEClient');
+    baseApp = new PhoneGapBLEClient();
     
     // Init the app (this will be loaded as current_app.js in the deployment package)
    	app = new MyApp(baseApp);

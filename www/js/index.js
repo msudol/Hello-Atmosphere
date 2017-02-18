@@ -4,7 +4,7 @@ function pageInit() {
 	// remove any temporary login data
 	localStorage.setItem("tempLogin", "");
 
-	// remove any temporary login data
+	// remove any temporary project data
 	localStorage.setItem("openProject", "");
 	
 	// check for saved username and password on this device
@@ -15,7 +15,7 @@ function pageInit() {
 	
 	// request the filesystem
 	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
-	
+	document.getElementById("messageBox").className = "";
 	document.getElementById("messageBox").innerHTML = "Login to Atmosphere...";
 
 }
@@ -28,22 +28,38 @@ function openDemo() {
 //submit the user login form
 function loginSubmit(apiUrl, hidden) {
 	
-	var loginUrl = apiUrl || env.apiUrl;
+	console.log(apiUrl);
+	
+	if(apiUrl !== undefined) {
+		loginUrl = apiUrl;
+	}
+	else {
+		loginUrl = env.apiUrl;
+	}
+	
 	var user = document.getElementById("username").value;
 	var pass = document.getElementById("password").value;
 	
 	if ((user.length > 0) && (pass.length > 0)) {
 
-		if (!hidden) document.getElementById("messageBox").innerHTML = 'Logging in to Atmosphere...';
+		if (!hidden) {
+			document.getElementById("messageBox").className = "";
+			document.getElementById("messageBox").innerHTML = 'Logging in to Atmosphere...';
+		}
+		
+		// use encoded login because of passwords with # in them potentially
+		var session=btoa(btoa(user)+"|"+btoa(pass));
+		var url = loginUrl + "auth.php?data=" + session;
 
-		var url = loginUrl + "auth.php?user=" + user + "&pass=" + pass;
+		console.log(url);
+		
 		var xhr = new XMLHttpRequest();
 		
 		xhr.addEventListener('readystatechange', function() {	
 			
-			//if (env.debug) console.log('state: ' + xhr.readyState + ' | status: ' + xhr.status);
+			if (env.debugHigh) console.log('state: ' + xhr.readyState + ' | status: ' + xhr.status);
 			
-			//TODO: handle failures gracefully
+			//TODO: handle failures more gracefully
 		    if (xhr.readyState == 4 && xhr.status == 200) {			
 				
 				res = xhr.responseText;
@@ -65,14 +81,21 @@ function loginSubmit(apiUrl, hidden) {
 				}
 				else {
 					// user/pass combo failed
-					if (!hidden) document.getElementById("messageBox").innerHTML = '<font color="red">Invalid login credentials!</font>';
+					if (!hidden) {
+						document.getElementById("messageBox").className = "warning";
+						document.getElementById("messageBox").innerHTML = 'Invalid login credentials!';
+					}
 				}
 			}
 
 			// handle failures gracefully
 		    if (xhr.readyState == 4 && xhr.status != 200) {			
-					// server issue possibly
-		    	if (!hidden) document.getElementById("messageBox").innerHTML = '<font color="red">Error logging in, check your connection and try again...</font>';
+				// server issue possibly
+		    	if (!hidden) {
+					document.getElementById("messageBox").className = "warning";
+					document.getElementById("messageBox").innerHTML = 'Error logging in, check your connection and try again...';
+				}
+				if (app.debug) console.log("Error logging in to: " + env.apiUrl);
 			}
 		    
 		}, false);
@@ -80,7 +103,12 @@ function loginSubmit(apiUrl, hidden) {
 		xhr.send();	
 	}
 	else {
-		if (!hidden) document.getElementById("messageBox").innerHTML = '<font color="red">Invalid login credentials!</font>';
+		if (!hidden) {
+			document.getElementById("messageBox").className = "warning";
+			document.getElementById("messageBox").innerHTML = 'Invalid login credentials!';
+		}
+		
+		console.log("'Invalid login credentials!");
 	}
 	
 }
@@ -88,7 +116,8 @@ function loginSubmit(apiUrl, hidden) {
 function altLogin() {
 	if (env.alt > 2) {
 		env.alt = 1;
-		loginSubmit("https://ionosphere.anaren.com/auth/", true);
+		console.log("Attempting Alt Login...");
+		loginSubmit(env.devLogin, true);
 	}
 	else {
 		env.alt++;
@@ -107,19 +136,27 @@ function saveCredentials() {
 	localStorage.setItem("AtmosphereLogin", store);
 }
 
-
 // load credentials of the login form
 function loadCredentials() {
-	var checkbox = document.getElementById("rememberInput");     
+	var creds;
+	var checkbox = document.getElementById("rememberInput");     	
 	var loadStore = localStorage.getItem("AtmosphereLogin");
-	if (loadStore !== null) {
-		checkbox.checked = true;
-		var creds = JSON.parse(loadStore);
+	if ((loadStore !== undefined) && (loadStore !== null)) {
+		checkbox.checked = true;		
+		try { 
+			creds = JSON.parse(loadStore);
+		}
+		catch(e) {
+			creds.user = "";
+			creds.pass = "";
+		}
 		document.getElementById("username").value = creds.user;
 		document.getElementById("password").value = creds.pass;
 	}
 	else {
 		checkbox.checked = false;
+		// if the checkbox is false - need to remove those creds
+		removeCredentials();
 	}
 }
 

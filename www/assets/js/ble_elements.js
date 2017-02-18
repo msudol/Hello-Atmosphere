@@ -1,7 +1,83 @@
-/*** 
- * Copyright 2014 Anaren Inc.
- * All rights reserved
- ***/
+function ConnectionElement(parent) {
+	
+	this.currentValue;
+	this.currentAddress;
+	this.currentName;
+	
+	parent.connections.push(this);
+	
+	//Target
+	this.trigger = function() {
+		this.onTrigger();
+	};
+	
+	//Trigger
+	this.onTrigger = function(e) {
+		parent.sendTrigger(this.name, "onTrigger");
+	};
+	
+	//Trigger
+	this.connecting = function() {
+	};
+	
+	//Trigger
+	this.connected = function() {
+	};
+	
+	//Trigger
+	this.disconnecting = function() {
+	};
+	
+	//Trigger
+	this.disconnected = function() {
+	};
+	
+	//Helper
+	this.bleCallbackHandler = function(e) {
+		this.currentValue = e;
+		
+		if(e.address !== undefined) {
+			this.currentAddress = e.address;
+		}
+		
+		if(e.name !== undefined) {
+			this.currentName = e.name;
+		}
+		
+		if(this.currentValue.status == "subscribed") {
+			this.connected();
+		}
+
+		else if(this.currentValue.status == "closed")	{
+			this.disconnected();
+		}
+	};
+	
+	//Target
+	this.connectToDevice = function(address) {
+		parent.connectToDevice(address);
+	};
+	
+	//Target
+	this.disconnectFromDevice = function() {
+		parent.closeConnection();
+	};
+	
+	//Source
+	this.getDeviceName = function() {
+		return this.currentName;
+	};
+	
+	//Source
+	this.getDeviceAddress = function() {
+		return this.currentAddress;
+	};
+	
+	//Source
+	this.getConnected = function() {
+		return parent.isConnected;
+	};
+}
 
 function convertToBase64Data(commandType, dataType, id, data) {
 	
@@ -14,7 +90,6 @@ function convertToBase64Data(commandType, dataType, id, data) {
 	if(dataType === "json" || dataType === undefined || dataType === "string") {
 		
 		t = [];
-// 		var space = " ";
 		
 		if(dataType === "json") {
 			
@@ -31,7 +106,7 @@ function convertToBase64Data(commandType, dataType, id, data) {
 			try {
 				data = data.toString();
 			}
-		
+			
 			catch(err) {
 				data = "";
 			}
@@ -87,50 +162,24 @@ function convertToBase64Data(commandType, dataType, id, data) {
 		dataFloat = parseFloat(data);
 		
 		buffer = new ArrayBuffer(4);
-		intView = new Int32Array(buffer);
+		intView = new Uint8Array(buffer);
 		floatView = new Float32Array(buffer);
-
+		
 		floatView[0] = dataFloat;
 		
-		long = intView[0];
-		
-		t = [0x00, 0x00, 0x00, 0x00]; //Four bytes for a integer 32-bit
-		
-		for (index = 0; index < t.length; index++) {
-			byte = long & 0xff;
-			t [ index ] = byte;
-			long = (long - byte) / 256 ;
-		}
-		
-		value = new Uint8Array(t);
-		base64Value = bluetoothle.bytesToEncodedString(value);
+		base64Value = bluetoothle.bytesToEncodedString(intView);
 	}
 	
 	else if(dataType === "double") {
 		dataFloat = parseFloat(data);
 		
 		buffer = new ArrayBuffer(8);
-		intView = new Int32Array(buffer);
+		intView = new Uint8Array(buffer);
 		floatView = new Float64Array(buffer);
-
+		
 		floatView[0] = dataFloat;
-		
-		t = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]; //Four bytes for a integer 32-bit
-		
-		for (index = 0; index < t.length; index++) {
-			long = intView[1];
-			
-			if(index > 3) {
-				long = intView[0];
-			}
-			
-			byte = long & 0xff;
-			t [ index ] = byte;
-			long = (long - byte) / 256 ;
-		}
-		
-		value = new Uint8Array(t);
-		base64Value = bluetoothle.bytesToEncodedString(value);
+
+		base64Value = bluetoothle.bytesToEncodedString(intView);
 	}
 	
 	else if(dataType === "bool") {
@@ -173,8 +222,6 @@ function convertToBase64Data(commandType, dataType, id, data) {
 		base64Value = bluetoothle.bytesToEncodedString(value);
 	}
 	
-	//if (env.debug) console.log("Converting: " + data + " as value: " + value + " to base64: " + base64Value);
-
 	return base64Value;
 }
 
@@ -189,7 +236,7 @@ function convertFromBase64Data(dataType, data) {
 		if(isValidJSON(data)) {
 			currentValue = JSON.parse(data);
 		}
-
+		
 		else {
 			currentValue = data;
 		}
@@ -204,7 +251,7 @@ function convertFromBase64Data(dataType, data) {
 		if(isValidJSON(data)) {
 			currentValue = JSON.parse(data);
 		}
-
+		
 		else {
 			currentValue = data;
 		}
@@ -216,7 +263,7 @@ function convertFromBase64Data(dataType, data) {
 		for (i = 0; i < 4; ++i) {
 			buf[i] = data.charCodeAt(i);
 		}
-
+		
 		currentValue = new Int32Array(buf.buffer)[0];
 	}
 	
@@ -226,7 +273,7 @@ function convertFromBase64Data(dataType, data) {
 		for (i = 0; i < 4; ++i) {
 			buf[i] = data.charCodeAt(i);
 		}
-
+		
 		currentValue = new Float32Array(buf.buffer)[0];
 	}
 	
@@ -236,7 +283,7 @@ function convertFromBase64Data(dataType, data) {
 		for (var j = 0; j < 8; ++j) {
 			buf[j] = data.charCodeAt(j);
 		}
-
+		
 		currentValue = new Float64Array(buf.buffer)[0];
 	}
 	
@@ -245,13 +292,13 @@ function convertFromBase64Data(dataType, data) {
 	}
 	
 	else if(dataType === "bool") {
-		currentValue = true == data.charCodeAt(0);
+		currentValue = 0 !== data.charCodeAt(0);
 	}
 	
 	else if(dataType === "char") {
 		currentValue = data.charCodeAt(0);
 	}
-
+	
 	else if(dataType === "string") {
 		currentValue = data;
 	}
@@ -261,17 +308,20 @@ function convertFromBase64Data(dataType, data) {
 
 function FunctionElement(parent, name, id, uuid, returnType, inputType) {
 	var currentValue;
-
+	
 	this.name = name;
 	this.parent = parent;
-	parent.elements[name] = this;
+	this.parent.elements[name] = this;
 	this.id = id;
 	this.uuid = uuid;
-	this.waiting = false;
-	this.waitingCommand = null;
 	this.returnType = returnType;
 	this.inputType = inputType;
-	parent.functionMapping[id] = this;
+	this.currentWrite = null;
+	this.writeRetryCount = 0;
+	this.writeRetryTimeout = null;
+	this.readRetryCount = 0;
+	this.readRetryTimout = null;
+	this.parent.functionMapping[id] = this;
 	
 	//For some reason when the valueReturnedCallback function is execute this is a global reference instead of the instance of this element...
 	var me = this;
@@ -283,9 +333,9 @@ function FunctionElement(parent, name, id, uuid, returnType, inputType) {
 	
 	//Trigger
 	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
+		this.parent.sendTrigger(this.name, "onTrigger");
 	};
-		
+	
 	//Trigger
 	this.valueReturned = null;
 	
@@ -295,139 +345,269 @@ function FunctionElement(parent, name, id, uuid, returnType, inputType) {
 	
 	//Target Method
 	this.execute = function(args) {
-		me.sendEvent(1, args);
-	};
-	
-	this.bleReadyCallback = function(commandType, data) {
-		
-		if(commandType === 0) {
-			parent.executeNextBLECommand();
-			return;
-		}
-		
-		me.waiting = true;
-
-		var base64Value = convertToBase64Data(commandType, me.inputType, me.id, data);
-		
-		parent.startBLECommand(me, base64Value);
+		this.sendEvent(1, args);
 	};
 	
 	//Helper Method
 	this.sendEvent = function(commandType, data) {
-		console.log("sendEvent:"+ me.id);
+		var currentFunctionElement = this;
 		
-		if(data === undefined && me.inputType !== "json") {
-			data = "";
-		}
-		
-		if(parent.isConnected === false) {
-			if (env.debug) console.log("We are not fully connected yet...");
-			me.waiting = false;
+		if(this.parent.isConnected === false) {
 			return;
 		}
 		
-		parent.addBLECommand(this, commandType, data);
+		var base64Value = convertToBase64Data(commandType, this.inputType, this.id, data);
+		
+		this.currentWrite = {"address":this.parent.currentlyConnectedAddress, "value":base64Value, "service":this.parent.serviceUUID, "characteristic":me.uuid};
+		this.writeRetryCount = 0;
+		
+		if(this.writeRetryTimeout !== null) {
+			clearTimeout(this.writeRetryTimeout);
+			this.writeRetryTimeout = null;
+		}
+		
+		bluetoothle.write(
+			function(retObject){
+				currentFunctionElement.valueWriteSuccessCallback(retObject);
+				
+			}, 
+			
+			function(retObject){
+				currentFunctionElement.valueWriteFailedCallback(retObject);
+			},
+			
+			this.currentWrite);
 	};
 	
 	this.valueReturnedCallback = function(retObject) {
+		this.parent.success(retObject);
 		
-		if(retObject.characteristic != me.uuid)	{
-			if (env.debug) console.log("I got the wrong UUID value! " + me.uuid + " I got " + retObject.characteristic);
-		}
-		
-		parent.handleBLECallback(retObject);
+		this.readRetryCount = 0;
 		
 		var data = atob(retObject.value);
 		
-		if (env.debug) console.log("valueReturnedCallback: "+ me.id + " with data: " + data);
 		
-		currentValue = convertFromBase64Data(me.returnType, data);
+		currentValue = convertFromBase64Data(this.returnType, data);
 		
-		if(me.valueReturned !== null) {
-			me.valueReturned();
+		if(this.valueReturned !== null) {
+			this.valueReturned();
 		}
 		
-		me.finish();
+		if(this.parent.embeddedChains[this.name] !== undefined) {
+			var currentChain = this.parent.embeddedChains[this.name];
+			
+			for(var i = 0; i < currentChain.length; i++) {
+				this.parent.elements[currentChain[i]].readValue();
+			}
+		}
 		
 		return;
 	};
 	
-	this.finish = function() {
-		if(parent.currentReadChain !== null) {
-			var nextRead = parent.currentReadChain.pop();
-			
-			if(nextRead !== undefined) {
-				var nextElement = parent.elements[nextRead];
-				
-				if(nextElement !== undefined) {
-					nextElement.readValue();
-					return;
-				}
-			}
-		}
-		
-		parent.currentReadChain = null;
-		parent.endCurrentBLECommand();
-		
-		me.waiting = false;
-		
-		if(me.waitingCommand !== null) {
-			me.sendEvent(0, "");
-		}
-	};
-	
 	this.notifyReturnedCallback = function(data) {
-		
-		if (env.debug) console.log("notifyReturnedCallback");
-		
 		currentValue = convertFromBase64Data("json", data);
-
-		me.notified();
-	};
-
-	this.valueWriteFailedCallback = function(retObject) {
-		if (env.debug) console.log("valueWriteFailedCallback ID: " + me.id + " data: " + JSON.stringify(retObject));
-		parent.handleBLECallback(retObject);
-		me.waiting = false;
+		
+		this.notified();
 	};
 	
-	this.readValue = function() {
-		if(parent.currentReadChain === null) {
-// 			if (env.debug) console.log("No chain setting up!");
-			
-			if(parent.embeddedChains[me.name] !== undefined) {
-				parent.currentReadChain = parent.embeddedChains[me.name].slice(0);
-// 				if (env.debug) console.log("Chain for " + me.name + " is " + parent.currentReadChain);
-			}
-			
-			else {
-				parent.currentReadChain = null;
-			}
-		}
+	this.valueWriteFailedCallback = function(retObject) {
+		var currentFunctionElement = this;
 		
-		if(me.valueReturned !== null) {
-			bluetoothle.read(me.valueReturnedCallback, me.valueReadFailedCallback, {"address":parent.currentlyConnectedAddress, "service":parent.serviceUUID, "characteristic":me.uuid});
+		if(this.currentWrite !== null && this.writeRetryCount < 100) {
+			this.writeRetryCount++;
+			
+			this.writeRetryTimeout = setTimeout(function() {
+				clearTimeout(currentFunctionElement.writeRetryTimeout);
+				currentFunctionElement.writeRetryTimeout = null;
+				
+				bluetoothle.write(
+					function(retObject){
+						currentFunctionElement.valueWriteSuccessCallback(retObject);
+					}, 
+					function(retObject){
+						currentFunctionElement.valueWriteFailedCallback(retObject);
+					}, 
+				currentFunctionElement.currentWrite);
+				
+			}, 10);
+			
 		}
 		
 		else {
-			me.finish();
+			this.parent.error(retObject);
+		}
+	};
+	
+	this.readValue = function() {
+		var currentFunctionElement = this;
+		
+		if(this.valueReturned !== null || this.parent.embeddedChains[this.name] !== undefined) {
+			bluetoothle.read(
+				function(retObject){
+					currentFunctionElement.valueReturnedCallback(retObject);
+				}, 
+				
+				function(retObject){
+					currentFunctionElement.valueReadFailedCallback(retObject);
+				}, 
+				
+				{"address":this.parent.currentlyConnectedAddress, "service":this.parent.serviceUUID, "characteristic":this.uuid}
+			);
 		}
 	};
 	
 	this.valueWriteSuccessCallback = function(retObject) {
-		if (env.debug) console.log("valueWriteSuccessCallback ID: " + me.id + " data: " + JSON.stringify(retObject));	
-		parent.handleBLECallback(retObject);
-		me.readValue();
+		this.currentWrite = null;
+		this.writeRetryCount = 0;
+		this.readValue();
+		this.parent.success(retObject);
 	};
 	
 	this.valueReadFailedCallback = function(retObject) {
-		if (env.debug) console.log("valueReadFailedCallback ID: " + me.id + " data: " + JSON.stringify(retObject));
-		parent.handleBLECallback(retObject);
+		var currentFunctionElement = this;
+		
+		if(this.readRetryCount < 100) {
+			this.readRetryCount++;
+			
+			this.readRetryTimeout = setTimeout(function() {
+				clearTimeout(currentFunctionElement.readRetryTimeout);
+				currentFunctionElement.readRetryTimeout = null;
+				
+				currentFunctionElement.readValue();		
+			}, 10);
+			
+		}
+		
+		else {
+			this.parent.error(retObject);
+		}
 	};
 	
 	//Source Method
 	this.getValue = function() {
 		return currentValue;
+	};
+}
+
+function GATTBatteryElement(parent) {
+	var currentValue = null;
+	var currentStatus = null;
+	
+	// Me is never read?
+	var me = this;
+	
+	parent.connections.push(this);
+	
+	//Helper
+	//Once we are connected we can subscripe to the battery service notifier
+	this.bleCallbackHandler = function(e) {
+		// 		if(currentValue.status == "subscribed") {
+		// 			this.connected();
+		// 		}
+		
+		// else?
+	};
+	
+	//Helper Method
+	this.valueReadFailedCallback = function(retObject) {
+		if (env.debug) console.log("valueReadFailedCallback:"+ me.id);
+		parent.success(retObject);
+	};
+	
+	//Helper
+	this.valueReturnedCallback = function(retObject) {
+		if (env.debug) console.log("valueReturnedCallback:"+ me.id);
+		
+		if(retObject.characteristic != me.uuid)	{
+			if (env.debug) console.log("I got the wrong UUID value! " + me.uuid + " I got " + retObject.characteristic);
+		}
+		
+		parent.success(retObject);
+		
+		var data = atob(retObject.value);
+		
+		currentValue = data.charCodeAt(0);
+		
+		if(me.batteryLevelRead !== null) {
+			me.batteryLevelRead();
+		}
+	};
+	
+	//Target
+	this.trigger = function() {
+		this.onTrigger();
+	};
+	
+	//Trigger
+	this.onTrigger = function(e) {
+		parent.sendTrigger(this.name, "onTrigger");
+	};
+	
+	//Trigger
+	this.batteryLevelRead = function () {
+	};
+	
+	//Trigger
+	this.batteryLevelNotified = function () {
+	};
+	
+	//Source
+	this.getBatteryLevel = function () {
+		return currentValue;
+	};
+	
+	//Target
+	this.readBatteryLevel = function () {
+		if (env.debug) console.log(JSON.stringify({"address":parent.currentlyConnectedAddress, "service":"180f", "characteristic":"2a19"}));
+		bluetoothle.read(me.valueReturnedCallback, me.valueReadFailedCallback, {"address":parent.currentlyConnectedAddress, "service":"180f", "characteristic":"2a19"});
+	};
+}
+
+function GATTImmediateAlertElement(parent) {
+	var currentValue = null;
+	var currentStatus = null;
+	
+	// Me is never read?
+	var me = this;
+	
+	//Helper Method
+	this.valueReadFailedCallback = function(retObject) {
+		if (env.debug) console.log("valueReadFailedCallback:"+ me.id);
+		parent.success(retObject);
+	};
+	
+	//Helper
+	this.valueWriteCallback = function(retObject) {
+		if (env.debug) console.log("valueWriteSuccessCallback");
+		parent.success(retObject);
+	};
+	
+	//Trigger
+	this.onTrigger = function(e) {
+		parent.sendTrigger(this.name, "onTrigger");
+	};
+	
+	//Target
+	this.trigger = function() {
+		this.onTrigger();
+	};
+	
+	//Target
+	this.writeAlertLevel = function (level) {	
+		var t = [0x00];
+		
+		for ( var index = 0; index < t.length; index ++ ) {
+			var byte = level & 0xff;
+			t [ index ] = byte;
+			level = (level - byte) / 256 ;
+		}
+		
+		var value = new Uint8Array(t);
+		base64Value = bluetoothle.bytesToEncodedString(value);
+		
+		if (env.debug) console.log(JSON.stringify({"address":parent.currentlyConnectedAddress, "value":base64Value, "service":"1802", "characteristic":"2a06","type":"noResponse"}));
+		
+		bluetoothle.write(me.valueWriteCallback, me.valueWriteCallback, {"address":parent.currentlyConnectedAddress, "value":base64Value, "service":"1802", "characteristic":"2a06","type":"noResponse"});
 	};
 }
 
@@ -521,225 +701,3 @@ function ScannerElement(parent) {
 		return [currentValue.name, currentValue.address, currentValue.rssi];
 	};
 }
-
-function ConnectionElement(parent) {
-	
-	// Current value is never read?
-	var currentValue;
-	var currentAddress;
-	var currentName;
-	
-	// Me is never read?
-	var me = this;
-	
-	parent.connections.push(this);
-	
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-	
-	//Trigger
-	this.connecting = function() {
-	};
-	
-	//Trigger
-	this.connected = function() {
-	};
-	
-	//Trigger
-	this.disconnecting = function() {
-	};
-	
-	//Trigger
-	this.disconnected = function() {
-	};
-	
-	//Helper
-	this.bleCallbackHandler = function(e) {
-		currentValue = e;
-		
-		if(e.address !== undefined) {
-			currentAddress = e.address;
-		}
-		
-		if(e.name !== undefined) {
-			currentName = e.name;
-		}
-		
-		//redundant log same as line 168 in bleclient, handleBLEcallback:  if (env.debug) console.log(JSON.stringify(currentValue));
-		
-		if(currentValue.status == "subscribed") {
-			this.connected();
-		}
-		
-		else if(currentValue.status == "connecting") {
-			this.connecting();
-		}
-		
-		else if(currentValue.status == "disconnecting") {
-			this.disconnecting();
-		}
-		
-		else if(currentValue.status == "disconnected")	{
-			this.disconnected();
-		}
-		
-		// else?
-	};
-	
-	//Target
-	this.connectToDevice = function(address) {
-		parent.connectToDevice(address);
-	};
-	
-	//Target
-	this.disconnectFromDevice = function() {
-		parent.disconnectFromDevice();
-	};
-	
-	//Source
-	this.getDeviceName = function() {
-		return currentName;
-	};
-	
-	//Source
-	this.getDeviceAddress = function() {
-		return currentAddress;
-	};
-	
-	//Source
-	this.getConnected = function() {
-		return parent.isConnected;
-	};
-	
-	//We may wish to expand this into a complete bluetooth control system.
-}
-
-function GATTBatteryElement(parent) {
-	var currentValue = null;
-	var currentStatus = null;
-	
-	// Me is never read?
-	var me = this;
-	
-	parent.connections.push(this);
-	
-	//Helper
-	//Once we are connected we can subscripe to the battery service notifier
-	this.bleCallbackHandler = function(e) {
-// 		if(currentValue.status == "subscribed") {
-// 			this.connected();
-// 		}
-		
-		// else?
-	};
-	
-	//Helper Method
-	this.valueReadFailedCallback = function(retObject) {
-		if (env.debug) console.log("valueReadFailedCallback:"+ me.id);
-		parent.handleBLECallback(retObject);
-	};
-	
-	//Helper
-	this.valueReturnedCallback = function(retObject) {
-		if (env.debug) console.log("valueReturnedCallback:"+ me.id);
-		
-		if(retObject.characteristic != me.uuid)	{
-			if (env.debug) console.log("I got the wrong UUID value! " + me.uuid + " I got " + retObject.characteristic);
-		}
-		
-		parent.handleBLECallback(retObject);
-		
-		var data = atob(retObject.value);
-		
-		currentValue = data.charCodeAt(0);
-
-		if(me.batteryLevelRead !== null) {
-			me.batteryLevelRead();
-		}
-	};
-	
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-	
-	//Trigger
-	this.batteryLevelRead = function () {
-	};
-	
-	//Trigger
-	this.batteryLevelNotified = function () {
-	};
-	
-	//Source
-	this.getBatteryLevel = function () {
-		return currentValue;
-	};
-	
-	//Target
-	this.readBatteryLevel = function () {
-		if (env.debug) console.log(JSON.stringify({"address":parent.currentlyConnectedAddress, "service":"180f", "characteristic":"2a19"}));
-		bluetoothle.read(me.valueReturnedCallback, me.valueReadFailedCallback, {"address":parent.currentlyConnectedAddress, "service":"180f", "characteristic":"2a19"});
-	};
-}
-	
-function GATTImmediateAlertElement(parent) {
-	var currentValue = null;
-	var currentStatus = null;
-	
-	// Me is never read?
-	var me = this;
-	
-	//Helper Method
-	this.valueReadFailedCallback = function(retObject) {
-		if (env.debug) console.log("valueReadFailedCallback:"+ me.id);
-		parent.handleBLECallback(retObject);
-	};
-	
-	//Helper
-	this.valueWriteCallback = function(retObject) {
-		if (env.debug) console.log("valueWriteSuccessCallback");
-		parent.handleBLECallback(retObject);
-	};
-	
-	//Trigger
-	this.onTrigger = function(e) {
-		parent.sendTrigger(this.name, "onTrigger");
-	};
-		
-	//Target
-	this.trigger = function() {
-		this.onTrigger();
-	};
-	
-	//Target
-	this.writeAlertLevel = function (level) {	
-		var t = [0x00];
-		
-		for ( var index = 0; index < t.length; index ++ ) {
-			var byte = level & 0xff;
-			t [ index ] = byte;
-			level = (level - byte) / 256 ;
-		}
-		
-		var value = new Uint8Array(t);
-		base64Value = bluetoothle.bytesToEncodedString(value);
-		
-		if (env.debug) console.log(JSON.stringify({"address":parent.currentlyConnectedAddress, "value":base64Value, "service":"1802", "characteristic":"2a06","type":"noResponse"}));
-		
-		bluetoothle.write(me.valueWriteCallback, me.valueWriteCallback, {"address":parent.currentlyConnectedAddress, "value":base64Value, "service":"1802", "characteristic":"2a06","type":"noResponse"});
-	};
-}
-

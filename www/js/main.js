@@ -22,8 +22,9 @@ function pageInit() {
 	// remove any temporary project list
 	localStorage.setItem("projectList", "");
 	
+	env.projectList = true;
+	
 	if (env.debug) console.log("Local filesystem initialized");
-	//the gotFS callback will fire getCurrentApp
 }
 
 // get current app will go to the web if we're online and grab the latest version of the app, save it to filesystem and eval the code base
@@ -120,7 +121,7 @@ function gotFS(fs) {
 	var openProject = localStorage.getItem("openProject");
 	
 	// a uuid saved in localstorage by the project list means the user has selected a project from project list
-	if ((openProject !== undefined) && (openProject !== null)  && (openProject !== "")) {
+	if ((openProject !== undefined) && (openProject !== null) && (openProject !== "")) {
 		getCurrentApp(openProject);
 	}
 	else {	
@@ -167,7 +168,7 @@ function evalProjectFile(data) {
 	if (env.debug) console.log("Loading project file");
 	//if (env.debug) console.log(data);
     // Init the BLE client
-    baseApp = new Client('PhoneGapBLEClient');	
+    baseApp = new PhoneGapBLEClient();	
     
     // tell the environment variable that baseApp is loaded
     env.baseApp = true;

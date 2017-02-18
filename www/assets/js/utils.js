@@ -6,15 +6,26 @@
 var iOSPlatform = "iOS";
 var androidPlatform = "Android";
 
-function clone(obj) {
+function clone(obj, testingList) {
+	testingList = testingList || [];
+	
 	if(obj === null || typeof(obj) != 'object')	{
 		return obj;
+	}
+	
+	for(var i = 0; i < testingList; i++) {
+		if(obj === testingList[i]) {
+			return obj;
+		}
 	}
 	
 	var temp = obj.constructor(); // changed
 
 	for(var key in obj)	{
-		temp[key] = clone(obj[key]);
+		if(obj.hasOwnProperty(key)) {
+			testingList.push(obj);
+			temp[key] = clone(obj[key], testingList);
+		}
 	}
 	
 	return temp;
@@ -143,4 +154,23 @@ function POSTForm(url, data, callback, headers) {
 
 	// send it
 	xmlhttp.send(formData);  
+}
+
+//return some date values based on now
+function getTimeStamp() {
+	
+	var ts = Date.now();
+	var d = new Date();
+	var date = new Date(ts + d.getTimezoneOffset());
+	
+	var datevalues = [
+          date.getFullYear(),
+          date.getMonth()+1,
+          date.getDate(),
+          date.getHours(),
+          date.getMinutes(),
+          date.getSeconds(),
+      ];
+	
+	return datevalues;
 }

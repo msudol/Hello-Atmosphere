@@ -13,8 +13,8 @@ function pageInit() {
 	// the demo should not have a project list
 	env.projectList = false;
 	
-	baseApp = new Client('PhoneGapBLEClient');	
-
+	baseApp = new PhoneGapBLEClient();	
+	
 	// load the demo app importer
 	app = new MyApp(baseApp);
 	
