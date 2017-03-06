@@ -1,12 +1,13 @@
 /*** 
- * Copyright 2014 Anaren Inc.
+ * Copyright 2016 Anaren Inc.
  * All rights reserved
  * 
- * PhoneGapBLECLient.js - included from assets into the mobile app to handle Cordova-Plugin-Bluetoothle API calls
+ * PhoneGapBLEClient.js - included from assets into the mobile app to handle Cordova-Plugin-Bluetoothle API calls
  * 
  ***/
 
 function PhoneGapBLEClient(root) {
+	
 	StandaloneClient.call(this, root);
 	
 	var currentPhoneGapBLEClient = this;
@@ -24,14 +25,17 @@ function PhoneGapBLEClient(root) {
 	this.foundServices = [];
 	this.embeddedChains = {};
 	this.currentReadChain = null;
-	this.stratosphereEnabled = false;
-	this.stratosphereAvailable = false;
-	this.currentStratosphereUuid = null;
-	this.currentStratosphereToken = null;
+	this.cloudEnabled = false;
+	this.cloudAvailable = false;
+	this.currentCloudUuid = null;
+	this.currentCloudToken = null;
 	this.isScanning = false;
 	this.autoConnectEnabled = false;
 	this.autoConnectAddress = null;
-
+	this.timeOut = null;
+	this.lastSelectedDevice = null;
+	this.lastSelectedProject = null;
+	
 	/*** Buttons ***/
 	
 	/* the toggle button */
@@ -48,14 +52,15 @@ function PhoneGapBLEClient(root) {
 	
 	// reload app
 	this.appBar.content.refreshButton.onclick = function() { 
-		currentPhoneGapBLEClient.closeConnection();
-		location.reload();	
+		currentPhoneGapBLEClient.closeConnection(undefined, true, function(){
+			location.reload();			
+		});
 	};
 	// logout
-	this.appBar.content.signoutButton.onclick = function() { 
-		
-		currentPhoneGapBLEClient.closeConnection();
-		window.location = "index.html"; 
+	this.appBar.content.signoutButton.onclick = function() { 	
+		currentPhoneGapBLEClient.closeConnection(undefined, true, function(){
+			window.location = "index.html"; 
+		});
 	};
 	
 	/* the bottom bar buttons - check per page event listeners as well */
@@ -116,14 +121,22 @@ function PhoneGapBLEClient(root) {
 	
 	// open project button
 	this.appMenu.content.projectOpenButton.onclick = function(e) {
+		
 		if (env.debug) console.log("Open project: " + e.target.getAttribute("pid"));
 		
 		// make sure this is set to something before trying to load a project
 		if ((e.target.getAttribute("pid") !== undefined) && (e.target.getAttribute("pid") !== null) && (e.target.getAttribute("pid") !== "")) {
 			localStorage.setItem("openProject", e.target.getAttribute("pid"));
 			
-			currentPhoneGapBLEClient.closeConnection();
-			if (!env.testing) location.reload();		
+			if (currentPhoneGapBLEClient.isConnected) {
+				currentPhoneGapBLEClient.closeConnection(undefined, true, function() {
+					location.reload();
+				});
+			}
+			else {
+				location.reload();
+			}
+			
 		}
 		else {
 			if (navigator.notification) {
@@ -141,122 +154,38 @@ function PhoneGapBLEClient(root) {
 		if (env.debug) console.log("Open project: last build");
 		localStorage.setItem("openProject", "");
 		
-		currentPhoneGapBLEClient.closeConnection();
-		if (!env.testing) location.reload();
+		if (currentPhoneGapBLEClient.isConnected) {
+			currentPhoneGapBLEClient.closeConnection(undefined, true, function() {
+				location.reload();
+			});
+		}
+		else {
+			location.reload();
+		}
+		
 	};
 	
-	
+	// if window touch is available
 	if (window.ontouchstart !== undefined) {
-		// Handle touch events
 		document.body.addEventListener("touchend", function(e) {
-			// check this first always, so we can always have the most update button info for project/device lists
-			if (e.target.nodeName == "BUTTON") {
-				
-			}
-			else {
-				// Clear set buttons because click happened
-				// currentPhoneGapBLEClient.appMenu.content.deviceConnectButton.setAttribute('pid', '');
-				currentPhoneGapBLEClient.appMenu.content.projectOpenButton.setAttribute('pid', '');			
-			}
-			
-			// if the element is a DIV
-			if (e.target.nodeName == "DIV") {
-				
-				// listen for project list clicks in the app modal
-				if(e.target && e.target.classList.contains("plist")) {
-					if (env.debugHigh) {
-						console.log("List item " + e.target.id + " was clicked!");
-					}
-					
-					currentPhoneGapBLEClient.setSelectedProject(e.target.id);
-				}
-				
-				// listen for device list clicks in the app modal
-				if(e.target && e.target.classList.contains("dlist")) {
-					if (env.debugHigh) {
-						console.log("List item " + e.target.id + " was clicked!");
-					}
-					
-					currentPhoneGapBLEClient.setSelectedDevice(e.target.id);
-				}	
-				
-			}
-			
-			// if the element is a SPAN
-			if (e.target.nodeName == "SPAN") {
-				
-				// check the span's parent div to see if this a device list span
-				if(e.target.parentNode && e.target.parentNode.classList.contains("dlist")) {
-					if (env.debugHigh) {
-						console.log("List item " + e.target.parentNode.id + " was clicked!");
-					}
-
-					currentPhoneGapBLEClient.setSelectedDevice(e.target.parentNode.id);
-				}	
-				
-			}			
+			currentPhoneGapBLEClient.handleTaps(e);
 		});
 	} 
-	else {
-		// Handle click events
+	else { 
+		// add click event listener   
 		document.body.addEventListener("click", function(e) {
-			
-			// check this first always, so we can always have the most update button info for project/device lists
-			if (e.target.nodeName == "BUTTON") {
-				
-			}
-			else {
-				// Clear set buttons because click happened
-				// currentPhoneGapBLEClient.appMenu.content.deviceConnectButton.setAttribute('pid', '');
-				currentPhoneGapBLEClient.appMenu.content.projectOpenButton.setAttribute('pid', '');			
-			}
-			
-			// if the element is a DIV
-			if (e.target.nodeName == "DIV") {
-				
-				// listen for project list clicks in the app modal
-				if(e.target && e.target.classList.contains("plist")) {
-					if (env.debugHigh) {
-						console.log("List item " + e.target.id + " was clicked!");
-					}
-					
-					currentPhoneGapBLEClient.appMenu.content.projectOpenButton.setAttribute('pid', e.target.id);
-					currentPhoneGapBLEClient.setSelectedProject(e.target.id);
-				}
-				
-				// listen for device list clicks in the app modal
-				if(e.target && e.target.classList.contains("dlist")) {
-					if (env.debugHigh) {
-						console.log("List item " + e.target.id + " was clicked!");
-					}
-					
-					currentPhoneGapBLEClient.setSelectedDevice(e.target.id);
-				}		
-				
-			}
-			
-			// if the element is a SPAN
-			if (e.target.nodeName == "SPAN") {
-				// check the span's parent div to see if this a device list span
-				if(e.target.parentNode && e.target.parentNode.classList.contains("dlist")) {
-					if (env.debugHigh) {
-						console.log("List item " + e.target.parentNode.id + " was clicked!");
-					}
-					
-					currentPhoneGapBLEClient.setSelectedDevice(e.target.parentNode.id);
-				}	
-				
-			}
-		});			
+			currentPhoneGapBLEClient.handleTaps(e);	
+		});		
 	}
+
 }
 
+// setup prototype
 PhoneGapBLEClient.prototype = Object.create(StandaloneClient.prototype);
 PhoneGapBLEClient.prototype.constructor = PhoneGapBLEClient;
 
 PhoneGapBLEClient.prototype.toggleMenu = function(state) { 
 	StandaloneClient.prototype.toggleMenu.call(this, state);
-	
 	if(this.currentPage === undefined) {
 		this.showDeviceList();
 	}
@@ -264,17 +193,11 @@ PhoneGapBLEClient.prototype.toggleMenu = function(state) {
 
 // load project list function
 PhoneGapBLEClient.prototype.showProjectList = function() {
-	
 	this.clearMenuClass();
 	this.appBar.content.projectButton.className = "selected";
-	
 	this.currentPage = "project";
 	this.appModalHeader.innerHTML = 'Project List';
-	
-	// loading spinner
 	this.appModal.content.innerHTML = '<div class="loader"></div>';
-	
-	//TODO: lots of checks to make sure we get latest version but not making too many XHRs
 	if (env.debug) console.log("Project List " + env.projectList);
 	if (env.projectList) {
 		this.getProjectList();
@@ -283,22 +206,17 @@ PhoneGapBLEClient.prototype.showProjectList = function() {
 		if (env.debug) console.log("Project list does not appear to be enabled");
 		this.appModal.content.innerHTML = "Project list not available offline or in demo mode.";
 	}
-	
 	this.appMenu.content.devicePageButtons.style.display = "none";
 	this.appMenu.content.projectPageButtons.style.display = "inline";
 	this.appMenu.content.debugPageButtons.style.display = "none";		
 };
 
 PhoneGapBLEClient.prototype.showDeviceList = function() {	
-	
 	this.clearMenuClass();
 	this.appBar.content.scanButton.className = "selected";
-	
 	this.currentPage = "device";
 	this.appModalHeader.innerHTML = 'Device List';
-	// loading spinner
 	this.appModal.content.innerHTML = '<div class="loader"></div>';
-	
 	this.loadDeviceList();
 	this.appMenu.content.devicePageButtons.style.display = "inline";
 	this.appMenu.content.projectPageButtons.style.display = "none";
@@ -308,20 +226,26 @@ PhoneGapBLEClient.prototype.showDeviceList = function() {
 PhoneGapBLEClient.prototype.initialize = function() {
 	var currentPhoneGapBLEClient = this;
 	
+	if (env.debug) console.log ("Waiting for device ready...");
+	
 	document.addEventListener('deviceready', function() {
+	   
 		bluetoothle.initialize(
 			function(retObject) {
-				currentPhoneGapBLEClient.success(retObject)					
+				currentPhoneGapBLEClient.success(retObject);					
 			}, 
 			
 			function(retObject) {
-				currentPhoneGapBLEClient.error(retObject)
-				
+				currentPhoneGapBLEClient.error(retObject);
 			}, {"request":true});
-		// for whatever reason location.reload doesn't re-init - the buttons try to stop scan but we'll try again
+		
+		// stop any existing scans
 		bluetoothle.stopScan();
+		
 		currentPhoneGapBLEClient.onReady();
+		
 	}, false);
+	
 };
 
 PhoneGapBLEClient.prototype.getScreenInfo = function() {
@@ -332,19 +256,18 @@ PhoneGapBLEClient.prototype.getScreenInfo = function() {
 
 PhoneGapBLEClient.prototype.readyUI = function() {
 	
-	// Something went wrong with loading the application
-	try {
-		if(this.app === undefined) {
-		}
-	} catch(err) {
-		console.log(err);
-		this.app = {};
-		this.airError = true;
-		this.app.initialize = function() {
-			return;
-		};
+	// readyUI should never fire if this.app isn't already set so this is a useless check IMHO -matt
+	/*
+	if((this.app === undefined) {
+		// an uncaught issue made it this far
+		
 	}
-	
+	else if (this.app.initialize === undefined) {
+		//
+		
+	} 
+	*/
+
 	//Check to see if we were given a container, if not run in the main root canvas fullscreen.
 	if(this.root === null || this.root === undefined) {
 		this.canvas = new zebra.ui.zCanvas("main");
@@ -363,23 +286,9 @@ PhoneGapBLEClient.prototype.readyUI = function() {
 	this.mainPanel.add(this.appPanel);	
 	
 	this.debugLog("Your Screen is (width, height, pixel ratio) = (" + this.screenWidth + "," + this.screenHeight + "," + this.screenPixelRatio + ")");
-	
-	if(this.airError === true) {
-		this.debugLog("There was a critical error when attempting to try and run your project please send an export of the current Atmosphere project to a developer for debugging at support@atmosphere.anaren.com");
-	}
-	
-	//If this.app is not defined it most likely means this is executing as a dummy client for the CloudView
-	if(this.app !== undefined && this.app.initialize !== undefined) {
-		try {
-			this.app.initialize();
-		} catch (err) {
-			console.log(err);
-			this.debugLog(err.stack);
-			this.debugLog(err.toString());
-		}
-	}		
+	this.app.initialize();
 	this.appPanel.requestFocus();
-	
+
 };
 
 PhoneGapBLEClient.prototype.onReady = function() {
@@ -396,19 +305,20 @@ PhoneGapBLEClient.prototype.onReady = function() {
 	if(this.root === null || this.root === undefined) {
 		zebra.ready(function(){
 			currentPhoneGapBLEClient.readyUI();
+			// client ready doesn't really do anything
 			currentPhoneGapBLEClient.clientReady();
 		});
 	}
 	else {
 		this.readyUI();
+		// client ready doesn't really do anything
 		this.clientReady();
 	}
 };
 
-
 PhoneGapBLEClient.prototype.getProjectList = function() {
 	var currentPhoneGapBLEClient = this;
-	var cred, user, pass;
+	var creds, user, pass;
 	
 	var loadStore = localStorage.getItem("tempLogin");
 	
@@ -487,8 +397,7 @@ PhoneGapBLEClient.prototype.loadProjectList = function(currentList) {
 	var plistHtml = '';
 	
 	for (var i = 0; i < currentList.length; i++) {	
-		// TODO: in the future make a global that we can do a quick string compare on for supported platforms
-		if ((currentList[i].type == "bcm20737") || (currentList[i].type == "bcm920737") || (currentList[i].type == "intel_d2000_bcm20737")) {
+		if (currentList[i].type !== "bcm43364") {
 			count++;
 			var fulluuid = currentList[i].project_uuid;	
 			var name = currentList[i].name;
@@ -548,8 +457,10 @@ PhoneGapBLEClient.prototype.loadDeviceList = function() {
 			plistHtml += '</div>';
 		}
 		
-		this.appModal.content.innerHTML = plistHtml;
-		this.appMenu.content.deviceConnectButton.setAttribute('pid', '');
+		if(this.currentPage === 'device') {
+			this.appModal.content.innerHTML = plistHtml;
+			this.appMenu.content.deviceConnectButton.setAttribute('pid', '');
+		}
 	}
 	
 };
@@ -587,117 +498,157 @@ PhoneGapBLEClient.prototype.updateDeviceList = function(device) {
 			plistHtml += '<span id="'+address+'_rssi" class="deviceRSSI">RSSI: '+rssi+'</span>';	
 			plistHtml += '</div>';
 		}
-		this.appModal.content.innerHTML = plistHtml;
+		
+		if(this.currentPage === "device") {
+			this.appModal.content.innerHTML = plistHtml;
+		}
 	}
 	else {
 		if (this.deviceListMapping[device.address].rssi != device.rssi) {
 			// live scan rssi update
-			var curdev = document.getElementById(device.address+"_rssi");
-			if (curdev !== undefined && curdev !== null) {
-				curdev.innerHTML = 'RSSI: '+device.rssi;
+			if(this.currentPage === "device") {
+				var curdev = document.getElementById(device.address+"_rssi");
+				if (curdev !== undefined && curdev !== null) {
+					curdev.innerHTML = 'RSSI: '+device.rssi;
+				}
 			}
 		}
 	}
 };
 
-PhoneGapBLEClient.prototype.getStratosphereCredentials = function(callback) {
+PhoneGapBLEClient.prototype.getCloudCredentials = function(callback) {
 	var currentPhoneGapBLEClient = this;
-	if (env.debug) console.log("Getting Stratosphere Credentials");
-	bluetoothle.read(
-		function(retObject) {
-			if (env.debug) console.log("Read Return From Stratosphere Credentials");
-					 if (env.debug) console.log(retObject.value);
-					 var data = atob(retObject.value);
-			var pipeSplit = data.split('|');
-			if (env.debug) console.log(pipeSplit);
-					 if(pipeSplit.length < 2 || pipeSplit[1] === undefined) {
-						 callback.call(currentPhoneGapBLEClient, null, null);
-						 return;
-					 }
-					 
-					 var uuid = pipeSplit[0];
-			var token = pipeSplit[1].replace(/\W/g, '');
+	
+	if (env.debug) {
+		console.log("Getting Atmosphere Cloud Credentials");
+	}
+	
+	if(this.cloudCredentialsOnEmbedded === true || this.cloudCredentialsOnEmbedded === undefined) {
+		bluetoothle.read(
+			function(retObject) {
+				if (env.debug) console.log("Read Return From Atmosphere Cloud Credentials");
+						if (env.debug) console.log(retObject.value);
+						var data = atob(retObject.value);
+				var pipeSplit = data.split('|');
+				if (env.debug) console.log(pipeSplit);
+						if(pipeSplit.length < 2 || pipeSplit[1] === undefined) {
+							callback.call(currentPhoneGapBLEClient, null, null);
+							return;
+						}
+						
+						var uuid = pipeSplit[0];
+				var token = pipeSplit[1].replace(/\W/g, '');
+				
+				if ((uuid === undefined || token === undefined)) {
+					callback.call(currentPhoneGapBLEClient, null, null);
+					return;
+				}
+				
+				if ( /[^a-zA-Z0-9-]/.test( uuid.toString() ) || /[^a-zA-Z0-9-]/.test( token.toString() ) ) {
+					callback.call(currentPhoneGapBLEClient, null, null);
+					return;
+				}
+				
+				callback.call(currentPhoneGapBLEClient, uuid, token);
+				return;
+			},
 			
-			if ((uuid === undefined || token === undefined)) {
+			function(retObject) {
 				callback.call(currentPhoneGapBLEClient, null, null);
 				return;
-			}
+			},
 			
-			if ( /[^a-zA-Z0-9-]/.test( uuid.toString() ) || /[^a-zA-Z0-9-]/.test( token.toString() ) ) {
-				callback.call(currentPhoneGapBLEClient, null, null);
-				return;
+			{
+				"address":this.currentlyConnectedAddress, 
+				"service":"bfe433cf-6b5e-4368-abab-b0a59666a402", 
+				"characteristic":"bfe433cf-6b5e-4368-abab-b0a59666a403"			
 			}
-			
-			callback.call(currentPhoneGapBLEClient, uuid, token);
-			return;
-		},
-		
-		function(retObject) {
+		);
+	}
+	
+	else {
+		var buildUuid = window.localStorage.getItem('cloudCredentialsBuildUuid_' + this.currentlyConnectedAddress);
+		var serviceUuid = window.localStorage.getItem('cloudCredentialsProjectUuid_' + this.currentlyConnectedAddress);
+		var cloudUuid = window.localStorage.getItem('cloudCredentialsUuid_' + this.currentlyConnectedAddress);
+		var cloudToken = window.localStorage.getItem('cloudCredentialsToken_' + this.currentlyConnectedAddress);
+
+		if(buildUuid !== this.buildUuid || serviceUuid !== this.serviceUUID || cloudUuid === null || cloudToken === null) {
+			console.log("Local stored credentials not valid!");
 			callback.call(currentPhoneGapBLEClient, null, null);
 			return;
-		},
-		
-		{
-			"address":this.currentlyConnectedAddress, 
-			"service":"bfe433cf-6b5e-4368-abab-b0a59666a402", 
-			"characteristic":"bfe433cf-6b5e-4368-abab-b0a59666a403"			
 		}
-	);
-};
-
-PhoneGapBLEClient.prototype.setStratosphereCredentials = function(uuid, token, callback) {
-	var currentPhoneGapBLEClient = this;
-	
-	var id = uuid || 0;
-	var data = id.toString();
-	var t = [];
-	var x;
-	
-	if(data.length !== 36) {
-		if (env.debug) console.log("Got bad uuid from Stratosphere!");
+		
+		callback.call(currentPhoneGapBLEClient, cloudUuid, cloudToken);
 		return;
 	}
-	
-	for(x = 0; x < data.length; x++) {
-		t.push(data.charCodeAt(x));
-	}
-	
-	t.push("|".charCodeAt(0));
-	
-	//TODO: What if we get no token?
-	var tokenData = token.toString();
-	
-	for(x = 0; x < tokenData.length; x++) {
-		t.push(tokenData.charCodeAt(x));
-	}
-	
-	t.push(0x00);
-	
-	var value = new Uint8Array(t);
-	var base64Value = bluetoothle.bytesToEncodedString(value);
-	
-	if (env.debug) console.log("Sending Registration Data: " + base64Value.toString());
-	
-	bluetoothle.write(
-		function(retObject) {
-			
-			callback.call(currentPhoneGapBLEClient, uuid, token);
-		},
-		
-		function(retObject) {
-			callback.call(currentPhoneGapBLEClient, null, null);
-		},
-		
-		{
-			"value":base64Value,
-			"address":this.currentlyConnectedAddress, 
-			"service":"bfe433cf-6b5e-4368-abab-b0a59666a402", 
-			"characteristic":"bfe433cf-6b5e-4368-abab-b0a59666a403"			
-		}
-	);
 };
 
-PhoneGapBLEClient.prototype.registerDeviceToStratosphere = function() {
+PhoneGapBLEClient.prototype.setCloudCredentials = function(uuid, token, callback) {
+	var currentPhoneGapBLEClient = this;
+	var id = uuid || 0;
+	var data = id.toString();
+
+	if(this.cloudCredentialsOnEmbedded === true || this.cloudCredentialsOnEmbedded === undefined) {
+		var t = [];
+		var x;
+		
+		if(data.length !== 36) {
+			if (env.debug) console.log("Got bad uuid from Atmosphere Cloud!");
+			return;
+		}
+		
+		for(x = 0; x < data.length; x++) {
+			t.push(data.charCodeAt(x));
+		}
+		
+		t.push("|".charCodeAt(0));
+		
+		var tokenData = token.toString();
+		
+		for(x = 0; x < tokenData.length; x++) {
+			t.push(tokenData.charCodeAt(x));
+		}
+		
+		t.push(0x00);
+		
+		var value = new Uint8Array(t);
+		var base64Value = bluetoothle.bytesToEncodedString(value);
+		
+		if (env.debug) {
+			console.log("Sending Registration Data: " + base64Value.toString());
+		}
+		
+		bluetoothle.write(
+			function(retObject) {
+				
+				callback.call(currentPhoneGapBLEClient, uuid, token);
+			},
+			
+			function(retObject) {
+				callback.call(currentPhoneGapBLEClient, null, null);
+			},
+			
+			{
+				"value":base64Value,
+				"address":this.currentlyConnectedAddress, 
+				"service":"bfe433cf-6b5e-4368-abab-b0a59666a402", 
+				"characteristic":"bfe433cf-6b5e-4368-abab-b0a59666a403"			
+			}
+		);
+	}
+	
+	else {
+		window.localStorage.setItem('cloudCredentialsBuildUuid_' + this.currentlyConnectedAddress, this.buildUuid);
+		window.localStorage.setItem('cloudCredentialsProjectUuid_' + this.currentlyConnectedAddress, this.serviceUUID);
+		window.localStorage.setItem('cloudCredentialsUuid_' + this.currentlyConnectedAddress, data);
+		window.localStorage.setItem('cloudCredentialsToken_' + this.currentlyConnectedAddress, token);
+		
+		callback.call(currentPhoneGapBLEClient, data, token);
+		return;
+	}
+};
+
+PhoneGapBLEClient.prototype.registerDeviceToCloud = function() {
 	var currentPhoneGapBLEClient = this;
 	
 	var xhttp = new XMLHttpRequest();
@@ -719,25 +670,36 @@ PhoneGapBLEClient.prototype.registerDeviceToStratosphere = function() {
 			}
 			
 			if(regData !== null) {
-				currentPhoneGapBLEClient.setStratosphereCredentials(regData.uuid, regData.token, function(uuid, token) {
+				currentPhoneGapBLEClient.setCloudCredentials(regData.uuid, regData.token, function(uuid, token) {
 					if(uuid === null) {
 						if (env.debug) console.log("Unable to set BLE devices credentials...");
 											  return;
 					}
 					
-					currentPhoneGapBLEClient.getStratosphereCredentials(function(uuid, token) {
+					currentPhoneGapBLEClient.getCloudCredentials(function(uuid, token) {
 						
 						if(uuid === null || token === null) {
-							if (env.debug) console.log("Registered to Stratosphere FAILED!");
-												  currentPhoneGapBLEClient.currentStratosphereUuid = null;
-							currentPhoneGapBLEClient.currentStratosphereToken = null;
+							if (env.debug) {
+								console.log("Registered to Atmosphere Cloud FAILED!");
+							}
+							
+							currentPhoneGapBLEClient.debugLog("Failed to register to Atmosphere Cloud!");
+							currentPhoneGapBLEClient.currentCloudUuid = null;
+							currentPhoneGapBLEClient.currentCloudToken = null;
 							return;
 						}
 						
-						if (env.debug) console.log("UUID:\"" + uuid.toString() + "\" Token:\"" + token.toString() + "\"");
-												  if (env.debug) console.log("Registered to Stratosphere so setting variables.");
-												  currentPhoneGapBLEClient.currentStratosphereUuid = uuid.toString();
-						currentPhoneGapBLEClient.currentStratosphereToken = token.toString();
+						if (env.debug) {
+							console.log("UUID:\"" + uuid.toString() + "\" Token:\"" + token.toString() + "\"");
+						}
+						
+						if (env.debug) {
+							console.log("Registered to Atmosphere Cloud so setting variables.");
+						}
+						
+						currentPhoneGapBLEClient.debugLog("Registered to Atmosphere Cloud.");
+						currentPhoneGapBLEClient.currentCloudUuid = uuid.toString();
+						currentPhoneGapBLEClient.currentCloudToken = token.toString();
 					});
 				});
 			}
@@ -759,31 +721,36 @@ PhoneGapBLEClient.prototype.registerDeviceToStratosphere = function() {
 		console.log("Using the following creds: " + creds.user);
 	}
 	
-	// 		if(navigator !== undefined && navigator.geolocation !== undefined) {
-	// 			navigator.geolocation.getCurrentPosition(
-	// 				function(position) {
-	// 					xhttp.open("GET", "https://troposphere.anaren.com:1337/register/direct/" + encodeURIComponent(JSON.stringify({"pid":currentPhoneGapBLEClient.serviceUUID, "meta":{"geoloc":{"lat":position.coords.latitude, "lon":position.coords.longitude}}, "owner":creds.user.toString(), "name":currentPhoneGapBLEClient.projectName.toString() + " (new)"})));
-	// 					xhttp.send();
-	// 				}, 
-	// 				
-	// 				function(error) {
-	// 					xhttp.open("GET", "https://troposphere.anaren.com:1337/register/direct/" + encodeURIComponent(JSON.stringify({"pid":currentPhoneGapBLEClient.serviceUUID, "owner":creds.user.toString(), "name":currentPhoneGapBLEClient.projectName.toString() + " (new)"})));
-	// 					xhttp.send();
-	// 				}
-	// 			);
-	// 		}
-	// 		
-	// 		else {
-	// TODO: check - because currentPhoneGapBLEClient.projectName and owner may be undefined and toString will toss an error
 	var pname = currentPhoneGapBLEClient.projectName.toString();
 	var owner = creds.user.toString();
-	
-	console.log("https://" + currentPhoneGapBLEClient.stratosphereUrl + "/register/direct/" + encodeURIComponent(JSON.stringify({"pid":currentPhoneGapBLEClient.serviceUUID, "owner":owner, "name":pname + " (new)"})));
-	xhttp.open("GET", "https://" + currentPhoneGapBLEClient.stratosphereUrl + "/register/direct/" + encodeURIComponent(JSON.stringify({"pid":currentPhoneGapBLEClient.serviceUUID, "owner":owner, "name":pname + " (new)"})));
-	xhttp.send();
-	// 		}
-	
-	//TODO: the above looks hand jammed so what's going on there?
+		
+	if(navigator !== undefined && navigator.geolocation !== undefined) {
+		navigator.geolocation.getCurrentPosition(
+			function(position) {
+				console.log("Register Data: " + "https://" + currentPhoneGapBLEClient.cloudUrl + "/register/direct/" + encodeURIComponent(JSON.stringify({"pid":currentPhoneGapBLEClient.serviceUUID, "meta":{"geoloc":{"lat":position.coords.latitude, "lon":position.coords.longitude}}, "owner":creds.user.toString(), "name":pname + " (new)"})));
+				xhttp.open("GET", "https://" + currentPhoneGapBLEClient.cloudUrl + "/register/direct/" + encodeURIComponent(JSON.stringify({"pid":currentPhoneGapBLEClient.serviceUUID, "meta":{"geoloc":{"lat":position.coords.latitude, "lon":position.coords.longitude}}, "owner":creds.user.toString(), "name":pname + " (new)"})));
+				xhttp.send();
+			}, 
+			
+			function(error) {
+				console.log("Register Data: " + "https://" + currentPhoneGapBLEClient.cloudUrl + "/register/direct/" + encodeURIComponent(JSON.stringify({"pid":currentPhoneGapBLEClient.serviceUUID, "owner":owner, "name":pname + " (new)"})));
+				xhttp.open("GET", "https://" + currentPhoneGapBLEClient.cloudUrl + "/register/direct/" + encodeURIComponent(JSON.stringify({"pid":currentPhoneGapBLEClient.serviceUUID, "owner":owner, "name":pname + " (new)"})));
+				xhttp.send();
+			},
+			
+			{
+				enableHighAccuracy: true,
+				timeout: 1000,
+				maximumAge: 1000
+			}
+		);
+	}
+	else {
+		console.log("https://" + currentPhoneGapBLEClient.cloudUrl + "/register/direct/" + encodeURIComponent(JSON.stringify({"pid":currentPhoneGapBLEClient.serviceUUID, "owner":owner, "name":pname + " (new)"})));
+		xhttp.open("GET", "https://" + currentPhoneGapBLEClient.cloudUrl + "/register/direct/" + encodeURIComponent(JSON.stringify({"pid":currentPhoneGapBLEClient.serviceUUID, "owner":owner, "name":pname + " (new)"})));
+		xhttp.send();
+	}
+
 };
 
 PhoneGapBLEClient.prototype.bleWatchdog = function(run, callback) {	
@@ -816,22 +783,22 @@ PhoneGapBLEClient.prototype.startScanning = function() {
 	if (device.platform == iOSPlatform) {
 		bluetoothle.startScan(
 			function(retObject) {
-				currentPhoneGapBLEClient.success(retObject)					
+				currentPhoneGapBLEClient.success(retObject);					
 			}, 
 			
 			function(retObject) {
-				currentPhoneGapBLEClient.error(retObject)
+				currentPhoneGapBLEClient.error(retObject);
 				
 			}, {"services": [this.serviceUUID]});
 	}
 	else if(device.platform == androidPlatform) {
 		bluetoothle.startScan(
 			function(retObject) {
-				currentPhoneGapBLEClient.success(retObject)					
+				currentPhoneGapBLEClient.success(retObject);					
 			}, 
 			
 			function(retObject) {
-				currentPhoneGapBLEClient.error(retObject)
+				currentPhoneGapBLEClient.error(retObject);
 				
 			}, {"services": []});
 	}
@@ -843,11 +810,11 @@ PhoneGapBLEClient.prototype.stopScanCheck = function(retObject) {
 	if (retObject.isEnabled) {
 		bluetoothle.stopScan(
 			function(retObject) {
-				currentPhoneGapBLEClient.success(retObject)					
+				currentPhoneGapBLEClient.success(retObject);					
 			}, 
 			
 			function(retObject) {
-				currentPhoneGapBLEClient.error(retObject)
+				currentPhoneGapBLEClient.error(retObject);
 				
 			}
 		);
@@ -862,7 +829,7 @@ PhoneGapBLEClient.prototype.stopScanCheck = function(retObject) {
 		// skip the error callback and call stopScan just in case
 		bluetoothle.stopScan(
 			function(retObject) {
-				currentPhoneGapBLEClient.success(retObject)					
+				currentPhoneGapBLEClient.success(retObject);					
 			}
 		);
 	}
@@ -874,7 +841,7 @@ PhoneGapBLEClient.prototype.stopScanning = function() {
 	// check if BLE is enabled then run the stop scan function
 	bluetoothle.isEnabled(
 		function(retObject) {
-			currentPhoneGapBLEClient.stopScanCheck(retObject)					
+			currentPhoneGapBLEClient.stopScanCheck(retObject);					
 		}
 	);
 	
@@ -892,6 +859,8 @@ PhoneGapBLEClient.prototype.connectToDevice = function(address) {
 	this.appMenu.content.deviceConnectButton.innerHTML = "Connecting";
 	this.appMenu.content.deviceConnectButton.value = "connecting";
 	
+	clearTimeout(this.connectionTimeout);
+	
 	this.connectionTimeout = setTimeout(function() {
 		console.log("CONNECTION TIMEOUT REACHED");
 		currentPhoneGapBLEClient.debugLog("Attempt to connect to device reached it's timeout");
@@ -907,30 +876,24 @@ PhoneGapBLEClient.prototype.connectToDevice = function(address) {
 	// connect with handler
 	bluetoothle.connect(
 		function(retObject) {
-			currentPhoneGapBLEClient.success(retObject)					
+			currentPhoneGapBLEClient.success(retObject);					
 		}, 
 	
 		function(retObject) {
-			currentPhoneGapBLEClient.error(retObject)
+			currentPhoneGapBLEClient.error(retObject);
 		
 		}, {"address":address});
 };
 
-PhoneGapBLEClient.prototype.completeConnection = function() {
-	this.isConnected = true;
-	clearTimeout(this.connectionTimeout);
-	
-	// close the window
+PhoneGapBLEClient.prototype.closeMenuAndSetConnected = function() {
 	this.toggleMenu("off");
 	
-	// fix the button
 	this.appMenu.content.deviceConnectButton.innerHTML = "Disconnect";
 	this.appMenu.content.deviceConnectButton.value = "connected";
 	
 	this.appModal.content.connectedDevice = document.getElementById(this.currentlyConnectedAddress);
 	this.appModal.content.connectedDeviceState = document.getElementById(this.currentlyConnectedAddress+"_state");
 	
-	// is this if statement necessary
 	if (this.appModal.content.connectedDevice) {
 		if(!this.appModal.content.connectedDevice.classList.contains("connected")) {
 			this.appModal.content.connectedDevice.className += "connected";
@@ -940,73 +903,118 @@ PhoneGapBLEClient.prototype.completeConnection = function() {
 	
 	this.debugLog("Connected to device: " + this.currentlyConnectedAddress);
 	
-	// If stratosphere is enabled
-	if(this.stratosphereEnabled && this.stratosphereAvailable) {
-		this.getStratosphereCredentials(function(uuid, token) {
+	this.isConnected = true;
+};
+
+PhoneGapBLEClient.prototype.completeConnection = function() {
+	var currentPhoneGapBLEClient = this;
+	clearTimeout(this.connectionTimeout);
+	this.connectionTimeout = null;
+	
+	// If Atmosphere Cloud is enabled
+	if(this.cloudEnabled && this.cloudAvailable) {
+		this.getCloudCredentials(function(uuid, token) {
 			if(uuid === null || token === null) {
-				if (env.debug) console.log("Not registered to Stratosphere!");
-									  this.registerDeviceToStratosphere();
+				if (env.debug) {
+					console.log("Not registered to Atmosphere Cloud!");
+				}
+				
+				currentPhoneGapBLEClient.registerDeviceToCloud();
+				this.closeMenuAndSetConnected();
 				return;
 			}
-			if (env.debug) console.log("UUID:\"" + uuid.toString() + "\" Token:\"" + token.toString() + "\"");
-									  if (env.debug) console.log("Registered to Stratosphere so setting variables.");
-									  this.currentStratosphereUuid = uuid.toString();
-			this.currentStratosphereToken = token.toString();
+			
+			if (env.debug) {
+				console.log("UUID:\"" + uuid.toString() + "\" Token:\"" + token.toString() + "\"");
+				console.log("Registered to Atmosphere Cloud so setting variables.");
+			}
+			
+			currentPhoneGapBLEClient.debugLog("Device is registered to Atmosphere Cloud.");
+			currentPhoneGapBLEClient.currentCloudUuid = uuid.toString();
+			currentPhoneGapBLEClient.currentCloudToken = token.toString();
+			this.closeMenuAndSetConnected();
+			return;
 		});
+	}
+	
+	else {
+		this.closeMenuAndSetConnected();
 	}
 };
 
-PhoneGapBLEClient.prototype.closeConnection = function(address, forceClosed) {
+PhoneGapBLEClient.prototype.closeConnection = function(address, forceClosed, callback) {
+	
 	var currentPhoneGapBLEClient = this;
+	
 	forceClosed = forceClosed || false;
+	address = address || this.currentlyConnectedAddress;
 	
 	if (this.isConnected || forceClosed) {
+		
 		if (env.debug) console.log("closeConnection");
+		
 		if(address === undefined) {
-			address = this.currentlyConnectedAddress;
+			if (env.debug) console.log("Forcing connection to close without an address, already closed? Failing gracefully...");
+			callback.call(currentPhoneGapBLEClient);
+			return;
 		}
 		
 		for(var k = 0; k < this.connections.length; k++)	{
 			this.connections[k].disconnecting();
 		}
 		
-		// set currentlyConnectedAddress to empty otherwise UI never picks up on this change
 		this.currentlyConnectedAddress = "";
 		
-		bluetoothle.close(
+		bluetoothle.disconnect(
 			function(retObject) {
-				currentPhoneGapBLEClient.success(retObject)					
+				currentPhoneGapBLEClient.success(retObject);
+				
+				bluetoothle.close(
+					function(retObject) {
+						currentPhoneGapBLEClient.success(retObject);
+						if(callback !== undefined && typeof callback === 'function') {
+							console.log("running callback");
+							callback.call(currentPhoneGapBLEClient);
+						}
+					}, 
+					
+					function(retObject) {
+						currentPhoneGapBLEClient.error(retObject);
+						if(callback !== undefined && typeof callback === 'function') {
+							console.log("running callback");
+							callback.call(currentPhoneGapBLEClient);
+						}
+					}, {"address":address});
 			}, 
 			
 			function(retObject) {
-				currentPhoneGapBLEClient.error(retObject)
+				currentPhoneGapBLEClient.error(retObject);
+				
+				bluetoothle.close(
+					function(retObject) {
+						currentPhoneGapBLEClient.success(retObject);	
+						if(callback !== undefined && typeof callback === 'function') {
+							console.log("running callback");
+							callback.call(currentPhoneGapBLEClient);
+						}
+					}, 
+					
+					function(retObject) {
+						currentPhoneGapBLEClient.error(retObject);
+						if(callback !== undefined && typeof callback === 'function') {
+							console.log("running callback");
+							callback.call(currentPhoneGapBLEClient);
+						}
+						
+					}, {"address":address});
+				
 			}, {"address":address});
 	}
-};
-
-PhoneGapBLEClient.prototype.reconnectToDevice = function(address) {
-	var currentPhoneGapBLEClient = this;
-	
-	if (env.debug) console.log("reconnectToDevice");
-	if(address === undefined) {
-	    // This shouldn't work - maybe there needs to be a "lastConnectedAddress" because the address should be wiped out on a disconnect
-		address = this.lastConnectedAddress;
-	}
-	bluetoothle.reconnect(
-		function(retObject) {
-			currentPhoneGapBLEClient.success(retObject)					
-		}, 
-		
-		function(retObject) {
-			currentPhoneGapBLEClient.error(retObject)
-			
-		}, {"address":address});
 };
 
 PhoneGapBLEClient.prototype.success = function(retObject) {
 	var currentPhoneGapBLEClient = this;
 	
-	// we don't need every action logged here, scanresults, ble read/writes are very spammy and should be for debughigh only
 	if ((env.debug) && (retObject.status != "scanResult") && (retObject.status != "read") && (retObject.status != "written")) {
 		console.log("Success callback: " + JSON.stringify(retObject));
 	}
@@ -1018,7 +1026,7 @@ PhoneGapBLEClient.prototype.success = function(retObject) {
 	}
 	
 	var paramsObj = {};
-	var nextService;
+	var nextService, i;
 	
 	//Status Types
 	if(retObject.status !== undefined) {
@@ -1062,8 +1070,8 @@ PhoneGapBLEClient.prototype.success = function(retObject) {
 				if (device.platform == androidPlatform) {
 					var advData = retObject.advertisement;
 					var rawData = atob(advData);
-					serviceUuid = "";
-					for(var i = 20; i >= 5; i--) {
+					var serviceUuid = "";
+					for(i = 20; i >= 5; i--) {
 						serviceUuid = serviceUuid + ("00" + rawData.charCodeAt(i).toString(16)).slice(-2);
 						if(i == 17 || i == 15 || i == 13 || i == 11) {
 							serviceUuid = serviceUuid + "-";
@@ -1085,35 +1093,36 @@ PhoneGapBLEClient.prototype.success = function(retObject) {
 					paramsObj = {"address":this.currentlyConnectedAddress, "services":[]};
 					bluetoothle.services(
 						function(retObject) {
-							currentPhoneGapBLEClient.success(retObject)					
+							currentPhoneGapBLEClient.success(retObject);					
 						}, 
 						
 						function(retObject) {
-							currentPhoneGapBLEClient.error(retObject)
+							currentPhoneGapBLEClient.error(retObject);
 							
 						}, paramsObj);
 				}
 				// android
 				else {
 					if (env.debug) console.log("Beginning discovery");
+// 					paramsObj = {"address":this.currentlyConnectedAddress, "clearCache": true};
 					paramsObj = {"address":this.currentlyConnectedAddress};
 					var priorityObj = {"address":this.currentlyConnectedAddress, "connectionPriority":"high"};
 					bluetoothle.requestConnectionPriority(
 						function(retObject) {
-							currentPhoneGapBLEClient.success(retObject)					
+							currentPhoneGapBLEClient.success(retObject);					
 						}, 
 						
 						function(retObject) {
-							currentPhoneGapBLEClient.error(retObject)
+							currentPhoneGapBLEClient.error(retObject);
 							
 						}, priorityObj);
 					bluetoothle.discover(
 						function(retObject) {
-							currentPhoneGapBLEClient.success(retObject)					
+							currentPhoneGapBLEClient.success(retObject);					
 						}, 
 						
 						function(retObject) {
-							currentPhoneGapBLEClient.error(retObject)
+							currentPhoneGapBLEClient.error(retObject);
 							
 						}, paramsObj);
 				}
@@ -1126,11 +1135,11 @@ PhoneGapBLEClient.prototype.success = function(retObject) {
 				
 				this.currentlyConnectedAddress = "";
 				this.isConnected = false;
-				this.currentStratosphereUuid = null;
-				this.currentStratosphereToken = null;   
+				this.currentCloudUuid = null;
+				this.currentCloudToken = null;   
 				
 				this.loadDeviceList();
-				this.debugLog("Disconnected from device: " + this.lastConnectedAddress);                
+				this.debugLog("Disconnected from device: " + this.lastConnectedAddress);				
 				this.closeConnection(retObject.address);		
 				break;
 				
@@ -1140,11 +1149,11 @@ PhoneGapBLEClient.prototype.success = function(retObject) {
 							
 				this.currentlyConnectedAddress = "";
 				this.isConnected = false;
-				this.currentStratosphereUuid = null;
-				this.currentStratosphereToken = null;
+				this.currentCloudUuid = null;
+				this.currentCloudToken = null;
 				
 				this.loadDeviceList();
-                this.debugLog("Closed connection to device: " + this.lastConnectedAddress);
+				this.debugLog("Closed connection to device: " + this.lastConnectedAddress);
 				break;
 				
 			//iOS only
@@ -1158,16 +1167,16 @@ PhoneGapBLEClient.prototype.success = function(retObject) {
 				nextService = this.foundServices.shift();
 				if(nextService !== undefined) {
 					if(nextService.toLowerCase() === "bfe433cf-6b5e-4368-abab-b0a59666a402") {
-						this.stratosphereAvailable = true;
+						this.cloudAvailable = true;
 					}
 					paramsObj = {"address":this.currentlyConnectedAddress, "service":nextService};
 					bluetoothle.characteristics(
 						function(retObject) {
-							currentPhoneGapBLEClient.success(retObject)					
+							currentPhoneGapBLEClient.success(retObject);					
 						}, 
 						
 						function(retObject) {
-							currentPhoneGapBLEClient.error(retObject)
+							currentPhoneGapBLEClient.error(retObject);
 							
 						}, paramsObj);
 				}
@@ -1181,11 +1190,11 @@ PhoneGapBLEClient.prototype.success = function(retObject) {
 					paramsObj = {"address":this.currentlyConnectedAddress, "service":nextService};
 					bluetoothle.characteristics(
 						function(retObject) {
-							currentPhoneGapBLEClient.success(retObject)					
+							currentPhoneGapBLEClient.success(retObject);					
 						}, 
 						
 						function(retObject) {
-							currentPhoneGapBLEClient.error(retObject)
+							currentPhoneGapBLEClient.error(retObject);
 							
 						}, paramsObj);
 				}
@@ -1193,11 +1202,11 @@ PhoneGapBLEClient.prototype.success = function(retObject) {
 					paramsObj = {"address":this.currentlyConnectedAddress, "service":this.serviceUUID, "characteristic":this.notifyUUID};
 					bluetoothle.subscribe(
 						function(retObject) {
-							currentPhoneGapBLEClient.success(retObject)					
+							currentPhoneGapBLEClient.success(retObject);					
 						}, 
 						
 						function(retObject) {
-							currentPhoneGapBLEClient.error(retObject)
+							currentPhoneGapBLEClient.error(retObject);
 							
 						}, paramsObj);
 					this.completeConnection();
@@ -1207,23 +1216,23 @@ PhoneGapBLEClient.prototype.success = function(retObject) {
 			//Android only - true success here for a connection to android here
 			case "discovered":	
 				
-				for(var i = 0; i < retObject.services.length; i++) {
-					//Look to see if the device has a stratosphere credential defined.
-					if(retObject.services[i].uuid === "bfe433cf-6b5e-4368-abab-b0a59666a402") {
-						this.stratosphereAvailable = true;
+				for(i = 0; i < retObject.services.length; i++) {
+					//Look to see if the device has a Atmosphere Cloud credential defined.
+					if(retObject.services[i].uuid.toLowerCase() === "bfe433cf-6b5e-4368-abab-b0a59666a402") {
+						this.cloudAvailable = true;
 					}
 				}
 				
 				paramsObj = {"service":this.serviceUUID, "characteristic":this.notifyUUID,"isNotification":true, "address":this.currentlyConnectedAddress};
 				
-				//Subscribte to the global callback, yes this is need for notifications.
+				//Subscribe to the global callback, this is needed for notifications.
 				bluetoothle.subscribe(
 					function(retObject) {
-						currentPhoneGapBLEClient.success(retObject)					
+						currentPhoneGapBLEClient.success(retObject);					
 					}, 
 					
 					function(retObject) {
-						currentPhoneGapBLEClient.error(retObject)
+						currentPhoneGapBLEClient.error(retObject);
 						
 					}, paramsObj);
 				
@@ -1253,32 +1262,21 @@ PhoneGapBLEClient.prototype.success = function(retObject) {
 				break;
 				
 			default:
-				if (env.debug) {
-					
-					function xinspect(o,i){
-						if(typeof i=='undefined')i='';
-						if(i.length>50)return '[MAX ITERATIONS]';
-						var r=[];
-						for(var p in o){
-							var t=typeof o[p];
-							r.push(i+'"'+p+'" ('+t+') => '+(t=='object' ? 'object:'+xinspect(o[p],i+'  ') : o[p]+''));
-						}
-						return r.join(i+'\n');
-					}
-					
+				if (env.debug) {					
 					console.log("Success not handled by client!");
-					console.log(xinspect(retObject));
+					console.log(currentPhoneGapBLEClient.xinspect(retObject));
 				}
-				
 				break;
 		}
 	}
 	
 	//Give all the scanner, and connection elements a chance to act on the new ble information.
 	var k = 0;
+	
 	for(k = 0; k < this.scanners.length; k++) {
 		this.scanners[k].bleCallbackHandler(retObject);
 	}
+	
 	for(k = 0; k < this.connections.length; k++)	{
 		this.connections[k].bleCallbackHandler(retObject);
 	}		
@@ -1288,7 +1286,7 @@ PhoneGapBLEClient.prototype.error = function(retObject) {
 	var currentPhoneGapBLEClient = this;
 	
 	if (env.debug) console.log("Error callback: " + JSON.stringify(retObject));
-	
+
 	var paramsObj = {};
 	var nextService;
 	
@@ -1308,24 +1306,30 @@ PhoneGapBLEClient.prototype.error = function(retObject) {
 							function() { 
 								bluetoothle.startScan(
 									function(retObject) {
-										currentPhoneGapBLEClient.success(retObject)					
+										currentPhoneGapBLEClient.success(retObject);					
 									}, 
 									
 									function(retObject) {
-										currentPhoneGapBLEClient.error(retObject)
+										currentPhoneGapBLEClient.error(retObject);
 										
-									}); 
-							}, this.error);
+									}
+								); 
+							}, 
+						   
+							function(retObject) {
+								currentPhoneGapBLEClient.error(retObject);
+							}
+						);
 					}
 					else {
 						navigator.notification.alert("Scan failed for the following reason: " + retObject.message, null, "Scan Failed", "Ok");
 						bluetoothle.stopScan(
 							function(retObject) {
-								currentPhoneGapBLEClient.success(retObject)					
+								currentPhoneGapBLEClient.success(retObject);					
 							}, 
 							
 							function(retObject) {
-								currentPhoneGapBLEClient.error(retObject)
+								currentPhoneGapBLEClient.error(retObject);
 							}
 						);
 					}	
@@ -1334,15 +1338,25 @@ PhoneGapBLEClient.prototype.error = function(retObject) {
 			case "connect":
 				this.isConnected = false;
 				
-				if((retObject.message !== undefined) && (retObject.message.includes("Device previously connected, reconnect or close"))) {
-					this.reconnectToDevice(retObject.address);
-					return;
+				this.appMenu.content.deviceConnectButton.innerHTML = "Connect";
+				this.appMenu.content.deviceConnectButton.value = "disconnected";
+				
+				if(retObject.address !== undefined) {
+					this.closeConnection(retObject.address, true, function(){
+						this.connectToDevice(retObject.address);
+					});
 				}
+				
+				break;
+			case "isNotDisconnected":
+				this.isConnected = false;
 				
 				this.appMenu.content.deviceConnectButton.innerHTML = "Connect";
 				this.appMenu.content.deviceConnectButton.value = "disconnected";
-				//TODO: just commenting out the alert? Shouldn't a user get feedback when their connection fails?  Bad UX IMHO - matt
-				// navigator.notification.alert("Connection failed for the following reason: " + retObject.message, null, "Connection Failed", "Ok");
+				
+				this.closeConnection(retObject.address, true, function(){
+					this.connectToDevice(retObject.address);
+				});
 				
 				break;
 			case "read":
@@ -1355,12 +1369,13 @@ PhoneGapBLEClient.prototype.error = function(retObject) {
 				this.appMenu.content.deviceConnectButton.innerHTML = "Connect";
 				this.appMenu.content.deviceConnectButton.value = "disconnected";		
 				this.isConnected = false;
+				
 				break;
 			case "isDisconnected":
 				this.appMenu.content.deviceConnectButton.innerHTML = "Connect";
-				this.appMenu.content.deviceConnectButton.value = "disconnected";
+				this.appMenu.content.deviceConnectButton.value = "disconnected";				
 				this.isConnected = false;
-				// TODO: I really think we need to call a close here for cleanup purposes
+				
 				break;	
 			default:
 				if (env.debug) console.log("Error not handled by client!");
@@ -1368,52 +1383,105 @@ PhoneGapBLEClient.prototype.error = function(retObject) {
 		}
 	}
 	
-	// What's this code do?  (Connections and scanners array that you had implemented... it's for the UI to know what is connected or not, which is currently broken and i'm trying to fix -matt)
-	var k = 0;
-	for(k = 0; k < this.scanners.length; k++) {
+	
+	for(var k = 0; k < this.scanners.length; k++) {
 		this.scanners[k].bleCallbackHandler(retObject);
 	}
-	for(k = 0; k < this.connections.length; k++)	{
-		this.connections[k].bleCallbackHandler(retObject);
+	
+	for(var l = 0; l < this.connections.length; l++)	{
+		this.connections[l].bleCallbackHandler(retObject);
 	}
+	
 };
 
+// when a device in the device list is touched, it calls this function
 PhoneGapBLEClient.prototype.setSelectedDevice = function(target) {
-	this.appMenu.content.deviceConnectButton.setAttribute('pid', target);
 	
-	// loop through and clear all selected classes
-	var odds = document.getElementsByClassName('odd dlist selected');
-	var evens = document.getElementsByClassName('even dlist selected');
-	var i;
-	for (i = 0; i < odds.length; i++) {
-		odds[i].className = "odd dlist";
-	}
-	for (i = 0; i < evens.length; i++) {
-		evens[i].className = "even dlist";
+	this.appMenu.content.deviceConnectButton.setAttribute('pid', target);
+	var last = document.getElementById(this.lastSelectedDevice);
+	
+	// clear last devices selected class as a new device is now selected
+	if ((last !== undefined) && (last !== null)) {
+		if (last.classList.contains("odd")) {
+			last.className = "odd dlist";
+		}
+		else {
+			last.className = "even dlist";
+		}
 	}
 	
 	var elClass = document.getElementById(target).className;
 	// if it's connected don't give it the selected class
 	if(!(document.getElementById(target).classList.contains("connected"))) {
-		document.getElementById(target).className = elClass + " selected";
+		if(!(document.getElementById(target).classList.contains("selected"))) {	
+			document.getElementById(target).className = elClass + " selected";
+		}
 	}	
+	
+	this.lastSelectedDevice = target;
 };
 
+//when a project in the project list is touched, it calls this function
 PhoneGapBLEClient.prototype.setSelectedProject = function(target) {
-	this.appMenu.content.projectOpenButton.setAttribute('pid', target);
 	
-	// loop through and clear all selected classes
-	var odds = document.getElementsByClassName('odd plist selected');
-	var evens = document.getElementsByClassName('even plist selected');
-	var i;
-	for (i = 0; i < odds.length; i++) {
-		odds[i].className = "odd dlist";
-	}
-	for (i = 0; i < evens.length; i++) {
-		evens[i].className = "even dlist";
+	this.appMenu.content.projectOpenButton.setAttribute('pid', target);
+	var last = document.getElementById(this.lastSelectedProject);
+	
+	// clear last projects selected class as a new device is now selected
+	if ((last !== undefined) && (last !== null)) {
+		if (last.classList.contains("odd")) {
+			last.className = "odd plist";
+		}
+		else {
+			last.className = "even plist";
+		}
 	}
 	
 	var elClass = document.getElementById(target).className;
-	document.getElementById(target).className = elClass + " selected";
+	// dont add selected twice to the className
+	if(!(document.getElementById(target).classList.contains("selected"))) { 
+		document.getElementById(target).className = elClass + " selected";
+	}  
+	
+	this.lastSelectedProject = target;
+	
 };
 
+PhoneGapBLEClient.prototype.xinspect = function(o,i) {
+	if(typeof i=='undefined')i='';
+	if(i.length>50)return '[MAX ITERATIONS]';
+	var r=[];
+	for(var p in o){
+		var t=typeof o[p];
+		r.push(i+'"'+p+'" ('+t+') => '+(t=='object' ? 'object:'+xinspect(o[p],i+'  ') : o[p]+''));
+	}
+	return r.join(i+'\n');
+};
+
+PhoneGapBLEClient.prototype.handleTaps = function(e) {
+	var currentPhoneGapBLEClient = this; 
+	currentPhoneGapBLEClient.timeOut = setTimeout(function() {
+		 var selectedDevice;
+		 var selectedProject;
+		 if (e.target.nodeName == "DIV") {
+			 if(e.target && e.target.classList.contains("plist")) {
+				 currentPhoneGapBLEClient.setSelectedProject(e.target.id);
+			 }
+			 else if(e.target && e.target.classList.contains("dlist")) {
+				 selectedDevice = e.target.id;
+				 if ((selectedDevice !== undefined) && (selectedDevice !== null)) {
+					 currentPhoneGapBLEClient.setSelectedDevice(selectedDevice);
+				 }
+			 }   
+			 
+		 }
+		 else if (e.target.nodeName == "SPAN") {
+			 if(e.target.parentNode && e.target.parentNode.classList.contains("dlist")) {
+				 selectedDevice = e.target.parentNode.id;
+				 if ((selectedDevice !== undefined) && (selectedDevice !== null)) {
+					 currentPhoneGapBLEClient.setSelectedDevice(selectedDevice);
+				 }
+			 }	 
+		 }	  
+	}, 100);
+};

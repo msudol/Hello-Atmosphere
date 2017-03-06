@@ -44,11 +44,11 @@ function ConnectionElement(parent) {
 			this.currentName = e.name;
 		}
 		
-		if(this.currentValue.status == "subscribed") {
+		if(this.currentValue.status === "subscribed") {
 			this.connected();
 		}
 
-		else if(this.currentValue.status == "closed")	{
+		else if(this.currentValue.status === "closed")	{
 			this.disconnected();
 		}
 	};
@@ -506,6 +506,22 @@ function GATTBatteryElement(parent) {
 		// 		}
 		
 		// else?
+	};
+	
+	//Helper
+	this.connecting = function() {
+	};
+	
+	//Helper
+	this.connected = function() {
+	};
+	
+	//Helper
+	this.disconnecting = function() {
+	};
+	
+	//Helper
+	this.disconnected = function() {
 	};
 	
 	//Helper Method

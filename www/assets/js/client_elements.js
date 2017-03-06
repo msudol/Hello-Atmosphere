@@ -1270,7 +1270,7 @@ function MobileCloudCommand(parent, name, interval) {
 	var currentParent = parent;
 	var currentElement = this;
 	
-	parent.stratosphereEnabled = true;
+	parent.cloudEnabled = true;
 	
 	BaseElement.call(this, parent);
 	
@@ -1291,35 +1291,37 @@ function MobileCloudCommand(parent, name, interval) {
 	this.errorReturned = function () {
 	};
 	
-	this.connecting = function() {
-	};
-	
-	this.disconnecting = function() {
-	};
-	
 	parent.connections.push(this);
 }
 
 MobileCloudCommand.prototype = Object.create(BaseElement.prototype);
 MobileCloudCommand.prototype.constructor = MobileCloudCommand;
 
-//Helper
-MobileCloudCommand.prototype.bleCallbackHandler = function(e) {
+MobileCloudCommand.prototype.connecting = function() {
 	var currentElement = this;
 	
-	if(e.status == "subscribed") {
-		this.currentInterval = setInterval(function() {
-			currentElement.popCommand();
-		}, this.interval);
+	if(this.currentInterval !== null) {
+		console.log("Command Run");
+		clearInterval(this.currentInterval);
 	}
+	
+	this.currentInterval = setInterval(function() {
+		currentElement.popCommand();
+	}, this.interval);
+};
+	
+MobileCloudCommand.prototype.disconnecting = function() {
+	var currentElement = this;
+	
+	if(this.currentInterval !== null) {
+		clearInterval(this.currentInterval);
+	}
+	
+	this.currentInterval = null;
+};
 
-	else if(e.status == "closed")	{
-		if(this.currentInterval !== null) {
-			clearInterval(this.currentInterval)
-		}
-		
-		this.currentInterval = null;
-	}
+//Helper
+MobileCloudCommand.prototype.bleCallbackHandler = function(e) {
 };
 
 //Source
@@ -1331,14 +1333,14 @@ MobileCloudCommand.prototype.getValue = function() {
 MobileCloudCommand.prototype.popCommand = function() {
 	var currentElement = this;
 	
-	if(currentElement.parent.stratosphereUrl === null ||
-		currentElement.parent.stratosphereUrl === undefined ||
-		currentElement.parent.currentStratosphereUuid === null || 
-		currentElement.parent.currentStratosphereUuid === undefined || 
-		currentElement.parent.currentStratosphereToken === null ||
-		currentElement.parent.currentStratosphereToken === undefined) {
+	if(currentElement.parent.cloudUrl === null ||
+		currentElement.parent.cloudUrl === undefined ||
+		currentElement.parent.currentCloudUuid === null || 
+		currentElement.parent.currentCloudUuid === undefined || 
+		currentElement.parent.currentCloudToken === null ||
+		currentElement.parent.currentCloudToken === undefined) {
 		
-		console.log("Credentials are null or undefined!");
+// 		console.log("Credentials are null or undefined!");
 		return;
 	}
 	
@@ -1347,14 +1349,22 @@ MobileCloudCommand.prototype.popCommand = function() {
 	xhttp.responseType = 'text';
 	
 	xhttp.onreadystatechange = function() {
+		
+// 		console.log(xhttp.readyState + ':' + xhttp.status);
+		
 		if (xhttp.readyState == 4 && xhttp.status == 200) {
 			
+			console.log("Got from commands: " + xhttp.responseText);
+			
 			try {
-				var commandValue = JSON.parse(xhttp.responseText);
+				var commands = JSON.parse(xhttp.responseText);
 				
-				if(commandValue !== null && commandValue !== undefined) {
-					currentElement.value = commandValue;
-					currentElement.valueReturned();
+				if(commands !== null && commands !== undefined) {
+					for(var i = 0; i < commands.length; i++) {
+						var commandValue = commands[i].command;
+						currentElement.value = commandValue;
+						currentElement.valueReturned();
+					}
 				}
 			}
 			
@@ -1363,8 +1373,8 @@ MobileCloudCommand.prototype.popCommand = function() {
 		}
 	};
 	
-	xhttp.open("GET", "https://"+currentElement.parent.stratosphereUrl+"/thing/" + currentElement.parent.currentStratosphereUuid  + "/command/" + this.name + "/pop");
-	xhttp.setRequestHeader("stratosphere", currentElement.parent.currentStratosphereToken);
+	xhttp.open("GET", "https://"+currentElement.parent.cloudUrl+"/thing/" + currentElement.parent.currentCloudUuid  + "/command/" + this.name + "/popAll");
+	xhttp.setRequestHeader("cloud", currentElement.parent.currentCloudToken);
 	xhttp.send();
 };
 
@@ -1378,7 +1388,7 @@ function MobileCloudEventElement(parent, name) {
 	var currentParent = parent;
 	var currentElement = this;
 	
-	parent.stratosphereEnabled = true;
+	parent.cloudEnabled = true;
 	
 	BaseElement.call(this, parent);
 	
@@ -1402,15 +1412,23 @@ MobileCloudEventElement.prototype = Object.create(BaseElement.prototype);
 MobileCloudEventElement.prototype.constructor = MobileCloudEventElement;
 
 //Target
-MobileCloudEventElement.prototype.sendEvent = function(value) {
+MobileCloudEventElement.prototype.sendEvent = function(value, retries) {
 	var currentElement = this;
 	
-	if(currentElement.parent.stratosphereUrl === null ||
-		currentElement.parent.stratosphereUrl === undefined ||
-		currentElement.parent.currentStratosphereUuid === null || 
-		currentElement.parent.currentStratosphereUuid === undefined || 
-		currentElement.parent.currentStratosphereUuid === null ||
-		currentElement.parent.currentStratosphereUuid === undefined) {
+	value = value || null;
+	
+	retries = retries || 5;
+	
+	if(retries < 0) {
+		currentElement.errorReturned();
+	}
+	
+	if(currentElement.parent.cloudUrl === null ||
+		currentElement.parent.cloudUrl === undefined ||
+		currentElement.parent.currentCloudUuid === null || 
+		currentElement.parent.currentCloudUuid === undefined || 
+		currentElement.parent.currentCloudUuid === null ||
+		currentElement.parent.currentCloudUuid === undefined) {
 		
 		return;
 	}
@@ -1419,16 +1437,17 @@ MobileCloudEventElement.prototype.sendEvent = function(value) {
 
 	xhttp.onreadystatechange = function() {
 		if (xhttp.readyState == 4 && xhttp.status == 200) {
-			console.log("Strat Event Success");
-			console.log(xhttp.responseText);
-			
 			currentElement.eventSent();
+		}
+		
+		else if(xhttp.readyState == 4) {
+			currentElement.sendEvent(value, retries - 1);
 		}
 	};
 	
-	console.log("https://"+currentElement.parent.stratosphereUrl+"/thing/" + currentElement.parent.currentStratosphereUuid + "/event/" + this.name + "/" + encodeURIComponent(JSON.stringify(value)));
-	xhttp.open("GET", "https://"+currentElement.parent.stratosphereUrl+"/thing/" + currentElement.parent.currentStratosphereUuid  + "/event/" + this.name + "/" + encodeURIComponent(JSON.stringify(value)));
-	xhttp.setRequestHeader("stratosphere", currentElement.parent.currentStratosphereToken);
+	console.log("https://"+currentElement.parent.cloudUrl+"/thing/" + currentElement.parent.currentCloudUuid + "/event/" + this.name + "/" + encodeURIComponent(JSON.stringify(value)));
+	xhttp.open("GET", "https://"+currentElement.parent.cloudUrl+"/thing/" + currentElement.parent.currentCloudUuid  + "/event/" + this.name + "/" + encodeURIComponent(JSON.stringify(value)));
+	xhttp.setRequestHeader("cloud", currentElement.parent.currentCloudToken);
 	xhttp.send();
 };
 
@@ -1684,7 +1703,7 @@ function MobileMotionElement(parent, name) {
 MobileMotionElement.prototype.retrieveAcceleration = function() {
 	var currentElement = this;
 	
-	if(navigator.accelerometer == undefined || navigator.accelerometer.getCurrentAcceleration == undefined) {
+	if(navigator.accelerometer === undefined || navigator.accelerometer.getCurrentAcceleration === undefined) {
 		return;
 	}
 	
@@ -1774,7 +1793,7 @@ MobileOrientationElement.prototype.retrieveHeading = function() {
 	
 	var currentElement = this;
 	
-	if(navigator.compass == undefined || navigator.compass.getCurrentHeading == undefined) {
+	if(navigator.compass === undefined || navigator.compass.getCurrentHeading === undefined) {
 		return;
 	}
 	
@@ -1919,6 +1938,106 @@ function MobilePromptElement(parent, name) {
 	};
 }
 
+function MobileSMS(parent, name) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	BaseElement.call(this, parent);
+	
+	this.parent.elements[name] = this;
+	this.name = name;
+	this.currentNumber = null;
+	this.currentMessage = null;
+	
+	//We currently do not suppoer incomming SMSes but will hopefully in the future.
+	//Trigger
+	this.recieved = function() {
+	};
+	
+	//Trigger
+	this.sent = function() {
+	};
+	
+	//Trigger
+	this.failed = function() {
+	};
+}
+
+MobileSMS.prototype = Object.create(BaseElement.prototype);
+MobileSMS.prototype.constructor = MobileSMS;
+
+//Target
+MobileSMS.prototype.setNumber = function(number) {
+	if(number === undefined) {
+		return;
+	}
+	
+	this.currentNumber = number.toString();
+};
+
+//Target
+MobileSMS.prototype.setMessage = function(message) {
+	if(message === undefined) {
+		return;
+	}
+	
+	this.currentMessage = message.toString();
+};
+
+//Target
+MobileSMS.prototype.sendMessage = function(number, message) {
+	
+	if(number === undefined || number === null) {
+		number = this.currentNumber;
+	}
+	
+	if(message === undefined || message === null) {
+		message = this.currentMessage;
+	}
+	
+	var currentElement = this;
+	
+	if(sms === undefined) {
+		return;
+	}
+	
+	var options = {
+		replaceLineBreaks: false, // true to replace \n by a new line, false by default
+		android: {
+// 			intent: 'INTENT'  // send SMS with the native android SMS messaging
+			intent: '' // send SMS without open any other app
+		}
+	};
+	
+	this.currentMessage = message;
+	this.currentNumber = number;
+	
+	var success = function () { currentElement.sent(); };
+	var error = function (e) { currentElement.failed(); };
+	sms.send(number, message, options, success, error);
+};
+
+//Source
+MobileSMS.prototype.getSMS = function () {
+	return [this.currentNumber, this.currentMessage];
+};
+
+//Source
+MobileSMS.prototype.getNumber = function() {
+	return this.currentNumber;
+};
+
+//Source
+MobileSMS.prototype.getMessage = function() {
+	return this.currentMessage;
+};
+
+MobileSMS.prototype.updateState = function(state) {
+	BaseElement.prototype.updateState.call(this, state);
+};
+
+
+
 function MobileVibrationElement(parent, name) {
 	var currentParent = parent;
 	var currentElement = this;
@@ -1984,6 +2103,10 @@ function ProgressBarElement(parent, name) {
 	var currentElement = this;
 	
 	this.zebraUIElement = new zebra.ui.Progress();
+	
+	this.zebraUIElement.getValue = function() {
+		return this.value;
+	};
 	
 	BaseUIElement.call(this, parent, name);
 }
@@ -2062,6 +2185,10 @@ function SliderElement(parent, name) {
 	
 	this.zebraUIElement = new zebra.ui.Slider();
 	
+	var sliderImageSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA25pVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDE0IDc5LjE1Njc5NywgMjAxNC8wOC8yMC0wOTo1MzowMiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDoxOGMyZGY1OC1lMWE0LTgzNDctYWYzNi1iOGRmOGJiMTU0OTEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NzlFRUU5QkQwQUVCMTFFNTk5QkVCMjdBMUQyRDdFQjEiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NzlFRUU5QkMwQUVCMTFFNTk5QkVCMjdBMUQyRDdFQjEiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTQgKFdpbmRvd3MpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6Qzg5MEVDNkUwQUU4MTFFNThCMUM5NEUyQzhGRkI3NzkiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6Qzg5MEVDNkYwQUU4MTFFNThCMUM5NEUyQzhGRkI3NzkiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4w9XRaAAABa0lEQVR42sxXoW7DMBC9mCwj/YRqI4NjVVlR4TIaNA1V+aYoMCi0Gywqq8YKSzr1E0yWsr3WZ9Wq0ire4lyf9EyS+J7Pzt1zRD6Y6weME3AKjsEhP9mBK3ABLul18N12yqhF0DuMKZiDcct5azADK4jZ/13AXL9g/KD/IYGITz8BZtUF+EbdoARnTdmIGoIPMH6BT9QtNuAIIvRlAWbl6wDBXRHPbibU2QtFwODEcxfNGejmwHkfzMhJfU39Ij5shd2ClPpH6p6BXEBAbrbAlNctyeBRcW2XwkRxY5HCVHFXk8JYOS1VAkNFwlBsJqSwU+xkpLBSbKOksFBHDyeHpW1GPx5+ryvUaEb39i/IBFafuc2oEhBQnQQYi5T0GDyxtuxUiIxDKXsIXro2/bwSztg4hsKGY1CzAJOWUSAR1pbvLwswIvTROne7HSXbcX1zV7Pr3dB8eChQ756uueZv4mvB292OA1/PfwUYAMT9Xofi/VbMAAAAAElFTkSuQmCC";
+
+	this.setHandleImage(sliderImageSrc);
+	
 	BaseUIElement.call(this, parent, name);
 	
 	//PATCHING
@@ -2135,6 +2262,10 @@ function SliderElement(parent, name) {
 		currentParent.sendTrigger(currentElement.name, "changed", {"value":e.getValue()});
 	};
 	
+	//Trigger
+	this.valueSet = function() {
+	};
+	
 	this.zebraUIElement.bind(function(e) {currentElement.changed(e);});
 }
 
@@ -2147,8 +2278,33 @@ SliderElement.prototype.trigger = function() {
 };
 
 //Target
+SliderElement.prototype.setHandleImage = function(imgSrc) {
+	var currentElement = this;
+	var sliderImage = new Image();
+
+	sliderImage.onload = function() {
+		currentElement.zebraUIElement.views.hbundle.target = sliderImage;
+		currentElement.zebraUIElement.views.vbundle.target = sliderImage;
+		currentElement.zebraUIElement.recalc();
+		currentElement.zebraUIElement.repaint();
+	}
+	
+	sliderImage.src = imgSrc;
+};
+
+//Target
 SliderElement.prototype.setValue = function(value) {
+	
+	if(value < this.zebraUIElement.min) {
+		value = this.zebraUIElement.min;
+	}
+	
+	if(value > this.zebraUIElement.max) {
+		value = this.zebraUIElement.max;
+	}
+	
 	this.zebraUIElement.setValueNoEvent(value);
+	this.valueSet();
 };
 
 //Target
@@ -2229,23 +2385,61 @@ SliderElement.prototype.updateState = function(state) {
 	}
 	
 	if(state.value !== undefined) {
-		
-		if(!this.valueLocked) {
-			this.zebraUIElement.setValue(state.value);
-		}
-		
-		if(state.value === this.lastValue) {
-			this.lastValue = null;
-			this.valueLocked = false;
-		}
+		this.zebraUIElement.setValue(state.value);
 	}
 };
 
-function TextFieldElement(parent, name) {
+function TaskElement(parent, name) {
 	var currentParent = parent;
 	var currentElement = this;
 	
-	this.zebraUIElement = new zebra.ui.HtmlTextField("");
+	this.currentRunIn = 1000;
+	this.currentRunEvery = 1000;
+	
+	this.zebraTask = new zebra.util.task(function(c){
+		currentElement.task();
+	});
+}
+
+TaskElement.prototype.trigger = function() {
+	this.onTrigger();
+};
+
+TaskElement.prototype.task = function() {
+};
+
+TaskElement.prototype.run = function(runIn, runEvery) {
+	
+	if(runIn !== undefined && runIn !== null) {
+		this.currentRunIn = runIn;
+	}
+	
+	if(runEvery !== undefined && runEvery !== null) {
+		this.currentRunEvery = runEvery;
+	}
+	
+	this.zebraTask.run(currentRunIn, currentRunEvery);
+};
+
+TaskElement.prototype.pause = function() {
+	this.zebraTask.pause();
+};
+
+TaskElement.prototype.onTrigger = function() {
+};
+
+
+function TextFieldElement(parent, name, notHtml) {
+	var currentParent = parent;
+	var currentElement = this;
+	
+	if(notHtml === true) {
+		this.zebraUIElement = new zebra.ui.TextField("");
+	}
+	
+	else {
+		this.zebraUIElement = new zebra.ui.HtmlTextField("");
+	}
 	
 	BaseUIElement.call(this, parent, name);
 	
@@ -2405,7 +2599,7 @@ WebIOElement.prototype.advancedGet = function(data) {
 WebIOElement.prototype.advancedPost = function(data, headers) {
 	var currentElement = this;
 	
-	var gdata = POSTForm(uri, data, function(request){currentElement.valueReturnedCallback(request);}, headers);
+	var gdata = POSTForm(this.uri, data, function(request){currentElement.valueReturnedCallback(request);}, headers);
 };
 
 //Target
@@ -2481,6 +2675,10 @@ WebLinkElement.prototype.getURL = function() {
 
 WebLinkElement.prototype.updateState = function(state) {
 	BaseElement.prototype.updateState.call(this, state);
+	
+	if(state.url !== undefined) {
+		this.setURL(state.url);
+	}
 };
 
 

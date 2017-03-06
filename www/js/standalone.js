@@ -3,7 +3,8 @@
 /*
  * 
  * standalone.js : 
- * 		- this replaces app.js and main.js for a standalone package
+ * 		
+ *      - This file handles standalone phonegap apps created by the Anaren Atmosphere Platform
  * 		- global handle of initialization for phonegap from the body onLoad function call
  * 		- global environment settings
  * 
@@ -29,54 +30,47 @@ function onLoad(page) {
  	
 }
 
-// Cordova is loaded and it is now safe to make calls to Cordova methods
-function onDeviceReady() {
-    
-	if (env.debug) console.log("onDeviceReady"); 
-	
-	if (env.debugHigh) console.log(device.platform);
-	
-	// As of Android SDK 23 we must ask permission to coarse location
-	if(device.platform == "Android") {
-		bluetoothle.hasPermission(function(hasPermissionSuccess) {
-		
-			if (hasPermissionSuccess !== undefined) {
-			
-				console.log(JSON.stringify(hasPermissionSuccess));
-			
-				if (hasPermissionSuccess.hasPermission) {
-					if (env.debug) console.log("BluetoothLE permission from the system: " + hasPermissionSuccess.hasPermission);
-					pageInit();
-				}
-			
-				else {
-				
-					bluetoothle.requestPermission(function(requestPermissionSuccess) {
-					
-						if (requestPermissionSuccess.requestPermission) {
-							if (env.debug) console.log("BluetoothLE plugin received permission from the system: " + requestPermissionSuccess.requestPermission);
-							pageInit();
-						}
-					
-						else {
-							if (env.debug) console.log("BluetoothLE plugin failed to get permission from the system");
-						}
-					
-					});	
-				}			
-			}
-			else {
-				if (env.debug) console.log("BluetoothLE callback failure");
-			}
+//Cordova is loaded and it is now safe to make calls to Cordova methods
+function onDeviceReady() { 
+  if (env.debug) console.log("onDeviceReady"); 
+  if (env.debugHigh) console.log(device.platform);
+  // As of Android SDK 23 we must ask permission to coarse location
+  if(device.platform == "Android") {
+      bluetoothle.hasPermission(function(hasPermissionSuccess) {
+          if (hasPermissionSuccess !== undefined) {
+              console.log(JSON.stringify(hasPermissionSuccess));
+              if (hasPermissionSuccess.hasPermission) {
+                  if (env.debug) console.log("BluetoothLE permission from the system: " + hasPermissionSuccess.hasPermission);
+                  pageInit();
+              }
+              else {
+                  bluetoothle.requestPermission(function(requestPermissionSuccess) {
+                      if (requestPermissionSuccess.requestPermission) {
+                          if (env.debug) console.log("BluetoothLE plugin received permission from the system: " + requestPermissionSuccess.requestPermission);
+                          pageInit();
+                      }
+                      else {
+                          if (env.debug) console.log("BluetoothLE plugin failed to get permission from the system");
+                      }
+                  }); 
+              }           
+          }
+          else {
+              if (env.debug) console.log("BluetoothLE callback failure");
+          }
+      });
+      
+      document.addEventListener("resume", function() {
+          AndroidFullScreen.immersiveMode(function() { if (env.debug) console.log("Android immersive mode enabled"); }, function() { if (env.debug) console.log("Android immersive mode failed");});
+      }, false)
 
-		});
-	}
-	
-	// IOS just page init
-	else {
-		pageInit();
-	}
-	
+      
+      AndroidFullScreen.immersiveMode(function() { if (env.debug) console.log("Android immersive mode enabled"); }, function() { if (env.debug) console.log("Android immersive mode failed");});
+  }
+  // IOS 
+  else {
+      pageInit();
+  }
 }
 
 // routine to load the app when the mobile device is ready

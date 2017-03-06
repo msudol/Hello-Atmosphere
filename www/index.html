@@ -2,24 +2,16 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8" />
-		<meta name="format-detection" content="telephone=no" />
-		<meta name="msapplication-tap-highlight" content="no" />
-		<!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-		<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
 		<meta http-equiv="Content-Security-Policy" content="default-src 'self' gap://ready file://* * 'unsafe-inline' 'unsafe-eval' data:;
 															img-src * 'unsafe-inline' 'unsafe-eval' data:;
-															style-src * 'unsafe-inline' 'unsafe-eval' data:;">
+															style-src * 'unsafe-inline' 'unsafe-eval' data:;">												
 		<link rel="stylesheet" type="text/css" href="assets/css/app_main.css" />
-		<title>Atmosphere Developer Shell</title>
-	</head>
-	<body onload="onLoad('demo')">
-	
-        <!-- Container for the canvas element -->
-        <div id="canvasWrapper">
 
-        </div>
-		
 		<!-- Hack the zebra.json so it is a .js object -->
 		<script type="text/javascript" src="assets/js/zebra.json.js"></script>
 		
@@ -32,18 +24,32 @@
 		</script>
 
 		<script type="text/javascript" src="cordova.js"></script> 
-
+		
+		<!-- Standalone package built by Atmosphere -->
+		<script type="text/javascript" src="js/standalone.js"></script>	
+		
+		<!-- The actual current app will be in the folder for standalone package when built by Atmosphere -->
+		<script type="text/javascript" src="js/current_app.js"></script> 	
+		
 		<script type="text/javascript" src="assets/js/utils.js"></script>
 		<script type="text/javascript" src="assets/js/elements.js"></script>
 		<script type="text/javascript" src="assets/js/client_elements.js"></script>
 		<script type="text/javascript" src="assets/js/ble_elements.js"></script>
 		<script type="text/javascript" src="assets/js/BaseClient.js"></script>
-		<script type="text/javascript" src="assets/js/StandaloneClient.js"></script>
+		<script type="text/javascript" src="assets/js/StandaloneClient.js"></script>	
 		<script type="text/javascript" src="assets/js/PhoneGapBLEClient.js"></script>
+		<script type="text/javascript" src="assets/js/Client.js"></script>
 		<script type="text/javascript" src="assets/js/Chart.Core.js"></script>
-		<script type="text/javascript" src="assets/js/Chart.Scatter.js"></script>		
+		<script type="text/javascript" src="assets/js/Chart.Scatter.js"></script>	
+				
+		<title>Atmosphere Developer Shell</title>
+	</head>
+	<body onload="onLoad('main')">
 		
-		<script type="text/javascript" src="js/standalone.js"></script>	
-		<script type="text/javascript" src="js/current_app.js"></script>	
+        <!-- Container for the canvas element -->
+        <div id="canvasWrapper">
+            
+        </div>
+        	
 	</body>
 </html>

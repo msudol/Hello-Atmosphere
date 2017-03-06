@@ -1,3 +1,13 @@
+/*** Copyright 2016 Anaren Inc. All rights reserved ***/
+
+/*
+ * 
+ * StandaloneClient.js : 
+ * 		- Called from parent client to setup the user UI overlay
+ * 		- handle menu, logs and layout
+ * 
+ */
+
 function StandaloneClient(root) {
 	BaseClient.call(this, root);
 	
@@ -11,7 +21,7 @@ function StandaloneClient(root) {
 	var cwrapper = document.getElementById("canvasWrapper");
 	
 	this.windowSize();
-	window.addEventListener("resize", function(){currentStandaloneClient.windowSize()});
+	window.addEventListener("resize", function(){currentStandaloneClient.windowSize();});
 	
 	cwrapper.innerHTML = '' +
 	'<div id=canvasOverflow><canvas id=main></canvas></div><div id=appBar>' + 
@@ -118,6 +128,9 @@ StandaloneClient.prototype.showDebugLog = function() {
 StandaloneClient.prototype.layoutSelector = function(layoutObj) {
 	// an array to hold greatest outcome possible throughout the whole loop
 	var bestLayoutMatch = [];
+	var badLayoutOffHeight = null;
+	var badLayoutOffWidth = null;
+	
 	for(var layoutName in layoutObj) {
 		if ((layoutObj[layoutName].width == window.innerWidth) && (layoutObj[layoutName].height == window.innerHeight) && (device.platform == layoutObj[layoutName].platform)) {
 			if (env.debug) console.log("Exact layout match: " + layoutName);
@@ -144,9 +157,24 @@ StandaloneClient.prototype.layoutSelector = function(layoutObj) {
 		}
 		else {
 			if (env.debug) console.log("Bad layout match: " + layoutName);
+			
+			var currentOffWidth = Math.abs(layoutObj[layoutName].width - window.innerWidth);
+			var currentOffHeight = Math.abs(layoutObj[layoutName].height - window.innerHeight);
+			
+			if(badLayoutOffHeight === null && badLayoutOffWidth === null) {
+				bestLayoutMatch[3] = layoutName;
+				badLayoutOffWidth = currentOffWidth;
+				badLayoutOffHeight = currentOffHeight;
+			}
+			
+			else if(currentOffHeight + currentOffWidth <= badLayoutOffHeight + badLayoutOffWidth) {
+				bestLayoutMatch[3] = layoutName;
+				badLayoutOffWidth = currentOffWidth;
+				badLayoutOffHeight = currentOffHeight;
+			}
 		}
 	}
-	var chosenLayout = bestLayoutMatch[0] || bestLayoutMatch[1] || bestLayoutMatch[2] || "Default";
+	var chosenLayout = bestLayoutMatch[0] || bestLayoutMatch[1] || bestLayoutMatch[2] || bestLayoutMatch[3] || "Default";
 	if (env.debug) console.log("Using layout: " + chosenLayout);
 	if (env.baseApp) this.debugLog("Using layout: " + chosenLayout);
 	return chosenLayout;

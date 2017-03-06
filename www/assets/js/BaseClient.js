@@ -1,3 +1,31 @@
+/*** Copyright 2015 Anaren Inc. All rights reserved ***/
+
+/*
+ * 
+ * BaseClient.js : 
+ * 		- Master client base for Atmosphere Client creation
+ * 
+ */
+
+function getLanguageTag(constructorFunction, tag) {
+	
+	if(constructorFunction.prototype.language === undefined) {
+		return tag;
+	}
+	
+	var value = constructorFunction.prototype.language["en-US"][tag];
+	
+	if(constructorFunction.prototype.language[navigator.language] !== undefined && constructorFunction.prototype.language[navigator.language][tag] !== undefined) {
+		value = constructorFunction.prototype.language[navigator.language][tag];
+	}
+	
+	if(value === undefined) {
+		return tag;
+	}
+	
+	return value;
+}
+
 function BaseClient(root) {
 	this.root = root;
 	this.elements = {};
