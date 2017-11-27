@@ -19,7 +19,7 @@
     <content src="index.html" />
 	
     <!-- Add this line for phonegap build -->	
-    <preference name="phonegap-version" value="cli-6.5.0" />
+    <preference name="phonegap-version" value="cli-7.0.1" />
         
     <preference name="permissions" value="none" />
     <preference name="orientation" value="portrait" />
@@ -34,25 +34,25 @@
     <preference name="DisallowOverscroll" value="true" />
     <preference name="cordova-custom-config-autorestore" value="false" />
      
-    <plugin name="cordova-plugin-battery-status" />
-    <plugin name="cordova-plugin-camera" />
-    <plugin name="cordova-plugin-media-capture" />
-    <plugin name="cordova-plugin-console" />
-    <plugin name="cordova-plugin-contacts" />
-    <plugin name="cordova-plugin-device" />
-    <plugin name="cordova-plugin-device-motion" />
-    <plugin name="cordova-plugin-device-orientation" />
-    <plugin name="cordova-plugin-dialogs" />
-    <plugin name="cordova-plugin-file" />
-    <plugin name="cordova-plugin-file-transfer" />
-    <plugin name="cordova-plugin-geolocation" />
-    <plugin name="cordova-plugin-globalization" />
-    <plugin name="cordova-plugin-inappbrowser" />
-    <plugin name="cordova-plugin-media" />
-    <plugin name="cordova-plugin-network-information" />
-    <plugin name="cordova-plugin-splashscreen" />
-    <plugin name="cordova-plugin-vibration" />
-    <plugin name="cordova-sms-plugin" />
+    <plugin name="cordova-plugin-battery-status" source="npm" />
+    <plugin name="cordova-plugin-camera" source="npm" spec="2.4.1" />
+    <plugin name="cordova-plugin-media-capture" source="npm" spec="1.4.3" />
+    <plugin name="cordova-plugin-console" source="npm" />
+    <plugin name="cordova-plugin-contacts" source="npm" spec="2.3.1"/>
+    <plugin name="cordova-plugin-device" source="npm" />
+    <plugin name="cordova-plugin-device-motion" source="npm" />
+    <plugin name="cordova-plugin-device-orientation" source="npm" />
+    <plugin name="cordova-plugin-dialogs" source="npm" />
+    <plugin name="cordova-plugin-file" source="npm" spec="4.3.3"/>
+    <plugin name="cordova-plugin-file-transfer" source="npm" spec="1.6.3"/>
+    <plugin name="cordova-plugin-geolocation" source="npm" spec="2.4.3"/>
+    <plugin name="cordova-plugin-globalization" source="npm" />
+    <plugin name="cordova-plugin-inappbrowser" source="npm" />
+    <plugin name="cordova-plugin-media" source="npm" spec="3.0.1" />
+    <plugin name="cordova-plugin-network-information" source="npm" />
+    <plugin name="cordova-plugin-splashscreen" source="npm" />
+    <plugin name="cordova-plugin-vibration" source="npm" />
+    <plugin name="cordova-sms-plugin" source="npm" />
     
     <plugin name="cordova-plugin-statusbar" source="npm" />
     <plugin name="cordova-custom-config" source="npm" />
