@@ -1,8 +1,12 @@
 # Hello-Atmosphere
 
-Hello Atmosphere is a sample phonegap build tool project integrated with Anaren Atmosphere
+## End of Life
 
-Learn more @ https://atmosphere.anaren.com
+The IoT Platform that this was created for is no longer supported by the developers, so this project should be considered end-of-life. 
+
+## About
+
+Hello Atmosphere is a sample phonegap build tool project integrated with Atmosphere IoT
 
 This demo application should connect to an Anaren "MSDB" programmed with the sample project from 
 the Atmopshere IDE called "UI Demo". 
@@ -21,8 +25,6 @@ following files with files in your downloaded app source:
 
 4. Zip the entire contents of the project and upload to the PhoneGap Online Build Tool or 
 clone this repository and attach your git repository to your PhoneGap Build Tool Account
-
-Learn more about using phonegap build: https://atmosphere.anaren.com/wiki/Compiling_Atmosphere_mobile_application_with_PhoneGap_Build_Tool
 
 ## For the firmware
 
